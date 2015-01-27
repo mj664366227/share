@@ -1,0 +1,12 @@
+.classpath
+bin/
+.project
+.settings/
+*.class
+ebin/
+.gradle/
+share-*.jar
+*.MF
+.idea/
+*.iml
+*~$*
