@@ -1,0 +1,70 @@
+/*全局*/
+*{margin:0;font-family:'Microsoft YaHei'}
+ul,li{list-style:none;padding:0}
+.clear{clear:both}
+a{color:#FFF;text-decoration:none}
+a:hover,.page a:hover,.page font,.current a,#download:hover{color:#52ae01}
+.btn,.left,.table_head,.table,.page,.text,.file_browser,.position,.pvuvip,.pvuvip li,.rank ul li{float:left}
+textarea{overflow-x:hidden;overflow-y:hidden}
+.table,.file_browser,.position,#file_content{margin-left:15px;margin-top:10px}
+label{cursor:pointer;}
+.checkbox{ margin-right:5px}
+/*红色提示*/
+.red{border:#F00 1px solid}
+/*按钮*/
+.btn{background:#459300;border:1px solid #459300;padding:2px 5px 2px 5px;margin:2px 5px 2px 5px;color:#fff;font-size:12px;cursor:pointer}
+/*文本框*/
+.text{width:150px;height:23px}
+.longtext{width:300px;height:23px}
+.textarea{ width:300px; height:120px}
+/*登录框*/
+.login{margin:0 auto;width:350px;color:#FFF;font-size:14px;padding-top:300px}
+.login p{margin:15px 0 0 0}
+/*左边*/
+.left{width:230px;background:#0e0e0e;color:#FFF;text-align:right;font-size:16px}
+/*网站基本信息*/
+.website .title,.website .welcome{margin-right:10px}
+.website .title{font-size:24px;padding-top:30px}
+.website .welcome,.website .operation{font-size:12px;margin-top:20px}
+.website .operation{margin-right:15px}
+.website .welcome{line-height:25px}
+/*菜单*/
+.left .menu .title,.left .menu ul li{padding-right:20px}
+.left .menu .title{background:#449403;height:33px;width:186px;float:right;line-height:33px;cursor:pointer;margin-top:12px;font-size:16px}
+.left .menu ul{float:right;width:100%;line-height:25px;display:none}
+.left .menu ul li{ font-size:16px}
+/*表格头*/
+.table_head{background:#eaeaea;padding:10px;font-size:14px;font-weight:bold;width:95%;margin-top:20px;margin-left:15px}
+.table_head img {margin-right:10px}
+/*表格*/
+.table{width:97%;border-top:#CCC 1px solid;border-right:#CCC 1px solid;height:auto;font-size:14px}
+.table tr td,.table tr th{border-left:#CCC 1px solid;border-bottom:#CCC 1px solid;padding:5px;margin:10px;text-align:
+left}
+.table tr:hover,.table tr th{background:#F7F7F7}
+.table a{color:#000}
+.table a:hover{color:#459300}
+.table div{height:auto}
+/*文件浏览器*/
+.file_browser{border:#CCC 1px solid}
+.file_browser li{width:100px;height:100px;float:left;margin:4px 4px 4px 4px;text-align:center}
+.file_browser li div,.position{width:100%;word-break:break-all;font-size:12px;margin-bottom:10px}
+.file_browser li a,.position a{color:#000}
+.file_browser li a:hover,.position a:hover{color:#0F0}
+#file_content textarea{width:99%;height:700px;overflow:scroll;overflow-x:hidden}
+/*分页*/
+.page{margin-top:15px;margin-left:15px;width:95%;font-size:14px}
+.page a{color:#000;text-decoration:none}
+.page a,.page font{font-size:14px;margin-right:8px} 
+/*运行时间*/
+.runtime{float:right;font-size:12px;margin-top:5px}
+/*pvuvip*/
+.pvuvip li{width:100px;text-align:center}
+/*错误提示*/
+.error,.success,.notice{width:95%;font-size:12px;padding:10px 10px 10px 10px;margin-top:15px;margin-left:15px;border:#CCC 1px solid}
+.error{background:#fdbbbb}
+.success{background:#ccfecc}
+.notice{background:#ffffcc}
+/*权限列表*/
+.rank{width:100%; margin:7px}
+.rank ul li{ width:120px}
+.rank strong{ cursor:pointer}
