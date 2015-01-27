@@ -1,0 +1,1 @@
+rsync.exe -vzru4P --old-d --progress --password-file=rsyncpwd.txt<p.txt root@172.18.104.96::log /cygdrive/c/bak
