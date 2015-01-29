@@ -3,8 +3,7 @@
 $base = dirname(__FILE__).'/';
 require $base.'../config.php';
 load_file(SHARE_ROOT.'class/shareMysql');
-global $mysql;
-$mysql = new mysql(DB_HOST, DB_USER, DB_PASS, DB_PRE, DB_NAME, DB_PORT, CHARSET);
+$mysql = new shareMysql(DB_HOST, DB_USER, DB_PASS, DB_PRE, DB_NAME, DB_PORT, CHARSET);
 $servers = $mysql->select('server')->query();
 
 $t = microtime(true);
