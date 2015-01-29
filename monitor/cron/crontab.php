@@ -10,9 +10,9 @@ $t = microtime(true);
 $day_break = time::day_break();
 foreach ($servers as $s) {
 	echo "==========".$s['name']."==============\r\n";
+	$ip = ip::long_to_ip($s['ip']);
 	$security_name = secret::dede($s['security_name'], KEY.$ip, DECODE);
 	$pass_phrase = secret::dede($s['pass_phrase'], $security_name.KEY, DECODE);
-	$ip = ip::long_to_ip($s['ip']);
 	$snmp = new snmpworker($s['type'], $ip.':'.$s['port'], $security_name, SNMP_AUTH_PRIV, $s['auth_protocol'], $pass_phrase, $s['priv_protocol'], $pass_phrase);
 	$rs = $snmp->get('.1.3.6.1.4.1.2021');
 	$where = array();
