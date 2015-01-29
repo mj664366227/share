@@ -25,8 +25,8 @@
         <tr>
           <td align="right">操作系统：</td>
           <td><select name="os">
-              <option value="LINUX">LINUX</option>
-              <option value="WINDOWS">WINDOWS</option>
+              <option value="linux">linux</option>
+              <option value="windows">windows</option>
             </select></td>
         </tr>
         <tr>
