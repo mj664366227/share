@@ -11,7 +11,7 @@
           <span style="color:#0F0">■</span>&nbsp;
           <?php endif?>
           <a href="<?php echo url('view', 'view', 'serverid='.$serverid.'&content=memory')?>" title="<?php echo MONITORING_CONTENT_MEMORY?>"><?php echo MONITORING_CONTENT_MEMORY?></a></li>
-          <li>
+        <li>
           <?php if($content=='loadavg'):?>
           <span style="color:#0F0">■</span>&nbsp;
           <?php endif?>
@@ -74,6 +74,58 @@ show_custom = function(){
 	}
 }
 
+$(function () {
+    $('#view').highcharts({
+        chart: {
+            zoomType: 'x'
+        },
+        title: {
+            <?php if($st==$et):?>
+				text: '<?php echo date('Y-m-d',$st).' '.$servers.VIEW_MEMORY_USAGE?>'
+				<?php else:?>
+				text: '<?php echo date('Y-m-d',$st).' '.TO.' '.date('Y-m-d',$et).' '.$servers.VIEW_MEMORY_USAGE?>'
+				<?php endif?>
+        },
+        xAxis: {
+            type: 'datetime',
+            minRange: 86400000 // fourteen days
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            area: {
+                fillColor: {
+                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+                    stops: [
+                        [0, Highcharts.getOptions().colors[0]],
+                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    ]
+                },
+                marker: {
+                    radius: 2
+                },
+                lineWidth: 1,
+                states: {
+                    hover: {
+                        lineWidth: 1
+                    }
+                },
+                threshold: null
+            }
+        },
+
+        series: [{
+            type: 'area',
+            name: 'USD to EUR',
+            pointInterval: 60 * 1000,
+            pointStart: Date.UTC(2006, 0, 1),
+            data: <?php echo json_encode($data)?>
+        }]
+    });
+});
+
+/*
 $(function () {
     var chart;
 	var r = 2;
@@ -147,7 +199,7 @@ $(function () {
             }
         });
     }); 
-});
+});*/
 </script>
   <div id="view" style="width: 100%; height: 400px; margin: 0 auto"></div>
   <?php endif?>

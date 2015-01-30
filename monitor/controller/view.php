@@ -118,7 +118,7 @@ class viewcontroller extends controller {
 			if (strrpos($servers, $d['name']) === false) {
 				$servers .= $d['name'] . ' , ';
 			}
-
+			
 			if ($data['data'][$i]['name'] == $memory['name']) {
 				unset ($memory['name']);
 				$data['data'][$i] = array_merge_recursive($data['data'][$i], $memory);
@@ -129,14 +129,14 @@ class viewcontroller extends controller {
 		}
 		if (!$diff && $st_ === $et_) {
 			$st = strtotime($st_);
-			$et = $st +86400;
+			$et = $st + 86400;
 		}
 		view::assign('is_custom', $is_custom);
 		view::assign('server_list', mserver::ls());
 		view::assign('st', $st);
 		view::assign('et', $et);
 		view::assign('date', $date);
-		view::assign('data', $data);
+		view::assign('data', $data['data'][1]['data']);
 		view::assign('servers', substr($servers, 0, -2));
 	}
 
