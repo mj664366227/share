@@ -1,6 +1,5 @@
 .classpath
 bin/
-.project
 .settings/
 *.class
 ebin/
