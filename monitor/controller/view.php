@@ -94,7 +94,7 @@ class viewcontroller extends controller {
 		}
 		$view_data = mserver::get_view_data($serverid, $date, 'memory');
 		$servers = '';
-		$i = $st = $et = 0;echo_($view_data);
+		$i = $st = $et = 0;
 		foreach ($view_data as $d) {
 			$data['time'] = $d['time'];
 			$memory = array ();
@@ -105,6 +105,7 @@ class viewcontroller extends controller {
 					continue;
 				}
 				$view = explode('|', $view_data);
+				echo_($view);
 				$memory_use = intval($view[1]);
 				if ($memory_use <= 0) {
 					continue;
