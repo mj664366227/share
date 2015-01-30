@@ -105,7 +105,6 @@ class viewcontroller extends controller {
 					continue;
 				}
 				$view = explode('|', $view_data);
-				echo_($view);
 				$memory_use = intval($view[1]);
 				if ($memory_use <= 0) {
 					continue;
