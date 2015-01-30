@@ -94,7 +94,7 @@ class viewcontroller extends controller {
 		}
 		$view_data = mserver::get_view_data($serverid, $date, 'memory');
 		$servers = '';
-		$i = $st = $et = 0;
+		$i = $st = $et = 0;echo_($view_data);
 		foreach ($view_data as $d) {
 			$data['time'] = $d['time'];
 			$memory = array ();
