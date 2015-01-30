@@ -1,4 +1,4 @@
-<div id="copyright">&copy; ruanzhijun</div>
+<div id="copyright">&copy; <a href="http://weibo.com/ruanzhijun" target="_blank">ruanzhijun</a></div>
 <script type="text/javascript">
 change_right_div_width = function(){
 	var clientWidth = document.documentElement.clientWidth;
