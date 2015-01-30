@@ -88,7 +88,12 @@ $(function () {
         },
         xAxis: {
             type: 'datetime',
-            minRange: 86400000 // fourteen days
+            minRange: 86400000
+        },
+		 yAxis: {
+            title: {
+                text: ''
+            }
         },
         legend: {
             enabled: false
@@ -116,10 +121,10 @@ $(function () {
         },
 
         series: [{
-            type: 'area',
-            name: 'USD to EUR',
+            type: 'line',
+            name: '<?php echo $servers.VIEW_MEMORY_USAGE?>',
             pointInterval: 60 * 1000,
-            pointStart: Date.UTC(2006, 0, 1),
+            pointStart: Date.UTC(<?php echo date('Y', $st)?>, <?php echo date('m', $st)?>, <?php echo date('d', $st)?>),
             data: <?php echo json_encode($data)?>
         }]
     });
