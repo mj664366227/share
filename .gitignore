@@ -4,6 +4,7 @@ bin/
 *.class
 ebin/
 .gradle/
+.project
 share-*.jar
 *.MF
 .idea/
