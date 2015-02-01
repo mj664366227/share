@@ -1,3 +1,0 @@
-<?php include view::dir().'head.php';?>
-缓存管理...
-<?php include view::dir().'foot.php';?>
