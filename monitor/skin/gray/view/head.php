@@ -1,14 +1,14 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo CHARSET_HTML?>" />
-<?php view::keywords('css', SYSTEM_TITLE);?>
-<?php view::description('css', SYSTEM_TITLE);?>
+<?php view::load_short_icon();?>
+<?php view::keywords(SYSTEM_TITLE);?>
+<?php view::description(SYSTEM_TITLE);?>
 <?php view::load_css('css');?>
 <?php view::load_js('jquery');?>
 <?php view::load_js('highcharts');?>
 <?php view::load_js('rcalendar');?>
 <?php view::load_js('function');?>
-<?php view::load_short_icon();?>
 <title><?php echo SYSTEM_TITLE?></title>
 </head>
 <body>
