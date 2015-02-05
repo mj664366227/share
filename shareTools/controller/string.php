@@ -15,6 +15,21 @@ class stringcontroller extends toolscontroller {
 		view::assign('input', $md5);
 		view::assign('result', md5($md5));
 	}
+	
+	/**
+	 * base64加密解密
+	 */
+	public function base64(){
+		$base64 = $this->post('base64');
+		if(!$base64) {
+			return;
+		}
+
+		$result['encode'] = base64_encode($base64);
+		$result['decode'] = base64_decode($base64);
+		view::assign('input', $base64);
+		view::assign('result', $result);
+	}
 
 	/**
 	 * 哈希加密
