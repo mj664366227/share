@@ -19,6 +19,14 @@
 <script type="text/javascript">
 $(function(){
 	$(':input').attr('autocomplete', 'off');
+	change_right_div_width = function(){
+		var clientHeight = parseInt(document.documentElement.clientHeight) - 70;
+		$('#iframe').css('height',clientHeight+'px');
+	}
+	window.onresize = function(){
+		change_right_div_width();
+	}
+	change_right_div_width();
 })
 </script>
 </head>
