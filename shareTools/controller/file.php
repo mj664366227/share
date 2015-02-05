@@ -17,7 +17,7 @@ class filecontroller extends toolscontroller {
 		$filename = $tmp.'1.'.$extension;
 		move_uploaded_file($file['tmp_name'], $filename); 
 		$result = md5_file($filename);
-		filesystem::rmdir($tmp);
+		filesystem::rm($tmp);
 		view::assign('result', $result);
 	}
 	
@@ -35,7 +35,7 @@ class filecontroller extends toolscontroller {
 		$filename = $tmp.'1.'.$extension;
 		move_uploaded_file($file['tmp_name'], $filename); 
 		$result = sha1_file($filename);
-		filesystem::rmdir($tmp);
+		filesystem::rm($tmp);
 		view::assign('result', $result);
 	}
 }
