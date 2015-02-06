@@ -16,7 +16,7 @@ date_default_timezone_set('Asia/Shanghai');
 define('DOCUMENT_ROOT', realpath(dirname(__FILE__)) . '/');
 
 //程序运行模式
-//1普通模式   	http://localhost/admin/admin/page/6
+//1普通模式   		http://localhost/admin/admin/page/6
 //2伪静态         	http://localhost/?action=admin.admin&page=6
 //3纯静态         	http://localhost/admin/admin/page_6.html
 define('MODE', 1);

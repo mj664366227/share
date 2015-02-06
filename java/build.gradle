@@ -85,6 +85,7 @@ project(':share-core') {
 		compile 'org.apache.httpcomponents:httpclient:4.3.6'
 		compile 'com.fasterxml.jackson.core:jackson-databind:2.4.3'
 		compile 'redis.clients:jedis:2.6.2'
+		compile 'org.redisson:redisson:1.2.0'
 		compile 'org.eclipse.jetty:jetty-alpn-client:9.3.0.M1'
 		compile 'org.eclipse.jetty:jetty-alpn-server:9.3.0.M1'
 		compile 'org.eclipse.jetty:jetty-annotations:9.3.0.M1'
