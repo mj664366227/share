@@ -12,11 +12,11 @@
 一个类似监控宝的服务器监控程序，基于snmp v3实现。
 
 
-####科学公式
+####绘制序列图
                     
-$$E=mc^2$$
-
-$$\(\sqrt{3x-1}+(1+x)^2\)$$
-                    
-$$\sin(\alpha)^{\theta}=\sum_{i=0}^{n}(x^i + \cos(f))$$
-                
+```seq
+Andrew->China: Says Hello 
+Note right of China: China thinks\nabout it 
+China-->Andrew: How are you? 
+Andrew->>China: I am good thanks!
+```
