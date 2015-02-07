@@ -1,6 +1,12 @@
 <?php require view::dir().'head.php';?>
 
-<div style="margin:10px 0 0 15px">当前位置：<a href="<?php echo url('file','md')?>">root</a> <?php echo $p;?>
+<div style="margin:10px 0 0 15px">当前位置：<a href="<?php echo url('file','md')?>">root</a>
+  <?php if(!empty($p)):?>
+  <?php $link = '/';?>
+  <?php foreach(explode('/',$p) as $dir):?>
+  <?php $dir = trim($dir);if(!$dir){continue;}$link.=$dir.'/';echo '/ <a href="'.url('file','md', 'p='.$link).'">'.$dir.'</a>';?>
+  <?php endforeach;?>
+  <?php endif;?>
   <?php if(!empty($file)){echo '/ '.$file;}?>
 </div>
 <?php if(empty($html)):?>
@@ -11,7 +17,7 @@
       <tbody>
         <?php foreach($path as $value):?>
         <tr>
-          <td><a href="<?php echo url('file','md', 'p='.$p.(intval(strpos($value,'.'))>0?'&file='.$value:'/'.$value));?>" title="dd"><?php echo $value?></a></td>
+          <td><a href="<?php $is_dir=intval(strpos($value,'.'))<=0;echo url('file','md', 'p='.$p.(!$is_dir?'&file='.$value:'/'.$value));?>" title="<?php echo($is_dir?'进入文件夹':'打开文件').$value?>"><?php echo $value?></a></td>
         </tr>
         <?php endforeach?>
       </tbody>
