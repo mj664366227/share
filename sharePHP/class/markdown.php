@@ -41,6 +41,9 @@ class markdown{
 			
 			// 解析文本
 			$this->parse_content($buffer);
+			
+			// 解析表格
+			$this->parse_table($buffer);
 		}
 		fclose($this->handle);
 		return $this->html;
@@ -110,12 +113,15 @@ class markdown{
 	 * @param $buffer 文件流
 	 */
 	private function parse_link($buffer){
-		$buffer = preg_replace('/(\[.*\])(\(.*\))/', '<a href="$2">$1</a>', $buffer);
-		$buffer = str_ireplace('[', '', $buffer);
-		$buffer = str_ireplace(']', '', $buffer);
-		$buffer = str_ireplace('(', '', $buffer);
-		$buffer = str_ireplace(')', '', $buffer);
-		return $buffer;
+		return preg_replace('/\[(.*)\]\((.*)\)/', '<a href="$2">$1</a>', $buffer);
+	}
+	
+	/**
+	 * 解析表格
+	 * @param $buffer 文件流
+	 */
+	private function parse_table($buffer){
+		
 	}
 }
 ?>

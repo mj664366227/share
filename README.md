@@ -16,8 +16,8 @@
 一个类似监控宝的服务器监控程序，基于snmp v3实现。
 
 #####表格
-参数        |必选   |类型    	|说明
----         |---    |---    	|---
-opusId    	|true   |long  		|作品ID
-playerId    |true   |int        |玩家ID
-fromType    |true   |int    	|1.人气最高  2.附近  3.最新  0.默认
+|参数        |必选   |类型    	|说明
+|---         |---    |---    	|---
+|opusId    	|true   |long  		|作品ID
+|playerId    |true   |int        |玩家ID
+|fromType    |true   |int    	|1.人气最高  2.附近  3.最新  0.默认
