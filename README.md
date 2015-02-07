@@ -5,18 +5,8 @@
 ---
 
 ###已实现项目
-######shareTools
+######[shareTools](https://github.com/ruanzhijun/share/tree/master/shareTools)
 一些在日常开发过程中小工具的集合，例如：md5计算，urlencode等等。
 
-######monitor
+######[monitor](https://github.com/ruanzhijun/share/tree/master/monitor)
 一个类似监控宝的服务器监控程序，基于snmp v3实现。
-
-
-####绘制序列图
-                    
-```seq
-Andrew->China: Says Hello 
-Note right of China: China thinks\nabout it 
-China-->Andrew: How are you? 
-Andrew->>China: I am good thanks!
-```
