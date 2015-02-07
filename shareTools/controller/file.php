@@ -43,10 +43,45 @@ class filecontroller extends toolscontroller {
 	 * md文件解析
 	 */
 	public function md(){
-		$md = new markdown(MD_FILE_ROOT_PATH.'README.md');
-		//$md = new markdown(MD_FILE_ROOT_PATH.'opus.md');
-		$html = $md->parse();
-		view::assign('html', $html);
+		$file = $this->get('file');
+		$p = $this->get('p');
+		
+		// 目录
+		$directory = MD_FILE_ROOT_PATH.$p.'/';
+		
+		// 遍历文件夹所有内容
+		$path = array();
+		$dir = filesystem::ls($directory);
+		usort($dir, 'compare');
+		foreach ($dir as $d){
+			$path[] = trim($d);
+		}
+		
+		//  解析mk文件
+		$file = $directory.$file;
+		if(is_file($file)){
+			$md = new markdown($file);
+			$html = $md->parse();
+			view::assign('html', $html);
+		}
+		view::assign('path', $path);
+		view::assign('p', $p);
+		view::assign('file', str_replace($directory, '', $file));
 	}
+}
+
+function compare($a, $b){
+	$aa = is_int(strpos($a, '.'));	
+	$bb = is_int(strpos($b, '.'));
+	if($aa) {
+		return 1;
+	}
+	if($bb) {
+		return -1;
+	}
+	if ($a == $b) {
+		return 0;
+	}
+	return ($a < $b) ? -1 : 1;
 }
 ?>

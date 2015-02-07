@@ -125,7 +125,7 @@ class filesystem{
 	 * 列出目录所有内容
 	 * @param $dir 目录路径
 	 * @param $mode 匹配模式(默认是文件夹内任意内容)
-	 * @param $sort 排序(默认是按文件名顺序)
+	 * @param $sort 排序(默认是按文件名顺序)，如果是false，则不排序
 	 * @return 指定文件夹内容列表
 	 */
 	public static function ls($dir, $mode = false, $sort = FILE_ASC){
@@ -144,8 +144,8 @@ class filesystem{
 			case -1:
 				rsort($rs);
 				break;
-			default:
-				return array();
+			case false:echo 'false';
+				return $rs;
 		}
 		return $rs;
 	}
