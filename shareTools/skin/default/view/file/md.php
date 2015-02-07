@@ -1,3 +1,3 @@
 <?php require view::dir().'head.php';?>
-md
+<?php echo $html;?>
 <?php require view::dir().'foot.php';?>

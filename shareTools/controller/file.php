@@ -44,7 +44,8 @@ class filecontroller extends toolscontroller {
 	 */
 	public function md(){
 		$md = new markdown(MD_FILE_ROOT_PATH.'README.md');
-		$md->parse();
+		$html = $md->parse();
+		view::assign('html', $html);
 	}
 }
 ?>

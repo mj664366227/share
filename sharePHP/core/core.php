@@ -237,7 +237,7 @@ function xss($str){
 function load_file($file){
 	if (!file_exists($file)){
 		if (DEBUG === true){
-			echo_('file '.$file.' is not exists...', true);
+			echo_('file '.$file.' not exists...', true);
 		} else {
 			error404();
 			die;
