@@ -13,4 +13,4 @@
 
 ####图片
 
-![xxx](https://github.com/fluidicon.png)
+![xx](https://github.com/fluidicon.png)
