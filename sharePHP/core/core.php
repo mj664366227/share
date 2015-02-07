@@ -235,7 +235,6 @@ function xss($str){
  * @param $file 文件路径
  */
 function load_file($file){
-	$file = $file.'.php';
 	if (!file_exists($file)){
 		if (DEBUG === true){
 			echo_('file '.$file.' is not exists...', true);
@@ -253,11 +252,12 @@ function load_file($file){
  */
 function __autoload($class){
 	if(strpos($class, 'controller') > 0){
-		$autoload = sharePHP::get_application_dir().'/controller/'.str_replace('controller', '', $class);
-	} else if($class{0} === 'm' && $class !== 'mysqli' && $class !== 'mysql' && $class !== 'mongodb'){
-		$autoload = sharePHP::get_application_dir().'/model/'.substr($class, 1);
+		$autoload = sharePHP::get_application_dir().'/controller/'.str_replace('controller', '', $class).'.php';
 	} else {
-		$autoload = SHARE_ROOT.'class/'.$class;
+		$autoload = sharePHP::get_application_dir().'/model/'.substr($class, 1).'.php';
+		if(!file_exists($autoload)){
+			$autoload = SHARE_ROOT.'class/'.$class.'.php';
+		}
 	}
 	load_file($autoload);
 

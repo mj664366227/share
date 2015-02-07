@@ -31,9 +31,9 @@ if (!$argv) {
 	if (!$lang) {
 		$lang = 'cn';
 	}
-	load_file(DOCUMENT_ROOT.'model/system');
+	load_file(DOCUMENT_ROOT.'model/system.php');
 	msystem::set_lang($lang);
-	load_file(DOCUMENT_ROOT.'/lang/'.$lang);
+	load_file(DOCUMENT_ROOT.'/lang/'.$lang.'.php');
 
 	//定义系统基础网址
 	define('BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].str_replace('index.php', '', $_SERVER['SCRIPT_NAME']));

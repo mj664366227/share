@@ -43,7 +43,8 @@ class filecontroller extends toolscontroller {
 	 * md文件解析
 	 */
 	public function md(){
-		
+		$md = new markdown(MD_FILE_ROOT_PATH.'README.md');
+		$md->parse();
 	}
 }
 ?>

@@ -41,4 +41,7 @@ define('CHARSET_HTML', 'utf-8');
 //定义默认类和方法
 define('DEFAULT_CLASS', 'tools');
 define('DEFAULT_METHOD', 'index');
+
+//md文件根目录
+define('MD_FILE_ROOT_PATH', DOCUMENT_ROOT.'md/');
 ?>
