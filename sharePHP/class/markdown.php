@@ -76,7 +76,8 @@ class markdown{
 		}
 		$h = intval(substr_count($buffer, "#"));
 		$buffer = trim(str_replace("#", "", $buffer));
-		$id = md5(urlencode($buffer));
+		echo_($buffer);
+		$id = md5($buffer.uniqid());
 		$this->html .= '<h'.$h.' id="'.$id.'" onMouseOver="$(\'#'.$id.' .anchor\').css(\'display\',\'block\')" onMouseOut="$(\'#'.$id.' .anchor\').css(\'display\',\'none\')"><a href="#'.$id.'"><div class="anchor"></div></a><div style="margin-left:25px">'.$buffer.'</div></h'.$h.'>';
 	}
 	

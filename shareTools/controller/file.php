@@ -49,6 +49,9 @@ class filecontroller extends toolscontroller {
 		// 目录
 		$directory = MD_FILE_ROOT_PATH.$p.'/';
 		
+		// 如果不存在自动创建
+		filesystem::mkdir($directory);
+		
 		// 遍历文件夹所有内容
 		$path = array();
 		$dir = filesystem::ls($directory);

@@ -1,6 +1,7 @@
 <?php require view::dir().'head.php';?>
 
 <div style="margin:10px 0 0 15px">当前位置：<a href="<?php echo url('file','md')?>">root</a>
+  <?php if(empty($path)){echo '<br><br>找不到任何文件！';}?>
   <?php if(!empty($p)):?>
   <?php $link = '/';?>
   <?php foreach(explode('/',$p) as $dir):?>
