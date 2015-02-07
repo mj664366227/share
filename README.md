@@ -12,15 +12,8 @@
 一个类似监控宝的服务器监控程序，基于snmp v3实现。
 
 
-```html
-<!DOCTYPE html>
-<html>
-    <head>
-        <mate charest="utf-8" ></mate>
-        <title>Hello world!</title>
-    </head>
-    <body>
-        <h1>Hello world!</h1>
-    </body>
-</html>
+```php
+<?php
+	echo time();
+?>
 ```
