@@ -15,7 +15,7 @@ class controller{
 			$get = explode('/', substr($get, $i + strlen($class.'/'.$method) + 1));
 			$flag = null;
 			foreach ($get as $k => $g){
-				if ($flag === null) {
+				if ($flag === null){
 					$GLOBALS['_GET'][$g] = '';
 					$flag = fliter($g);
 				} else {
@@ -297,16 +297,16 @@ class controller{
 	 */
 	public function action_name(){
 		$action_name = $this->get('action');
-		if(!$action_name) {
+		if(!$action_name){
 			return;
 		}
 		$menu = $this->menu();
-		if(!is_array($menu)) {
+		if(!is_array($menu)){
 			return;
 		}
-		foreach ($this->menu() as $k => $m) {
-			foreach($m as $key => $name) {
-				if($key === $action_name) {
+		foreach ($this->menu() as $k => $m){
+			foreach($m as $key => $name){
+				if($key === $action_name){
 					view::assign('action_name', $name);
 					return;
 				}

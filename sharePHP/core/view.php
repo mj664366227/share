@@ -21,7 +21,7 @@ class view{
 	 * @param $varname 变量名
 	 * @param $value 变量值
 	 */
-	public static function assign($varname, $value) {
+	public static function assign($varname, $value){
 		self::$vars[$varname] = $value;
 	}
 
@@ -30,7 +30,7 @@ class view{
 	 * @param $varname 变量名
 	 * @param $value 变量值
 	 */
-	public static function remove($varname) {
+	public static function remove($varname){
 		unset(self::$vars[$varname]);
 	}
 
@@ -52,7 +52,7 @@ class view{
 		}
 
 		//把变量导入模板文件
-		foreach (self::$vars as $var_k_tmp => $var_v_tmp) {
+		foreach (self::$vars as $var_k_tmp => $var_v_tmp){
 			eval('$' . $var_k_tmp . ' = ' . var_export($var_v_tmp, true) . ";\r\n");
 		}
 
@@ -132,7 +132,7 @@ class view{
 	 */
 	public static function keywords(){
 		$str = '<meta name="keywords" content="';
-		foreach (func_get_args() as $keywords) {
+		foreach (func_get_args() as $keywords){
 			$str .= $keywords.',';
 		}
 		$str = substr($str, 0, -1);
@@ -145,7 +145,7 @@ class view{
 	 */
 	public static function description(){
 		$str = '<meta name="description" content="';
-		foreach (func_get_args() as $description) {
+		foreach (func_get_args() as $description){
 			$str .= $description.',';
 		}
 		$str = substr($str, 0, -1);
@@ -159,7 +159,7 @@ class view{
 	 */
 	public static function copyright($author){
 		$now = date('Y');
-		if($now == START_YEAR) {
+		if($now == START_YEAR){
 			$str = START_YEAR;
 		} else {
 			$str = START_YEAR.'-'.$now;
