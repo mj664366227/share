@@ -10,7 +10,3 @@
 
 ######[monitor](https://github.com/ruanzhijun/share/tree/master/monitor)
 一个类似监控宝的服务器监控程序，基于snmp v3实现。
-
-####图片
-
-![xx](https://github.com/fluidicon.png)
