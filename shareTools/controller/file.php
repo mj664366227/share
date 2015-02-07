@@ -38,5 +38,12 @@ class filecontroller extends toolscontroller {
 		filesystem::rm($tmp);
 		view::assign('result', $result);
 	}
+	
+	/**
+	 * md文件解析
+	 */
+	public function md(){
+		
+	}
 }
 ?>
