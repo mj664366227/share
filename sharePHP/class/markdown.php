@@ -6,7 +6,7 @@ class markdown{
 	/**
 	 * 输出的html代码(js部分与依赖jquery，请自行引入)
 	 */
-	private $html = '<style>*{color:#000}table th,table td{padding:10px}table th{background:#ccc}table{margin-left:45px;width:100%;border-top:1px solid #ccc;border-left:1px solid #ccc}table th,table td{border-bottom:1px solid #ccc;border-right:1px solid #ccc;}h1,h2,h3,h4,h5,h6{margin:20px;font-weight:bold}h1{font-size:32px}h2{font-size:28px}h3{font-size:24px}h4{font-size:20px}h5{font-size:16px}h6{font-size:16px}p{margin-left:45px}.anchor{display:none;margin-top:5px;margin-right:5px;float:left;width:18px;height:10px;background:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAKCAIAAAA2KZn2AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAuklEQVQokZ2RLRKDMBSElypukNwAHJKjgEMiOUZwHKG9QXCVSCQSHLYO3MNtRRvolHb6sybzzbx9b2fjkcTvOtzfZajLNNTeJh2mZT3M83BK9YqL85GktCZ+szY2rUhTqAckSZDsqghAnNtRuElGm8cAoqrbI5wrs9NtvDMKQH4WUppi85GTzRwe9rl8DcD3V74s+5kXIb/J/FyJKhr50JCrhCSltyYJFACVHPtpWtFJBYmxvbvv/ffdVycYutMLAImQAAAAAElFTkSuQmCC\') no-repeat}</style>';
+	private $html = '<style>*{color:#000}pre{margin-left:45px;}table th,table td{padding:10px}table th{background:#E2E2E2}table{margin-left:45px;width:100%;border-top:1px solid #ccc;border-left:1px solid #ccc}table th,table td{border-bottom:1px solid #ccc;border-right:1px solid #ccc;}h1,h2,h3,h4,h5,h6{margin:20px;font-weight:bold}h1{font-size:32px}h2{font-size:28px}h3{font-size:24px}h4{font-size:20px}h5{font-size:16px}h6{font-size:16px}p{margin-left:45px}.anchor{display:none;margin-top:5px;margin-right:5px;float:left;width:18px;height:10px;background:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAKCAIAAAA2KZn2AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAuklEQVQokZ2RLRKDMBSElypukNwAHJKjgEMiOUZwHKG9QXCVSCQSHLYO3MNtRRvolHb6sybzzbx9b2fjkcTvOtzfZajLNNTeJh2mZT3M83BK9YqL85GktCZ+szY2rUhTqAckSZDsqghAnNtRuElGm8cAoqrbI5wrs9NtvDMKQH4WUppi85GTzRwe9rl8DcD3V74s+5kXIb/J/FyJKhr50JCrhCSltyYJFACVHPtpWtFJBYmxvbvv/ffdVycYutMLAImQAAAAAElFTkSuQmCC\') no-repeat}</style>';
 	/**
 	 * 文件句柄
 	 */
@@ -15,6 +15,10 @@ class markdown{
 	 * 解析表格用到的参数变量集合
 	 */
 	private $table = array();
+	/**
+	 * 解析pre用到的参数变量集合
+	 */
+	private $pre = array();
 	
 	/**
 	 * 构造函数
@@ -35,13 +39,14 @@ class markdown{
 	 */
 	public function parse(){
 		while (($buffer = fgets($this->handle)) !== false) {
-			$buffer = trim($buffer);
-			
 			// 解析标题
 			$this->parse_title($buffer);
 			
 			// 解析表格
 			$this->parse_table($buffer);
+			
+			// 解析文本区域
+			$this->parse_pre($buffer);
 			
 			// 解析文本
 			$this->parse_content($buffer);
@@ -78,6 +83,7 @@ class markdown{
 	 * @param $buffer 文件流
 	 */
 	private function parse_title($buffer){
+		$buffer = trim($buffer);
 		if(!$this->is_title($buffer)) {
 			return;
 		}
@@ -92,6 +98,7 @@ class markdown{
 	 * @param $buffer 文件流
 	 */
 	private function parse_hr($buffer){
+		$buffer = trim($buffer);
 		if(!$this->is_hr($buffer) || $this->table['open']){
 			return;
 		}
@@ -103,14 +110,22 @@ class markdown{
 	 * @param $buffer 文件流
 	 */
 	private function parse_content($buffer){
-		$bool = true;
-		$bool = $bool && !$this->is_title($buffer);
-		$bool = $bool && !$this->is_hr($buffer);
-		$bool = $bool && !$this->table['open'];
-		if(!$bool){
-			return;
+		if($this->pre['open']){
+			$this->html .= htmlspecialchars($buffer);
+		} else {
+			$buffer = trim($buffer);
+			if(!$buffer){
+				return;
+			}
+			$bool = true;
+			$bool = $bool && !$this->is_title($buffer);
+			$bool = $bool && !$this->is_hr($buffer);
+			$bool = $bool && !$this->table['open'];
+			if(!$bool){
+				return;
+			}
+			$this->html .= '<p>'.$this->parse_link($buffer).'</p>';
 		}
-		$this->html .= '<p>'.$this->parse_link($buffer).'</p>';
 	}
 	
 	/**
@@ -126,8 +141,13 @@ class markdown{
 	 * @param $buffer 文件流
 	 */
 	private function parse_table($buffer){
+		$buffer = trim($buffer);
 		$td_num = intval(substr_count($buffer, '|'));
 		if($td_num <= 0){
+			if($this->table['open']){
+				unset($this->table);
+				$this->html .= '</tbody></table>';
+			}
 			return;
 		}
 		$td_array = explode('|', $buffer);
@@ -140,7 +160,7 @@ class markdown{
 		$size = count($td_array);
 		if(!$this->table['open']){
 			$this->table['open'] = true;
-			$this->html .= '<table>';
+			$this->html .= '<table cellpadding="0" cellspacing="0">';
 		}
 		if($this->table['open'] && !$this->table['head']){
 			$this->table['head'] = true;
@@ -165,7 +185,25 @@ class markdown{
 			$this->html .= '</tr>';
 		}
 		if($this->table['close']){
+			unset($this->table);
 			$this->html .= '</tbody></table>';
+		}
+	}
+	
+	/**
+	 * 解析文本区域
+	 * @param $buffer 文件流
+	 */
+	private function parse_pre(&$buffer){
+		if($buffer{0} === '`' && $buffer{1} === '`' && $buffer{2} === '`'){
+			if(!$this->pre['open']){
+				$this->pre['open'] = true;
+				$this->html .= '<pre>';
+			} else {
+				unset($this->pre);
+				$this->html .= '</pre>';
+			}
+			$buffer = '';
 		}
 	}
 }
