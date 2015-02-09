@@ -353,7 +353,7 @@ public final class FileSystem {
 		for (Entry<Object, Object> e : Property.entrySet()) {
 			configMap.put(e.getKey(), e.getValue());
 		}
-		return SortUtil.sortMapKey(configMap, order);
+		return SortUtil.sortMap(configMap, order);
 	}
 
 	/**
