@@ -40,6 +40,7 @@ fi
 
 #安装erlang
 erlang=$erlang_install_version 
+rm -rf $erlang_install_path/erlang
 if [ ! -d $erlang_install_path/erlang ]; then 
 	echo 'installing erlang '$erlang'...'
 	if [ ! -f $base_path/otp_src_$erlang.tar.gz ]; then
