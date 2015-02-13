@@ -61,15 +61,13 @@ fi
 
 #安装OpenSSL
 openssl='openssl-1.0.2'
-if [ ! -d $install_path/$openssl ]; then
-	echo 'installing '$openssl' ...'
-	if [ ! -f $base_path/$openssl.tar.gz ]; then
-		echo $openssl'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$openssl.tar.gz http://www.openssl.org/source/$openssl.tar.gz || exit
-		echo 'download '$openssl' finished...'
-	fi
-	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
+echo 'installing '$openssl' ...'
+if [ ! -f $base_path/$openssl.tar.gz ]; then
+	echo $openssl'.tar.gz is not exists, system will going to download it...'
+	wget -O $base_path/$openssl.tar.gz http://www.openssl.org/source/$openssl.tar.gz || exit
+	echo 'download '$openssl' finished...'
 fi
+tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
 
 #安装libatomic
 libatomic='libatomic_ops-1.1'
