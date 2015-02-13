@@ -6,7 +6,7 @@ class markdown{
 	/**
 	 * 输出的html代码(js部分与依赖jquery，请自行引入)
 	 */
-	private $html = '<style>*{color:#000}ul{margin-left:25px}pre{padding:10px;width:98%;margin-left:45px;border:1px solid #ccc;background:#F1F1F1}table th,table td{padding:10px}table th{background:#E2E2E2}table{margin-left:45px;width:98%;border-top:1px solid #ccc;border-left:1px solid #ccc}table th,table td{border-bottom:1px solid #ccc;border-right:1px solid #ccc;}h1,h2,h3,h4,h5,h6{margin:20px;font-weight:bold}h1{font-size:32px}h2{font-size:28px}h3{font-size:24px}h4{font-size:20px}h5{font-size:16px}h6{font-size:16px}p{margin-left:45px}.anchor{display:none;margin-top:5px;margin-right:5px;float:left;width:18px;height:10px;background:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAKCAIAAAA2KZn2AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAuklEQVQokZ2RLRKDMBSElypukNwAHJKjgEMiOUZwHKG9QXCVSCQSHLYO3MNtRRvolHb6sybzzbx9b2fjkcTvOtzfZajLNNTeJh2mZT3M83BK9YqL85GktCZ+szY2rUhTqAckSZDsqghAnNtRuElGm8cAoqrbI5wrs9NtvDMKQH4WUppi85GTzRwe9rl8DcD3V74s+5kXIb/J/FyJKhr50JCrhCSltyYJFACVHPtpWtFJBYmxvbvv/ffdVycYutMLAImQAAAAAElFTkSuQmCC\') no-repeat}</style>';
+	private $html = '<style>*{color:#000;word-break:break-all}ul,ol{margin-left:25px}pre{padding:10px;width:98%;margin-left:45px;border:1px solid #ccc;background:#F1F1F1}table th,table td{padding:10px}table th{background:#E2E2E2}table{margin-left:45px;width:98%;border-top:1px solid #ccc;border-left:1px solid #ccc}table th,table td{border-bottom:1px solid #ccc;border-right:1px solid #ccc;}h1,h2,h3,h4,h5,h6{margin:20px;font-weight:bold}h1{font-size:32px}h2{font-size:28px}h3{font-size:24px}h4{font-size:20px}h5{font-size:16px}h6{font-size:16px}p{margin-left:45px}.anchor{display:none;margin-top:5px;margin-right:5px;float:left;width:18px;height:10px;background:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAKCAIAAAA2KZn2AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAuklEQVQokZ2RLRKDMBSElypukNwAHJKjgEMiOUZwHKG9QXCVSCQSHLYO3MNtRRvolHb6sybzzbx9b2fjkcTvOtzfZajLNNTeJh2mZT3M83BK9YqL85GktCZ+szY2rUhTqAckSZDsqghAnNtRuElGm8cAoqrbI5wrs9NtvDMKQH4WUppi85GTzRwe9rl8DcD3V74s+5kXIb/J/FyJKhr50JCrhCSltyYJFACVHPtpWtFJBYmxvbvv/ffdVycYutMLAImQAAAAAElFTkSuQmCC\') no-repeat}</style>';
 	/**
 	 * 文件句柄
 	 */
@@ -58,14 +58,14 @@ class markdown{
 			return;
 		}
 		while (($buffer = fgets($this->handle)) !== false) {
+			// 解析文本区域
+			$this->parse_pre($buffer);
+			
 			// 解析标题
 			$this->parse_title($buffer);
 			
 			// 解析表格
 			$this->parse_table($buffer);
-			
-			// 解析文本区域
-			$this->parse_pre($buffer);
 			
 			// 解析图片
 			$this->parse_img($buffer);
@@ -138,6 +138,9 @@ class markdown{
 	 * @param $buffer 文件流
 	 */
 	private function parse_content($buffer){
+		if($this->ul || $this->ol){
+			return;
+		}
 		if($this->pre['open']){
 			$this->html .= htmlspecialchars($buffer);
 		} else {
@@ -256,31 +259,35 @@ class markdown{
 			return;
 		}
 		$buffer = substr($buffer, 1);
-		$this->html .= trim(preg_replace('/\[(.*)\]\((.*)\)/', '<a href="$2" target="_blank" title="$1   $2"><img src="$2" alt="$1"/></a>', $buffer));
+		$this->html .= trim(preg_replace('/\[(.*)\]\((.*)\)/', '<a href="$2" target="_blank" title="$1   $2"><img src="$2" alt="$1"/></a>', trim($buffer)));
 	}
 	
 	/**
 	 * 解析无序列表
 	 * @param $buffer 文件流
 	 */
-	private function parse_ul(&$buffer){
-		$buffer = trim($buffer);
-		if($buffer{0} === '*' || $buffer{0} === '+' /*|| $buffer{0} === '-'*/){
+	private function parse_ul($buffer){
+		$str = trim($buffer);
+		if($str{0} === '*' || $str{0} === '+' /*|| $str{0} === '-'*/){
 			if(!$this->ul['open']){
 				$this->ul['open'] = true;
 				$this->html .= '<ul>';
 			}
-			$buffer = str_replace('*', '', $buffer);
-			$buffer = str_replace('+', '', $buffer);
-			$buffer = str_replace('-', '', $buffer);
-			$buffer = trim($buffer);
-			$this->html .= '<li>'.$buffer.'</li>';
-			$buffer = '';
+			$str = str_replace('*', '', $str);
+			$str = str_replace('+', '', $str);
+			$str = str_replace('-', '', $str);
+			$this->html .= '<li>'.trim($str).'</li>';
 		} else {
 			if($this->ul['open']){
 				$this->ul['close'] = true;
 				$this->html .= '</ul>';
+				unset($this->ul['open']);
 			}
+		}
+		if($this->ul['open'] && feof($this->handle)){
+			$this->ul['close'] = true;
+			$this->html .= '</ul>';
+			unset($this->ul['open']);
 		}
 	}
 	
@@ -288,24 +295,27 @@ class markdown{
 	 * 解析有序列表
 	 * @param $buffer 文件流
 	 */
-	private function parse_ol(&$buffer){
-		$buffer = trim($buffer);
-		if($buffer{0} === '*' || $buffer{0} === '+' /*|| $buffer{0} === '-'*/){
+	private function parse_ol($buffer){
+		$str = trim($buffer);
+		$pattern = '/^\d+\./';
+		if(preg_match($pattern, $str)){
 			if(!$this->ol['open']){
 				$this->ol['open'] = true;
 				$this->html .= '<ol>';
 			}
-			$buffer = str_replace('*', '', $buffer);
-			$buffer = str_replace('+', '', $buffer);
-			$buffer = str_replace('-', '', $buffer);
-			$buffer = trim($buffer);
-			$this->html .= '<li>'.$buffer.'</li>';
-			$buffer = '';
+			$str = trim(preg_replace($pattern, '', $str));
+			$this->html .= '<li>'.trim($str).'</li>';
 		} else {
 			if($this->ol['open']){
 				$this->ol['close'] = true;
 				$this->html .= '</ol>';
+				unset($this->ol['open']);
 			}
+		}
+		if($this->ol['open'] && feof($this->handle)){
+			$this->ol['close'] = true;
+			$this->html .= '</ol>';
+			unset($this->ol['open']);
 		}
 	}
 }
