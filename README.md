@@ -27,9 +27,9 @@ fromType    |true   |int    	|1.人气最高  2.附近  3.最新  0.默认
 
 ![艰苦奋斗和健康](http://www.baidu.com/img/bd_logo1.png)
 
-+Red
-+Green
-+Blue
++ Red
++ Green
++ Blue
 
 1.  Bird
 1.  McHale
