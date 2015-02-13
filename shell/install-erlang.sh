@@ -22,7 +22,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #安装erlang
-erlang='17.4'
+erlang='R16B03'
 if [ ! -d $erlang_install_path/erlang ]; then 
 	echo 'installing erlang '$erlang'...'
 	if [ ! -f $base_path/otp_src_$erlang.tar.gz ]; then
