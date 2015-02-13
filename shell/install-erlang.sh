@@ -33,10 +33,7 @@ if [ ! -d $erlang_install_path/openssl ]; then
 	fi
 	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
 	cd $install_path/$openssl
-	./config --prefix=$erlang_install_path/openssl && $install_path/$openssl/config -t || exit
-	sed -i 's/CC= cc/CC= gcc/' Makefile || exit
-	sed -i 's/CFLAG=/CFLAG= -fPIC/' Makefile || exit
-	make && make test && make install || exit
+	./config --prefix=$erlang_install_path/openssl && $install_path/$openssl/config -t && make && make test && make install || exit
 	yes|cp $erlang_install_path/openssl/bin/* /usr/bin/
 	echo $openssl' install finished...'
 fi
@@ -52,6 +49,7 @@ if [ ! -d $erlang_install_path/erlang ]; then
 	fi
 	tar zxvf $base_path/otp_src_$erlang.tar.gz -C $install_path || exit
 	cd $install_path/otp_src_$erlang
+	exit
 	./configure --with-ssl=$install_path/$openssl --enable-sctp --enable-kernel-poll --enable-smp-support --enable-threads --enable-halfword-emulator --disable-hipe --enable-native-libs --enable-m64-build --prefix=$erlang_install_path/erlang && make && sudo make install || exit
 	cd $erlang_install_path/erlang/lib/erlang/bin
 	yes | cp -rf ct_run /usr/bin/ || exit
