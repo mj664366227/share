@@ -7,8 +7,9 @@ ntpdate time.nist.gov
 
 #处理外部参数
 erlang_install_path=$1
-if [ ! $erlang_install_path ]; then
-	echo 'error command!!! you must input erlang install path...'
+erlang_install_version=$1
+if [ ! $erlang_install_path ] || [ ! $erlang_install_version ]; then
+	echo 'error command!!! you must input erlang install path and install version...'
 	echo 'for example: sh install-erlang.sh /usr/local'
 	exit
 fi
@@ -22,7 +23,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #安装erlang
-erlang='R16B03'
+erlang=$erlang_install_version 
 if [ ! -d $erlang_install_path/erlang ]; then 
 	echo 'installing erlang '$erlang'...'
 	if [ ! -f $base_path/otp_src_$erlang.tar.gz ]; then
