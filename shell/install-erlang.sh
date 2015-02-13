@@ -59,15 +59,15 @@ if [ ! -d $erlang_install_path/erlang ]; then
 	fi
 	tar zxvf $base_path/otp_src_$erlang.tar.gz -C $install_path || exit
 	cd $install_path/otp_src_$erlang
-	./configure --with-ssl=$erlang_install_path/openssl --enable-sctp --enable-kernel-poll --enable-smp-support --enable-threads --enable-halfword-emulator --disable-hipe --enable-native-libs --enable-darwin-64bit --prefix=$erlang_install_path/erlang && make && sudo make install
+	./configure --with-ssl=$erlang_install_path/openssl --enable-sctp --enable-kernel-poll --enable-smp-support --enable-threads --enable-halfword-emulator --disable-hipe --enable-native-libs --enable-darwin-64bit --prefix=$erlang_install_path/erlang && make && sudo make install || exit
 	cd $erlang_install_path/erlang/lib/erlang/bin
-	yes | cp -rf ct_run /usr/bin/
-	yes | cp -rf erlc /usr/bin/
-	yes | cp -rf erl /usr/bin/
-	yes | cp -rf escript /usr/bin/
-	yes | cp -rf dialyzer /usr/bin/
-	yes | cp -rf start_erl /usr/bin/
-	yes | cp -rf to_erl /usr/bin/
-	yes | cp -rf run_erl /usr/bin/
-	yes | cp -rf typer /usr/bin/
+	yes | cp -rf ct_run /usr/bin/ || exit
+	yes | cp -rf erlc /usr/bin/ || exit
+	yes | cp -rf erl /usr/bin/ || exit
+	yes | cp -rf escript /usr/bin/ || exit
+	yes | cp -rf dialyzer /usr/bin/ || exit
+	yes | cp -rf start_erl /usr/bin/ || exit
+	yes | cp -rf to_erl /usr/bin/ || exit
+	yes | cp -rf run_erl /usr/bin/ || exit
+	yes | cp -rf typer /usr/bin/ || exit
 fi
