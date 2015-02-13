@@ -22,15 +22,6 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #安装erlang
-erlang='17.4'
-if [ ! -d $riak_install_path/erlang ]; then 
-	echo 'installing erlang '$erlang'...'
-	if [ ! -f $base_path/otp_src_$erlang.tar.gz ]; then
-		echo 'otp_src_'$erlang'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/otp_src_$erlang.tar.gz http://www.erlang.org/download/otp_src_$erlang.tar.gz || exit
-		echo 'download erlang'$erlang' finished...'
-	fi
-	tar zxvf $base_path/otp_src_$erlang.tar.gz -C $install_path || exit
-	cd $install_path/otp_src_$erlang
-	./configure --prefix=$riak_install_path/erlang && make && sudo make install
-fi
+sh install-erlang.sh $riak_install_path
+
+#安装riak
