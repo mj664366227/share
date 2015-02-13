@@ -45,6 +45,9 @@ if [ ! -d $erlang_install_path/erlang ]; then
 	fi
 	tar zxvf $base_path/otp_src_$erlang.tar.gz -C $install_path || exit
 	cd $install_path/otp_src_$erlang
+	sed -i 's/CC= cc/CC= gcc/' Makefile || exit
+	sed -i 's/CFLAG= -O/CC= -fPIC -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -Wa,--noexecstack -m64 -DL_ENDIAN -DTERMIO -O3 -Wall -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM/' Makefile || exit
+	exit
 	./configure --with-ssl=$install_path/$openssl --enable-sctp --enable-kernel-poll --enable-smp-support --enable-threads --enable-halfword-emulator --disable-hipe --enable-native-libs --enable-m64-build --prefix=$erlang_install_path/erlang && make && sudo make install || exit
 	cd $erlang_install_path/erlang/lib/erlang/bin
 	yes | cp -rf ct_run /usr/bin/ || exit
