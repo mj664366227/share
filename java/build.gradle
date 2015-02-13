@@ -178,3 +178,11 @@ project(':share-admin') {
 	}
 	task deploy(dependsOn: [copyLib, copyWebapp])
 }
+project(':riak-study') {
+	dependencies{
+	   compile 'com.basho.riak:riak-client:2.0.0'
+	   compile 'com.basho.riak.protobuf:riak-pb:2.0.0.16'
+	   compile fileTree( dir: "lib", include: '*.jar' )
+	}
+	task deploy(dependsOn: [copyLib, copyWebapp])
+}
