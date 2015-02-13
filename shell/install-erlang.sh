@@ -22,9 +22,9 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-#安装OpenSSL
+# 安装OpenSSL
 openssl='openssl-1.0.1j'
-if [ ! -d $install_path/$openssl ]; then
+if [ ! -d $erlang_install_path/openssl ]; then
 	echo 'installing '$openssl' ...'
 	if [ ! -f $base_path/$openssl.tar.gz ]; then
 		echo $openssl'.tar.gz is not exists, system will going to download it...'
@@ -32,6 +32,13 @@ if [ ! -d $install_path/$openssl ]; then
 		echo 'download '$openssl' finished...'
 	fi
 	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
+	cd $install_path/$openssl
+	sed -i 's/CC= cc/CC= gcc/' Makefile || exit
+	sed -i 's/CFLAG= -O/CC= -fPIC -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -Wa,--noexecstack -m64 -DL_ENDIAN -DTERMIO -O3 -Wall -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM/' Makefile || exit
+	exit
+	./config --prefix=$erlang_install_path/openssl && $install_path/$openssl/config -tmake && make test && make install || exit
+	yes|cp $erlang_install_path/openssl/bin/* /usr/bin/
+	echo $openssl' install finished...'
 fi
 
 #安装erlang
@@ -45,9 +52,6 @@ if [ ! -d $erlang_install_path/erlang ]; then
 	fi
 	tar zxvf $base_path/otp_src_$erlang.tar.gz -C $install_path || exit
 	cd $install_path/otp_src_$erlang
-	sed -i 's/CC= cc/CC= gcc/' Makefile || exit
-	sed -i 's/CFLAG= -O/CC= -fPIC -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -Wa,--noexecstack -m64 -DL_ENDIAN -DTERMIO -O3 -Wall -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM/' Makefile || exit
-	exit
 	./configure --with-ssl=$install_path/$openssl --enable-sctp --enable-kernel-poll --enable-smp-support --enable-threads --enable-halfword-emulator --disable-hipe --enable-native-libs --enable-m64-build --prefix=$erlang_install_path/erlang && make && sudo make install || exit
 	cd $erlang_install_path/erlang/lib/erlang/bin
 	yes | cp -rf ct_run /usr/bin/ || exit
