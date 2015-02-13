@@ -106,7 +106,7 @@ if [ ! -d $php_install_path/libxml2 ]; then
 fi
 
 # 安装OpenSSL
-openssl='openssl-1.0.1j'
+openssl='openssl-1.0.2'
 if [ ! -d $php_install_path/openssl ]; then
 	echo 'installing '$openssl' ...'
 	if [ ! -f $base_path/$openssl.tar.gz ]; then
@@ -138,7 +138,7 @@ if [ ! -d $php_install_path/pcre ]; then
 fi
 
 # 安装curl
-curl='curl-7.39.0'
+curl='curl-7.40.0'
 if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then

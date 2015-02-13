@@ -21,7 +21,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 # 安装curl
-curl='curl-7.39.0'
+curl='curl-7.40.0'
 if [ ! -d $mongodb_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then
