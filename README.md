@@ -31,6 +31,6 @@ fromType    |true   |int    	|1.人气最高  2.附近  3.最新  0.默认
 + Green
 + Blue
 
-1.  Bird
-1.  McHale
-1.  Parish
+1.Bird
+1.McHale
+1.Parish

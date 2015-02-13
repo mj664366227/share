@@ -67,6 +67,9 @@ class markdown{
 			
 			// 解析图片
 			$this->parse_img($buffer);
+			
+			// 解析无序列表
+			$this->parse_ul($buffer);
 		}
 		fclose($this->handle);
 		return $this->html;
@@ -242,7 +245,14 @@ class markdown{
 		}
 		$buffer = substr($buffer, 1);
 		$this->html .= trim(preg_replace('/\[(.*)\]\((.*)\)/', '<a href="$2" target="_blank" title="$1   $2"><img src="$2" alt="$1"/></a>', $buffer));
-		unset($buffer);
+	}
+	
+	/**
+	 * 解析无序列表
+	 * @param $buffer 文件流
+	 */
+	private function parse_ul($buffer){
+		
 	}
 }
 ?>
