@@ -59,7 +59,7 @@ if [ ! -d $erlang_install_path/erlang ]; then
 	fi
 	tar zxvf $base_path/otp_src_$erlang.tar.gz -C $install_path || exit
 	cd $install_path/otp_src_$erlang
-	./configure --with-ssl=$erlang_install_path/openssl --enable-sctp --enable-kernel-poll --enable-smp-support --enable-threads --enable-halfword-emulator --disable-hipe --enable-native-libs --enable-darwin-64bit --prefix=$erlang_install_path/erlang && make && sudo make install || exit
+	./configure --with-ssl=$erlang_install_path/openssl --enable-sctp --enable-kernel-poll --enable-smp-support --enable-threads --enable-halfword-emulator --disable-hipe --enable-native-libs --enable-m64-build --prefix=$erlang_install_path/erlang && make && sudo make install || exit
 	cd $erlang_install_path/erlang/lib/erlang/bin
 	yes | cp -rf ct_run /usr/bin/ || exit
 	yes | cp -rf erlc /usr/bin/ || exit
