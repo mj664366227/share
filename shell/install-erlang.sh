@@ -41,6 +41,15 @@ fi
 #安装erlang
 erlang=$erlang_install_version 
 rm -rf $erlang_install_path/erlang
+rm -rf /usr/bin/ct_run
+rm -rf /usr/bin/erlc
+rm -rf /usr/bin/erl
+rm -rf /usr/bin/escript
+rm -rf /usr/bin/dialyzer
+rm -rf /usr/bin/start_erl
+rm -rf /usr/bin/to_erl
+rm -rf /usr/bin/run_erl
+rm -rf /usr/bin/typer
 if [ ! -d $erlang_install_path/erlang ]; then 
 	echo 'installing erlang '$erlang'...'
 	if [ ! -f $base_path/otp_src_$erlang.tar.gz ]; then
