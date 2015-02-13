@@ -33,7 +33,9 @@ if [ ! -d $erlang_install_path/openssl ]; then
 	fi
 	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
 	cd $install_path/$openssl
-	./config --prefix=$erlang_install_path/openssl && $install_path/$openssl/config -t && make && make test && make install || exit
+	./config --prefix=$erlang_install_path/openssl && $install_path/$openssl/config -t
+	sed -i 's/CFLAG=/CFLAG= -fPIC /' Makefile || exit
+	make && make test && make install || exit
 	yes|cp $erlang_install_path/openssl/bin/* /usr/bin/
 	echo $openssl' install finished...'
 fi
