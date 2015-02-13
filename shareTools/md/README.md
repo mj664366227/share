@@ -37,3 +37,6 @@ class a{
 }
 ?>
 ```
+
+###图片
+![d图片f](http://www.baidu.com/img/bd_logo1.png)

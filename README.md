@@ -26,3 +26,11 @@ fromType    |true   |int    	|1.人气最高  2.附近  3.最新  0.默认
 来不及詹姆斯
 
 ![艰苦奋斗和健康](http://www.baidu.com/img/bd_logo1.png)
+
++   Red
++   Green
++   Blue
+
+1.  Bird
+1.  McHale
+1.  Parish

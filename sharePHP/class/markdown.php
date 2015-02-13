@@ -12,6 +12,10 @@ class markdown{
 	 */
 	private $handle = null;
 	/**
+	 * 缓存时间，秒为单位
+	 */
+	private $cache_time = 0;
+	/**
 	 * 解析表格用到的参数变量集合
 	 */
 	private $table = array();
@@ -23,14 +27,18 @@ class markdown{
 	/**
 	 * 构造函数
 	 * @param $file 文件路径
+	 * @param $cache_time 缓存时间，秒为单位(默认不用缓存)
 	 */
-	public function __construct($file){
+	public function __construct($file, $cache_time = false){
+		$this->$cache_time = intval($cache_time);
 		if(!is_file($file)){
 			echo_('file '.$file.' not exists...', true);
 		}
-		$this->handle = fopen($file, 'r');
-		if(!$this->handle) {
-			echo_('can not read file '.$file, true);
+		if($this->$cache_time <= 0) {
+			$this->handle = fopen($file, 'r');
+			if(!$this->handle) {
+				echo_('can not read file '.$file, true);
+			}
 		}
 	}
 	
@@ -38,6 +46,9 @@ class markdown{
 	 * 解析
 	 */
 	public function parse(){
+		if($this->$cache_time > 0) {
+			return;
+		}
 		while (($buffer = fgets($this->handle)) !== false) {
 			// 解析标题
 			$this->parse_title($buffer);
@@ -53,6 +64,9 @@ class markdown{
 			
 			// 解析分割线
 			$this->parse_hr($buffer);
+			
+			// 解析图片
+			$this->parse_img($buffer);
 		}
 		fclose($this->handle);
 		return $this->html;
@@ -84,7 +98,7 @@ class markdown{
 	 */
 	private function parse_title($buffer){
 		$buffer = trim($buffer);
-		if(!$this->is_title($buffer)) {
+		if(!$this->is_title($buffer) || $buffer{0} === '!') {
 			return;
 		}
 		$h = intval(substr_count($buffer, '#'));
@@ -99,7 +113,7 @@ class markdown{
 	 */
 	private function parse_hr($buffer){
 		$buffer = trim($buffer);
-		if(!$this->is_hr($buffer) || $this->table['open']){
+		if(!$this->is_hr($buffer) || $this->table['open'] || $buffer{0} === '!'){
 			return;
 		}
 		$this->html .= '<hr>';
@@ -114,7 +128,7 @@ class markdown{
 			$this->html .= htmlspecialchars($buffer);
 		} else {
 			$buffer = trim($buffer);
-			if(!$buffer){
+			if(!$buffer || $buffer{0} === '!'){
 				return;
 			}
 			$bool = true;
@@ -133,7 +147,11 @@ class markdown{
 	 * @param $buffer 文件流
 	 */
 	private function parse_link($buffer){
-		return trim(preg_replace('/\[(.*)\]\((.*)\)/', '<a href="$2">$1</a>', $buffer));
+		$buffer = trim($buffer);
+		if($buffer{0} === '!'){
+			return;
+		}
+		return trim(preg_replace('/\[(.*)\]\((.*)\)/', '<a href="$2" target="_blank" title="$1   $2">$1</a>', $buffer));
 	}
 	
 	/**
@@ -142,6 +160,9 @@ class markdown{
 	 */
 	private function parse_table($buffer){
 		$buffer = trim($buffer);
+		if($buffer{0} === '!'){
+			return;
+		}
 		$td_num = intval(substr_count($buffer, '|'));
 		if($td_num <= 0){
 			if($this->table['open']){
@@ -195,6 +216,10 @@ class markdown{
 	 * @param $buffer 文件流
 	 */
 	private function parse_pre(&$buffer){
+		$str = trim($buffer);
+		if($str{0} === '!'){
+			return;
+		}
 		if($buffer{0} === '`' && $buffer{1} === '`' && $buffer{2} === '`'){
 			if(!$this->pre['open']){
 				$this->pre['open'] = true;
@@ -205,6 +230,19 @@ class markdown{
 			}
 			$buffer = '';
 		}
+	}
+	
+	/**
+	 * 解析图片
+	 * @param $buffer 文件流
+	 */
+	private function parse_img(&$buffer){
+		if($buffer{0} !== '!'){
+			return;
+		}
+		$buffer = substr($buffer, 1);
+		$this->html .= trim(preg_replace('/\[(.*)\]\((.*)\)/', '<a href="$2" target="_blank" title="$1   $2"><img src="$2" alt="$1"/></a>', $buffer));
+		unset($buffer);
 	}
 }
 ?>
