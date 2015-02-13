@@ -36,6 +36,7 @@ if [ ! -d $erlang_install_path/openssl ]; then
 	./config --prefix=$erlang_install_path/openssl && $install_path/$openssl/config -t || exit
 	sed -i 's/CC= cc/CC= gcc/' Makefile || exit
 	sed -i 's/CFLAG= -O/CC= -fPIC -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -Wa,--noexecstack -m64 -DL_ENDIAN -DTERMIO -O3 -Wall -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM/' Makefile || exit
+	exit
 	make && make test && make install || exit
 	yes|cp $erlang_install_path/openssl/bin/* /usr/bin/
 	echo $openssl' install finished...'
