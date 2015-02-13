@@ -38,5 +38,10 @@ class a{
 ?>
 ```
 
-###图片
-![d图片f](http://www.baidu.com/img/bd_logo1.png)
++ Red
++ Green
++ Blue
+
+1. Bird
+1. McHale
+1. Parish

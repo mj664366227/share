@@ -6,7 +6,7 @@ class markdown{
 	/**
 	 * 输出的html代码(js部分与依赖jquery，请自行引入)
 	 */
-	private $html = '<style>*{color:#000}pre{padding:10px;width:98%;margin-left:45px;border:1px solid #ccc;background:#F1F1F1}table th,table td{padding:10px}table th{background:#E2E2E2}table{margin-left:45px;width:98%;border-top:1px solid #ccc;border-left:1px solid #ccc}table th,table td{border-bottom:1px solid #ccc;border-right:1px solid #ccc;}h1,h2,h3,h4,h5,h6{margin:20px;font-weight:bold}h1{font-size:32px}h2{font-size:28px}h3{font-size:24px}h4{font-size:20px}h5{font-size:16px}h6{font-size:16px}p{margin-left:45px}.anchor{display:none;margin-top:5px;margin-right:5px;float:left;width:18px;height:10px;background:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAKCAIAAAA2KZn2AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAuklEQVQokZ2RLRKDMBSElypukNwAHJKjgEMiOUZwHKG9QXCVSCQSHLYO3MNtRRvolHb6sybzzbx9b2fjkcTvOtzfZajLNNTeJh2mZT3M83BK9YqL85GktCZ+szY2rUhTqAckSZDsqghAnNtRuElGm8cAoqrbI5wrs9NtvDMKQH4WUppi85GTzRwe9rl8DcD3V74s+5kXIb/J/FyJKhr50JCrhCSltyYJFACVHPtpWtFJBYmxvbvv/ffdVycYutMLAImQAAAAAElFTkSuQmCC\') no-repeat}</style>';
+	private $html = '<style>*{color:#000}ul{margin-left:25px}pre{padding:10px;width:98%;margin-left:45px;border:1px solid #ccc;background:#F1F1F1}table th,table td{padding:10px}table th{background:#E2E2E2}table{margin-left:45px;width:98%;border-top:1px solid #ccc;border-left:1px solid #ccc}table th,table td{border-bottom:1px solid #ccc;border-right:1px solid #ccc;}h1,h2,h3,h4,h5,h6{margin:20px;font-weight:bold}h1{font-size:32px}h2{font-size:28px}h3{font-size:24px}h4{font-size:20px}h5{font-size:16px}h6{font-size:16px}p{margin-left:45px}.anchor{display:none;margin-top:5px;margin-right:5px;float:left;width:18px;height:10px;background:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAKCAIAAAA2KZn2AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAuklEQVQokZ2RLRKDMBSElypukNwAHJKjgEMiOUZwHKG9QXCVSCQSHLYO3MNtRRvolHb6sybzzbx9b2fjkcTvOtzfZajLNNTeJh2mZT3M83BK9YqL85GktCZ+szY2rUhTqAckSZDsqghAnNtRuElGm8cAoqrbI5wrs9NtvDMKQH4WUppi85GTzRwe9rl8DcD3V74s+5kXIb/J/FyJKhr50JCrhCSltyYJFACVHPtpWtFJBYmxvbvv/ffdVycYutMLAImQAAAAAElFTkSuQmCC\') no-repeat}</style>';
 	/**
 	 * 文件句柄
 	 */
@@ -19,6 +19,14 @@ class markdown{
 	 * 解析表格用到的参数变量集合
 	 */
 	private $table = array();
+	/**
+	 * 解析无序列表用到的参数变量集合
+	 */
+	private $ul = array();
+	/**
+	 * 解析有序列表用到的参数变量集合
+	 */
+	private $ol = array();
 	/**
 	 * 解析pre用到的参数变量集合
 	 */
@@ -34,7 +42,7 @@ class markdown{
 		if(!is_file($file)){
 			echo_('file '.$file.' not exists...', true);
 		}
-		if($this->$cache_time <= 0) {
+		if($this->cache_time <= 0) {
 			$this->handle = fopen($file, 'r');
 			if(!$this->handle) {
 				echo_('can not read file '.$file, true);
@@ -59,17 +67,20 @@ class markdown{
 			// 解析文本区域
 			$this->parse_pre($buffer);
 			
-			// 解析文本
-			$this->parse_content($buffer);
-			
-			// 解析分割线
-			$this->parse_hr($buffer);
-			
 			// 解析图片
 			$this->parse_img($buffer);
 			
 			// 解析无序列表
 			$this->parse_ul($buffer);
+			
+			// 解析有序列表
+			$this->parse_ol($buffer);
+			
+			// 解析分割线
+			$this->parse_hr($buffer);
+			
+			// 解析文本
+			$this->parse_content($buffer);
 		}
 		fclose($this->handle);
 		return $this->html;
@@ -223,6 +234,7 @@ class markdown{
 		if($str{0} === '!'){
 			return;
 		}
+		$buffer = str_replace('	', '    ', $buffer);
 		if($buffer{0} === '`' && $buffer{1} === '`' && $buffer{2} === '`'){
 			if(!$this->pre['open']){
 				$this->pre['open'] = true;
@@ -251,8 +263,50 @@ class markdown{
 	 * 解析无序列表
 	 * @param $buffer 文件流
 	 */
-	private function parse_ul($buffer){
-		
+	private function parse_ul(&$buffer){
+		$buffer = trim($buffer);
+		if($buffer{0} === '*' || $buffer{0} === '+' /*|| $buffer{0} === '-'*/){
+			if(!$this->ul['open']){
+				$this->ul['open'] = true;
+				$this->html .= '<ul>';
+			}
+			$buffer = str_replace('*', '', $buffer);
+			$buffer = str_replace('+', '', $buffer);
+			$buffer = str_replace('-', '', $buffer);
+			$buffer = trim($buffer);
+			$this->html .= '<li>'.$buffer.'</li>';
+			$buffer = '';
+		} else {
+			if($this->ul['open']){
+				$this->ul['close'] = true;
+				$this->html .= '</ul>';
+			}
+		}
+	}
+	
+	/**
+	 * 解析有序列表
+	 * @param $buffer 文件流
+	 */
+	private function parse_ol(&$buffer){
+		$buffer = trim($buffer);
+		if($buffer{0} === '*' || $buffer{0} === '+' /*|| $buffer{0} === '-'*/){
+			if(!$this->ol['open']){
+				$this->ol['open'] = true;
+				$this->html .= '<ol>';
+			}
+			$buffer = str_replace('*', '', $buffer);
+			$buffer = str_replace('+', '', $buffer);
+			$buffer = str_replace('-', '', $buffer);
+			$buffer = trim($buffer);
+			$this->html .= '<li>'.$buffer.'</li>';
+			$buffer = '';
+		} else {
+			if($this->ol['open']){
+				$this->ol['close'] = true;
+				$this->html .= '</ol>';
+			}
+		}
 	}
 }
 ?>
