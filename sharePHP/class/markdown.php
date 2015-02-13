@@ -30,7 +30,7 @@ class markdown{
 	 * @param $cache_time 缓存时间，秒为单位(默认不用缓存)
 	 */
 	public function __construct($file, $cache_time = false){
-		$this->$cache_time = intval($cache_time);
+		$this->cache_time = intval($cache_time);
 		if(!is_file($file)){
 			echo_('file '.$file.' not exists...', true);
 		}
@@ -46,7 +46,7 @@ class markdown{
 	 * 解析
 	 */
 	public function parse(){
-		if($this->$cache_time > 0) {
+		if($this->cache_time > 0) {
 			return;
 		}
 		while (($buffer = fgets($this->handle)) !== false) {

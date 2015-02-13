@@ -27,10 +27,8 @@ fromType    |true   |int    	|1.人气最高  2.附近  3.最新  0.默认
 
 ![艰苦奋斗和健康](http://www.baidu.com/img/bd_logo1.png)
 
-+ Red
-+ Green
-+ Blue
-
-1. Bird
-1. McHale
-1. Parish
+*   Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+    Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi,
+    viverra nec, fringilla in, laoreet vitae, risus.
+*   Donec sit amet nisl. Aliquam semper ipsum sit amet velit.
+    Suspendisse id sem consectetuer libero luctus adipiscing.
