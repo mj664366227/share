@@ -35,7 +35,7 @@ if [ ! -d $erlang_install_path/openssl ]; then
 	cd $install_path/$openssl
 	./config --prefix=$erlang_install_path/openssl && $install_path/$openssl/config -t || exit
 	sed -i 's/CC= cc/CC= gcc/' Makefile || exit
-	sed -i 's/CFLAG= -O/CFLAG= -fPIC /' Makefile || exit
+	sed -i 's/CFLAG=/CFLAG= -fPIC /' Makefile || exit
 	exit
 	make && make test && make install || exit
 	yes|cp $erlang_install_path/openssl/bin/* /usr/bin/
