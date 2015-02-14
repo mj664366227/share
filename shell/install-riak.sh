@@ -23,6 +23,10 @@ mkdir -p $install_path
 #安装erlang
 sh install-erlang.sh $riak_install_path 'R16B03'
 
+git clone https://github.com/basho/erlang_protobuffs.git
+cd erlang_protobuffs
+make
+
 #安装riak
 riak='2.0.4'
 if [ ! -d $riak_install_path/riak ]; then 
