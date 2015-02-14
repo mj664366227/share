@@ -24,12 +24,12 @@ mkdir -p $install_path
 sh install-erlang.sh $riak_install_path 'R16B03'
 
 #安装riak
-riak='1.3.2'
+riak='1.4.2'
 if [ ! -d $riak_install_path/riak ]; then 
 	echo 'installing riak '$riak'...'
 	if [ ! -f $base_path/riak-$riak.tar.gz ]; then
 		echo 'riak-'$riak'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/riak-$riak.tar.gz http://s3.amazonaws.com/downloads.basho.com/riak/1.3/$riak/riak-$riak.tar.gz || exit
+		wget -O $base_path/riak-$riak.tar.gz http://s3.amazonaws.com/downloads.basho.com/riak/1.4/$riak/riak-$riak.tar.gz || exit
 		echo 'download riak '$riak' finished...'
 	fi
 	tar zxvf $base_path/riak-$riak.tar.gz -C $install_path || exit
