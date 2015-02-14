@@ -1,4 +1,3 @@
-#linux git
 #运行例子：sh install-erlang.sh /usr/local 17.4
 
 #定义本程序的当前目录
