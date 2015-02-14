@@ -21,7 +21,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #安装erlang
-sh install-erlang.sh $riak_install_path 'R16B03'
+sh install-erlang.sh $riak_install_path 'R15B01'
 
 #安装riak
 riak='2.0.4'
