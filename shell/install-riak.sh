@@ -23,8 +23,9 @@ mkdir -p $install_path
 #安装erlang
 sh install-erlang.sh $riak_install_path 'R16B03'
 
-git clone https://github.com/basho/erlang_protobuffs.git
-cd erlang_protobuffs
+cd $install_path
+git clone git@github.com:basho/erlang_protobuffs.git
+cd $install_path/erlang_protobuffs
 make
 
 #安装riak
