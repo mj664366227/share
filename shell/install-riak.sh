@@ -34,6 +34,6 @@ if [ ! -d $riak_install_path/riak ]; then
 	fi
 	tar zxvf $base_path/riak-$riak.tar.gz -C $install_path || exit
 	cd $install_path/riak-$riak
-	make all && make rel || exit
+	make rel || exit
 	#make devrel DEVNODES=5  后面的5是建立5个节点
 fi
