@@ -23,11 +23,6 @@ mkdir -p $install_path
 #安装erlang
 sh install-erlang.sh $riak_install_path 'R16B03'
 
-cd $install_path
-git clone git@github.com:basho/erlang_protobuffs.git || exit
-cd $install_path/erlang_protobuffs
-make || exit
-
 #安装riak
 riak='2.0.4'
 if [ ! -d $riak_install_path/riak ]; then 
@@ -39,5 +34,6 @@ if [ ! -d $riak_install_path/riak ]; then
 	fi
 	tar zxvf $base_path/riak-$riak.tar.gz -C $install_path || exit
 	cd $install_path/riak-$riak
-	make rel
+	make all && make rel || exit
+	#make devrel DEVNODES=5  后面的5是建立5个节点
 fi
