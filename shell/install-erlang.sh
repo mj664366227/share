@@ -24,6 +24,7 @@ mkdir -p $install_path
 
 # 安装OpenSSL
 openssl='openssl-1.0.2'
+rm -rf $erlang_install_path/openssl
 echo 'installing '$openssl' ...'
 if [ ! -f $base_path/$openssl.tar.gz ]; then
 	echo $openssl'.tar.gz is not exists, system will going to download it...'
@@ -34,6 +35,7 @@ tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
 cd $install_path/$openssl
 ./config --prefix=$erlang_install_path/openssl && $install_path/$openssl/config -t
 sed -i 's/CFLAG=/CFLAG= -fPIC/' Makefile || exit
+make && make install || exit
 
 #安装erlang
 erlang=$erlang_install_version 
