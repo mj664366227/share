@@ -1,9 +1,17 @@
 #linux mongodb自动安装程序 
-#运行例子：sh install-ssdb.sh
+#运行例子：sh install-ssdb.sh /usr/local
 
 #定义本程序的当前目录
 base_path=$(pwd)
 ntpdate time.nist.gov
+
+#处理外部参数
+ssdb_install_path=$1
+if [ ! $ssdb_install_path ]; then
+	echo 'error command!!! you must input ssdb install path...'
+	echo 'for example: sh install-ssdb.sh /usr/local'
+	exit
+fi
 
 yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc lrzsz
 
@@ -13,7 +21,7 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-ssdb_install_path='/usr/local/ssdb'
+ssdb_install_path=$1'/ssdb'
 rm -rf $ssdb_install_path
 
 #安装ssdb
