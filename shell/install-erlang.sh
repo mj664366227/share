@@ -24,18 +24,19 @@ mkdir -p $install_path
 
 # 安装OpenSSL
 openssl='openssl-1.0.2'
-rm -rf $erlang_install_path/openssl
-echo 'installing '$openssl' ...'
-if [ ! -f $base_path/$openssl.tar.gz ]; then
-	echo $openssl'.tar.gz is not exists, system will going to download it...'
-	wget -O $base_path/$openssl.tar.gz http://www.openssl.org/source/$openssl.tar.gz || exit
-	echo 'download '$openssl' finished...'
+if [ ! -d $erlang_install_path/openssl ]; then
+	echo 'installing '$openssl' ...'
+	if [ ! -f $base_path/$openssl.tar.gz ]; then
+		echo $openssl'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/$openssl.tar.gz http://www.openssl.org/source/$openssl.tar.gz || exit
+		echo 'download '$openssl' finished...'
+	fi
+	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
+	cd $install_path/$openssl
+	./config --prefix=$erlang_install_path/openssl && $install_path/$openssl/config -t && make && make test && make install || exit
+	yes|cp $erlang_install_path/openssl/bin/* /usr/bin/
+	echo $openssl' install finished...'
 fi
-tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
-cd $install_path/$openssl
-./config --prefix=$erlang_install_path/openssl
-sed -i 's/CFLAG=/CFLAG= -fPIC/' Makefile || exit
-make && make install || exit
 
 #安装erlang
 erlang=$erlang_install_version 
@@ -52,7 +53,7 @@ if [ ! -d $erlang_install_path/erlang ]; then
 	sed -i 's/&& !defined(OPENSSL_NO_EC)/'$replace'/' crypto.c || exit
 	sed -i 's/'$replace'/\&\& !defined(OPENSSL_NO_EC) \&\& !defined(OPENSSL_NO_EC2M)/' crypto.c || exit
 	cd $install_path/otp_src_$erlang
-	./configure --with-ssl=$install_path/$openssl --enable-sctp --enable-kernel-poll --enable-smp-support --enable-threads --enable-halfword-emulator --disable-hipe --enable-native-libs --enable-m64-build --prefix=$erlang_install_path/erlang && make && make install || exit
+	./configure --with-ssl --enable-sctp --enable-kernel-poll --enable-smp-support --enable-threads --enable-halfword-emulator --disable-hipe --enable-native-libs --enable-m64-build --prefix=$erlang_install_path/erlang && make && make install || exit
 	cd $erlang_install_path/erlang/lib/erlang/bin
 	yes | cp -rf ct_run /usr/bin/ || exit
 	yes | cp -rf erlc /usr/bin/ || exit
