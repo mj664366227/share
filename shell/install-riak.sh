@@ -24,25 +24,16 @@ mkdir -p $install_path
 sh install-erlang.sh $riak_install_path 'R16B03'
 
 #安装riak
-
-cd $install_path
-git clone git@github.com:basho/riak.git
-cd $install_path/riak
-git checkout 1.4
-git pull
-make rel || exit
-
-
-# riak='2.0.4'
-# if [ ! -d $riak_install_path/riak ]; then 
-	# echo 'installing riak '$riak'...'
-	# if [ ! -f $base_path/riak-$riak.tar.gz ]; then
-		# echo 'riak-'$riak'.tar.gz is not exists, system will going to download it...'
-		# wget -O $base_path/riak-$riak.tar.gz http://s3.amazonaws.com/downloads.basho.com/riak/2.0/$riak/riak-$riak.tar.gz || exit
-		# echo 'download riak '$riak' finished...'
-	# fi
-	# tar zxvf $base_path/riak-$riak.tar.gz -C $install_path || exit
-	# cd $install_path/riak-$riak
-	# make rel || exit
-	# #make devrel DEVNODES=5  后面的5是建立5个节点
-# fi
+riak='1.3.2'
+if [ ! -d $riak_install_path/riak ]; then 
+	echo 'installing riak '$riak'...'
+	if [ ! -f $base_path/riak-$riak.tar.gz ]; then
+		echo 'riak-'$riak'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/riak-$riak.tar.gz http://s3.amazonaws.com/downloads.basho.com/riak/1.3/$riak/riak-$riak.tar.gz || exit
+		echo 'download riak '$riak' finished...'
+	fi
+	tar zxvf $base_path/riak-$riak.tar.gz -C $install_path || exit
+	cd $install_path/riak-$riak
+	make rel || exit
+	#make devrel DEVNODES=5  后面的5是建立5个节点
+fi
