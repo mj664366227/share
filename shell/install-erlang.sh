@@ -47,10 +47,6 @@ if [ ! -d $erlang_install_path/erlang ]; then
 		echo 'download erlang'$erlang' finished...'
 	fi
 	tar zxvf $base_path/otp_src_$erlang.tar.gz -C $install_path || exit
-	#cd $install_path/otp_src_$erlang/lib/crypto/c_src
-	#replace='11111111111111'
-	#sed -i 's/&& !defined(OPENSSL_NO_EC)/'$replace'/' crypto.c || exit
-	#sed -i 's/'$replace'/\&\& !defined(OPENSSL_NO_EC) \&\& !defined(OPENSSL_NO_EC2M)/' crypto.c || exit
 	cd $install_path/otp_src_$erlang
 	./configure --with-ssl --enable-sctp --enable-kernel-poll --enable-smp-support --enable-threads --enable-halfword-emulator --disable-hipe --enable-native-libs --enable-m64-build --prefix=$erlang_install_path/erlang && make && make install || exit
 	cd $erlang_install_path/erlang/lib/erlang/bin
