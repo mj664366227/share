@@ -35,4 +35,5 @@ if [ ! -d $riak_install_path/riak ]; then
 	fi
 	tar zxvf $base_path/riak-$riak.tar.gz -C $install_path || exit
 	cd $install_path/riak-$riak
+	make rel
 fi
