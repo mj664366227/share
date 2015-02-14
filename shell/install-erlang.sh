@@ -1,5 +1,5 @@
 #linux git
-#运行例子：sh install-erlang.sh /usr/local R16B03
+#运行例子：sh install-erlang.sh /usr/local 17.4
 
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ erlang_install_path=$1
 erlang_install_version=$2
 if [ ! $erlang_install_path ] || [ ! $erlang_install_version ]; then
 	echo 'error command!!! you must input erlang install path and install version...'
-	echo 'for example: sh install-erlang.sh /usr/local R16B03'
+	echo 'for example: sh install-erlang.sh /usr/local 17.4'
 	exit
 fi
 
