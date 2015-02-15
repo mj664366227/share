@@ -4,6 +4,14 @@
 
 这里是安装[openssl](https://github.com/ruanzhijun/share/blob/master/shell/install-erlang.sh)、[erlang](https://github.com/ruanzhijun/share/blob/master/shell/install-erlang.sh)、[riak](https://github.com/ruanzhijun/share/blob/master/shell/install-riak.sh)的命令脚本。
 
+riak启动命令：
+```
+[root@localhost ~]# /install/riak-1.4.2/rel/riak/bin/riak
+Usage: riak {start | stop| restart | reboot | ping | console | attach | 
+                    attach-direct | ertspath | chkconfig | escript | version | 
+                    getpid | top [-interval N] [-sort reductions|memory|msg_q] [-lines N] }
+```
+
 配置Riak Control。Riak Control是riak自带的图形化管理界面。
 
 以下是配置Riak Control的方法：
