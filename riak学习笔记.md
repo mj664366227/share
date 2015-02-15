@@ -44,4 +44,4 @@ Usage: riak {start | stop| restart | reboot | ping | console | attach |
 完成！重启riak。
 ```
 
-[demo项目](https://github.com/ruanzhijun/share/tree/master/java/riak-study/src)，里面有详细注释。
+[demo项目](ssssssssssssssssssss)，里面有详细注释。
