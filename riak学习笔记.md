@@ -37,7 +37,8 @@ Usage: riak {start | stop| restart | reboot | ping | console | attach |
 {userlist, [{"user", "pass"}
            ]},
 		   
-		  
+		
+开启admin		
 {admin, true}
 
 完成！重启riak。
