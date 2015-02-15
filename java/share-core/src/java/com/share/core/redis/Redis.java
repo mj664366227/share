@@ -133,7 +133,7 @@ public class Redis {
 		GenericObjectPoolConfig jedisPoolConfig = new GenericObjectPoolConfig();
 		jedisPoolConfig.setMinIdle(minIdle);
 		jedisPoolConfig.setMaxIdle(maxIdle);
-		jedisPoolConfig.setTestOnBorrow(false);//检查连接是否可用
+		jedisPoolConfig.setTestOnBorrow(false);// 检查连接是否可用
 		jedisPoolConfig.setTestOnCreate(false);
 		jedisPoolConfig.setTestWhileIdle(false);
 		jedisPoolConfig.setTestOnReturn(false);
@@ -182,6 +182,9 @@ public class Redis {
 	}
 
 	public class Keys {
+		private Keys() {
+		}
+
 		/**
 		 * 设置过期时间
 		 * @param key 键
@@ -649,6 +652,9 @@ public class Redis {
 	}
 
 	public class Sets {
+		private Sets() {
+		}
+
 		/**
 		 * 添加一个或者多个元素到集合(set)里
 		 * @param key 键
@@ -964,6 +970,9 @@ public class Redis {
 	}
 
 	public class SortSet {
+		private SortSet() {
+		}
+
 		/**
 		 * 向集合中增加一条记录,如果这个值已存在，这个值对应的权重将被置为新的权重
 		 * @param key
@@ -1519,6 +1528,9 @@ public class Redis {
 	}
 
 	public class Hash {
+		private Hash() {
+		}
+
 		/**
 		 * 从hash中删除指定的field
 		 * @param key
@@ -1977,6 +1989,9 @@ public class Redis {
 	}
 
 	public class Strings {
+		private Strings() {
+		}
+
 		/**
 		 * 根据key获取记录
 		 * @param key
@@ -2452,6 +2467,9 @@ public class Redis {
 	}
 
 	public class Lists {
+		private Lists() {
+		}
+
 		/**
 		 * List长度
 		 * @param key
@@ -3116,6 +3134,9 @@ public class Redis {
 	}
 
 	public class PubSub {
+		private PubSub() {
+		}
+
 		/**
 		 * 指定模式订阅频道
 		 * @param jedisPubSub 发布订阅监听器
@@ -3223,6 +3244,9 @@ public class Redis {
 	}
 
 	public class Transactions {
+		private Transactions() {
+		}
+
 		/**
 		 * 监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断。
 		 * @param keys
@@ -3276,6 +3300,9 @@ public class Redis {
 	}
 
 	public class Scripts {
+		private Scripts() {
+		}
+
 		/**
 		 * 将脚本 script 添加到脚本缓存中，但并不立即执行这个脚本
 		 * @param script 脚本
@@ -3480,6 +3507,9 @@ public class Redis {
 	}
 
 	public class Connection {
+		private Connection() {
+		}
+
 		/**
 		 * 验证密码
 		 * @author ruan
@@ -3575,6 +3605,9 @@ public class Redis {
 	}
 
 	public class Server {
+		private Server() {
+		}
+
 		/**
 		 * 删除所有数据库的所有 key
 		 */

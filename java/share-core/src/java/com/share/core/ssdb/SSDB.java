@@ -131,6 +131,9 @@ public class SSDB {
 	}
 
 	public class Kv {
+		private Kv() {
+		}
+
 		/**
 		 * 设置一个kv值
 		 * @param key
@@ -492,6 +495,9 @@ public class SSDB {
 	}
 
 	public class Hash {
+		private Hash() {
+		}
+
 		/**
 		 * 设置 hashmap 中指定 key 对应的值内容
 		 * @author ruan
@@ -775,6 +781,9 @@ public class SSDB {
 	}
 
 	public class Zset {
+		private Zset() {
+		}
+
 		/**
 		 * 设置 zset 中指定 member 对应的权重值
 		 * @author ruan
@@ -1214,6 +1223,9 @@ public class SSDB {
 	}
 
 	public class Queue {
+		private Queue() {
+		}
+
 		/**
 		 * 返回队列的长度
 		 * @author ruan
@@ -1483,6 +1495,9 @@ public class SSDB {
 	}
 
 	public class Server {
+		private Server() {
+		}
+
 		/**
 		* 返回ssdb服务器信息
 		*/

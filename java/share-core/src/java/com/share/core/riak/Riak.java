@@ -13,6 +13,7 @@ import com.basho.riak.client.api.RiakClient;
 import com.basho.riak.client.api.cap.Quorum;
 import com.basho.riak.client.api.commands.buckets.ListBuckets;
 import com.basho.riak.client.api.commands.kv.FetchValue;
+import com.basho.riak.client.api.commands.kv.ListKeys;
 import com.basho.riak.client.api.commands.kv.StoreValue;
 import com.basho.riak.client.api.commands.kv.StoreValue.Option;
 import com.basho.riak.client.core.query.Location;
@@ -36,6 +37,8 @@ public class Riak {
 	 * riak客户端
 	 */
 	private RiakClient client;
+	
+	public KV KV = new KV();
 
 	/**
 	 * 构造函数
@@ -114,9 +117,29 @@ public class Riak {
 		try {
 			List<Namespace> list = new ArrayList<Namespace>();
 			ListBuckets listBuckets = new ListBuckets.Builder(Namespace.DEFAULT_BUCKET_TYPE).build();
-			ListBuckets.Response listBucketsresponse;
-			listBucketsresponse = client.execute(listBuckets);
-			Iterator<Namespace> it = listBucketsresponse.iterator();
+			ListBuckets.Response response = client.execute(listBuckets);
+			Iterator<Namespace> it = response.iterator();
+			while (it.hasNext()) {
+				list.add(it.next());
+			}
+			return list;
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		return null;
+	}
+
+	/**
+	 * 获取某个bucket下的所有key
+	 * @param bucketName
+	 */
+	public List<Location> ListKeys(String bucketName) {
+		try {
+			List<Location> list = new ArrayList<Location>();
+			Namespace namespace = new Namespace(bucketName);
+			ListKeys.Builder listKeys = new ListKeys.Builder(namespace);
+			ListKeys.Response response = client.execute(listKeys.build());
+			Iterator<Location> it = response.iterator();
 			while (it.hasNext()) {
 				list.add(it.next());
 			}
@@ -135,29 +158,3 @@ public class Riak {
 		logger.info("riak cluster closed");
 	}
 }
-/*
- * public static void main(String[] a) throws Exception { RiakClient client =
- * RiakClient.newClient("192.168.190.129");
- * 
- * Namespace ns = new Namespace("default", "user"); UserInfo userInfo = new
- * UserInfo(); userInfo.setName("ruanzhijun"); userInfo.setCity("guangzou");
- * userInfo.setUid("15152"); userInfo.setNickName("jun jun");
- * 
- * Location location = new Location(ns, "1");
- * 
- * // Getting Data In StoreValue store = new
- * StoreValue.Builder(userInfo).withLocation(location).withOption(Option.W, new
- * Quorum(2)).build(); client.execute(store);
- * 
- * // Getting Data Out FetchValue fv = new FetchValue.Builder(location).build();
- * FetchValue.Response response = client.execute(fv); UserInfo u =
- * response.getValue(UserInfo.class); System.err.println(u);
- * 
- * ListBuckets listBuckets = new ListBuckets.Builder("a").build();
- * ListBuckets.Response listBucketsresponse = client.execute(listBuckets);
- * Iterator<Namespace> it = listBucketsresponse.iterator(); while (it.hasNext())
- * { Namespace namespace = it.next();
- * System.err.println(namespace.getBucketNameAsString()); }
- * 
- * System.exit(0); }
- */

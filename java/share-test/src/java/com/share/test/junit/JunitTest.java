@@ -1,7 +1,5 @@
 package com.share.test.junit;
 
-import java.util.List;
-
 import org.apache.thrift.transport.TTransportException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +8,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.basho.riak.client.core.query.Namespace;
 import com.share.core.annotation.processor.MenuProcessor;
 import com.share.core.annotation.processor.ProtocolProcessor;
 import com.share.core.client.HttpClient;
@@ -56,16 +53,6 @@ public class JunitTest {
 
 	@Test
 	public void junitTest() throws TTransportException, InterruptedException {
-		riak.store("test","test", 123);
-		List<Namespace> list = riak.listBuckets();
-		System.err.println(list);
-		/*byte[] b = new byte[24];
-		ByteBuf buf = Unpooled.buffer();
-		buf.writeBytes(b);
-		ReqDemo req = new ReqDemo();
-		req.loadFromBuffer(buf);
-		byte[] bytes = httpClient.post("http://127.0.0.1:8080/demo/data",b);
-		System.err.println(bytes);
-		nsqService.produce("a", new byte[1]);*/
+		System.err.println(riak.ListKeys("user"));
 	}
 }
