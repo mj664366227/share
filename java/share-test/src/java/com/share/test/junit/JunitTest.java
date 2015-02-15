@@ -53,6 +53,8 @@ public class JunitTest {
 
 	@Test
 	public void junitTest() throws TTransportException, InterruptedException {
-		System.err.println(riak.ListKeys("user"));
+		System.err.println(riak.KV.ListKeys("user"));
+		riak.KV.delete("user", "key: uid:15152,name:ruanzhijun,city:guangzou,nickName:jun jun");
+		System.err.println(riak.KV.ListKeys("user"));
 	}
 }
