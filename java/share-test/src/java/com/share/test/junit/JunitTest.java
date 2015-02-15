@@ -1,5 +1,7 @@
 package com.share.test.junit;
 
+import java.util.List;
+
 import org.apache.thrift.transport.TTransportException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.basho.riak.client.core.query.Namespace;
 import com.share.core.annotation.processor.MenuProcessor;
 import com.share.core.annotation.processor.ProtocolProcessor;
 import com.share.core.client.HttpClient;
@@ -15,6 +18,7 @@ import com.share.core.memory.Memory;
 import com.share.core.mongo.Mongodb;
 import com.share.core.nsq.NsqService;
 import com.share.core.redis.Redis;
+import com.share.core.riak.Riak;
 import com.share.core.ssdb.SSDB;
 import com.share.core.system.SystemProperty;
 import com.share.core.threadPool.DefaultThreadPool;
@@ -47,9 +51,14 @@ public class JunitTest {
 	private MenuProcessor menuProcessor;
 	@Autowired
 	private SystemProperty systemProperty;
+	@Autowired
+	private Riak riak;
 
 	@Test
 	public void junitTest() throws TTransportException, InterruptedException {
+		riak.store("test","test", 123);
+		List<Namespace> list = riak.listBuckets();
+		System.err.println(list);
 		/*byte[] b = new byte[24];
 		ByteBuf buf = Unpooled.buffer();
 		buf.writeBytes(b);
