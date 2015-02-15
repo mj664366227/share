@@ -1,8 +1,5 @@
 package com.share.test.junit;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-
 import org.apache.thrift.transport.TTransportException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +19,6 @@ import com.share.core.ssdb.SSDB;
 import com.share.core.system.SystemProperty;
 import com.share.core.threadPool.DefaultThreadPool;
 import com.share.test.db.AdminDbService;
-import com.share.test.protocol.ReqDemo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:share-test.xml" })
@@ -54,13 +50,13 @@ public class JunitTest {
 
 	@Test
 	public void junitTest() throws TTransportException, InterruptedException {
-		byte[] b = new byte[24];
+		/*byte[] b = new byte[24];
 		ByteBuf buf = Unpooled.buffer();
 		buf.writeBytes(b);
 		ReqDemo req = new ReqDemo();
 		req.loadFromBuffer(buf);
 		byte[] bytes = httpClient.post("http://127.0.0.1:8080/demo/data",b);
 		System.err.println(bytes);
-		nsqService.produce("a", new byte[1]);
+		nsqService.produce("a", new byte[1]);*/
 	}
 }

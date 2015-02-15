@@ -139,7 +139,7 @@ public abstract class AbstractSocketServerInitializer<SEND, RECV> extends Channe
 		/**
 		 * 接收消息
 		 */
-		protected void messageReceived(ChannelHandlerContext ctx, RECV recv) {
+		protected void channelRead0(ChannelHandlerContext ctx, RECV recv) throws Exception {
 			recvMessage(ctx, recv);
 		}
 

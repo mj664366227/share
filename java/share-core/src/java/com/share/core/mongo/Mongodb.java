@@ -416,6 +416,6 @@ public final class Mongodb {
 	 */
 	public void close() {
 		mongo.close();
-		logger.info("mongodb close");
+		logger.info("mongodb closed");
 	}
 }
