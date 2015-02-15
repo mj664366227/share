@@ -44,4 +44,6 @@ Usage: riak {start | stop| restart | reboot | ping | console | attach |
 完成！重启riak。
 ```
 
+riak有两种通信模式：pb  http，pb的性能比较高；http比较简单方便。
+
 [demo项目](ssssssssssssssssssss)，里面有详细注释。
