@@ -79,7 +79,7 @@ public final class HttpClient {
 		// 支持http和https
 		RegistryBuilder<ConnectionSocketFactory> registryBuilder = RegistryBuilder.<ConnectionSocketFactory> create();
 		registryBuilder.register("http", PlainConnectionSocketFactory.INSTANCE);
-		registryBuilder.register("https", new SSLConnectionSocketFactory(SSLContexts.createSystemDefault(), new BrowserCompatHostnameVerifier()));
+		registryBuilder.register("https", new SSLConnectionSocketFactory(SSLContexts.createSystemDefault()));
 		Registry<ConnectionSocketFactory> socketFactoryRegistry = registryBuilder.build();
 
 		// 初始化连接池

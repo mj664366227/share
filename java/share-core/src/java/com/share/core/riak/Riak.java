@@ -1,20 +1,10 @@
 package com.share.core.riak;
 
-import java.net.UnknownHostException;
-import java.util.Iterator;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.basho.riak.client.api.RiakClient;
-import com.basho.riak.client.api.cap.Quorum;
-import com.basho.riak.client.api.commands.buckets.ListBuckets;
-import com.basho.riak.client.api.commands.kv.FetchValue;
-import com.basho.riak.client.api.commands.kv.StoreValue;
-import com.basho.riak.client.api.commands.kv.StoreValue.Option;
-import com.basho.riak.client.core.query.Location;
-import com.basho.riak.client.core.query.Namespace;
 
 /**
  * riak
@@ -41,7 +31,7 @@ public class Riak {
 	}
 
 	/**
-	 * 初始化方法
+	 * 初始化方法 
 	 */
 	public void init() {
 		System.err.println(client);
