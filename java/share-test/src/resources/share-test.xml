@@ -76,6 +76,9 @@
 
 	<!-- 启动Mongodb -->
 	<bean class="com.share.core.mongo.Mongodb" init-method="init" destroy-method="close"></bean>
+	
+	<!-- 启动riak -->
+	<bean class="com.share.core.riak.Riak" init-method="init" destroy-method="close"></bean>
 
 	<!-- 自动加载配置 -->
 	<bean class="com.share.core.annotation.processor.ConfigProcessor" init-method="init">
