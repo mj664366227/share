@@ -182,6 +182,8 @@ project(':riak-study') {
 	dependencies{
 	   compile 'com.basho.riak:riak-client:2.0.0'
 	   compile 'com.basho.riak.protobuf:riak-pb:2.0.0.16'
+	   compile 'org.slf4j:slf4j-api:1.7.7'
+	   compile 'org.slf4j:slf4j-log4j12:1.7.7'
 	   compile fileTree( dir: "lib", include: '*.jar' )
 	}
 	task deploy(dependsOn: [copyLib, copyWebapp])
