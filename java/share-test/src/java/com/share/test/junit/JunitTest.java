@@ -1,6 +1,5 @@
 package com.share.test.junit;
 
-import org.apache.thrift.transport.TTransportException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +51,11 @@ public class JunitTest {
 	private Riak riak;
 
 	@Test
-	public void junitTest() throws TTransportException, InterruptedException {
-		System.err.println(riak.KV.ListKeys("user"));
-		riak.KV.delete("user", "key1");
-		System.err.println(riak.KV.ListKeys("user"));
+	public void junitTest() throws Exception {
+		String bucketName = "user";
+		String key = "key1";
+		riak.KV.store(bucketName, key, 11);
+		System.err.println(riak.BUCKETS.listBuckets());
+		System.err.println(riak.KV.fetch(bucketName, key, Object.class));
 	}
 }
