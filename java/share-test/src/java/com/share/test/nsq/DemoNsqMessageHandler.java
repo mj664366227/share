@@ -1,10 +1,9 @@
 package com.share.test.nsq;
 
-import com.share.core.annotation.NsqCallback;
 import com.share.core.interfaces.NsqMessageHandler;
 
 public class DemoNsqMessageHandler implements NsqMessageHandler {
-	@NsqCallback(topic = "a", channel = "a", onlyChannel = false)
+	//@NsqCallback(topic = "a", channel = "a", onlyChannel = false)
 	public void handle(byte[] message) {
 		// 先getMessage()
 		// 然后做你想要做的事情
