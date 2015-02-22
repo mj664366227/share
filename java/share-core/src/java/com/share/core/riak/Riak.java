@@ -4,6 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +14,19 @@ import org.springframework.beans.factory.annotation.Value;
 import com.basho.riak.client.api.RiakClient;
 import com.basho.riak.client.api.cap.Quorum;
 import com.basho.riak.client.api.commands.buckets.ListBuckets;
+import com.basho.riak.client.api.commands.datatypes.FetchMap;
+import com.basho.riak.client.api.commands.datatypes.MapUpdate;
+import com.basho.riak.client.api.commands.datatypes.RegisterUpdate;
+import com.basho.riak.client.api.commands.datatypes.UpdateMap;
 import com.basho.riak.client.api.commands.kv.DeleteValue;
 import com.basho.riak.client.api.commands.kv.FetchValue;
 import com.basho.riak.client.api.commands.kv.ListKeys;
 import com.basho.riak.client.api.commands.kv.StoreValue;
 import com.basho.riak.client.api.commands.kv.StoreValue.Option;
+import com.basho.riak.client.api.commands.kv.UpdateValue;
 import com.basho.riak.client.core.query.Location;
 import com.basho.riak.client.core.query.Namespace;
+import com.basho.riak.client.core.util.BinaryValue;
 import com.share.core.util.StringUtil;
 
 /**
@@ -39,6 +47,10 @@ public class Riak {
 	 */
 	private RiakClient client;
 	/**
+	 * 集群数
+	 */
+	private int clusterNum;
+	/**
 	* kv
 	*/
 	public KV KV = new KV();
@@ -46,6 +58,10 @@ public class Riak {
 	 * buckets
 	 */
 	public Buckets BUCKETS = new Buckets();
+	/**
+	 * mapReduce
+	 */
+	public MapReduce MAPREDUCE = new MapReduce();
 
 	/**
 	 * 构造函数
@@ -58,8 +74,9 @@ public class Riak {
 	 */
 	private InetSocketAddress[] getAddress() {
 		String[] arr = cluster.split("\\|");
-		InetSocketAddress[] inetSocketAddress = new InetSocketAddress[arr.length];
-		for (int i = 0; i < arr.length; i++) {
+		clusterNum = arr.length;
+		InetSocketAddress[] inetSocketAddress = new InetSocketAddress[clusterNum];
+		for (int i = 0; i < clusterNum; i++) {
 			String[] a = arr[i].split(":");
 			InetSocketAddress socketAddress = new InetSocketAddress(StringUtil.getString(a[0]), StringUtil.getInt(a[1]));
 			inetSocketAddress[i] = socketAddress;
@@ -90,11 +107,11 @@ public class Riak {
 		* @param value
 		*/
 		public void store(String bucketName, String key, Object value) {
-			Namespace ns = new Namespace(bucketName);
+			Namespace ns = new Namespace(bucketName, bucketName);
 			Location location = new Location(ns, key);
 			StoreValue.Builder store = new StoreValue.Builder(value);
 			store.withLocation(location);
-			store.withOption(Option.W, new Quorum(3));
+			store.withOption(Option.W, new Quorum(clusterNum));
 			try {
 				client.execute(store.build());
 			} catch (Exception e) {
@@ -132,6 +149,22 @@ public class Riak {
 			DeleteValue.Builder deleteValue = new DeleteValue.Builder(location);
 			try {
 				client.execute(deleteValue.build());
+			} catch (Exception e) {
+				logger.error("", e);
+			}
+		}
+
+		/**
+		 * 修改数据
+		 * @param bucketName
+		 * @param key
+		 */
+		public void update(String bucketName, String key) {
+			Namespace ns = new Namespace(bucketName);
+			Location location = new Location(ns, key);
+			UpdateValue.Builder updateValue = new UpdateValue.Builder(location);
+			try {
+				client.execute(updateValue.build());
 			} catch (Exception e) {
 				logger.error("", e);
 			}
@@ -180,6 +213,49 @@ public class Riak {
 				logger.error("", e);
 			}
 			return null;
+		}
+	}
+
+	public class MapReduce {
+		/**
+		 * 更新map	
+		 * @param bucketName
+		 * @param key
+		 * @param map
+		 */
+		public void updateMap(String bucketName, String key, Map<String, String> map) {
+			Namespace ns = new Namespace(bucketName, bucketName);
+			Location location = new Location(ns, key);
+
+			MapUpdate mapUpdate = new MapUpdate();
+			for (Entry<String, String> e : map.entrySet()) {
+				RegisterUpdate registerUpdate = new RegisterUpdate(BinaryValue.create(e.getValue()));
+				mapUpdate.update(e.getKey(), registerUpdate);
+			}
+
+			UpdateMap.Builder update = new UpdateMap.Builder(location, mapUpdate);
+			try {
+				client.execute(update.build());
+			} catch (Exception e) {
+				logger.error("", e);
+			}
+		}
+
+		/**
+		 * 查询map
+		 * @param bucketName
+		 * @param key
+		 */
+		public void FetchMap(String bucketName, String key) {
+			Namespace ns = new Namespace(bucketName, bucketName);
+			Location location = new Location(ns, key);
+			FetchMap.Builder fetchMap = new FetchMap.Builder(location);
+			try {
+				FetchMap.Response response = client.execute(fetchMap.build());
+				System.err.println(	response.getDatatype());
+			} catch (Exception e) {
+				logger.error("", e);
+			}
 		}
 	}
 

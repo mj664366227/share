@@ -1,5 +1,8 @@
 package com.share.test.junit;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +57,12 @@ public class JunitTest {
 	public void junitTest() throws Exception {
 		String bucketName = "user";
 		String key = "key1";
-		riak.KV.store(bucketName, key, 11);
-		System.err.println(riak.BUCKETS.listBuckets());
-		System.err.println(riak.KV.fetch(bucketName, key, Object.class));
+		
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("a", "a");
+		map.put("b", "b");
+		map.put("c", "c");
+		riak.MAPREDUCE.updateMap(bucketName, key, map);
+		riak.MAPREDUCE.FetchMap(bucketName, key);
 	}
 }

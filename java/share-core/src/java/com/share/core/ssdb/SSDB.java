@@ -1588,7 +1588,7 @@ public class SSDB {
 				return;
 			}
 			try {
-				ssdb.flushdb(type.toString().toLowerCase());
+				ssdb.flushdb(type.toString());
 			} catch (SSDBException e) {
 				logger.error("", e);
 			}
@@ -1619,7 +1619,7 @@ public class SSDB {
 		QUEUE;
 
 		public String toString() {
-			return name();
+			return name().toLowerCase();
 		}
 	}
 }
