@@ -1,8 +1,5 @@
 package com.share.test.junit;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import com.share.core.mongo.Mongodb;
 import com.share.core.nsq.NsqService;
 import com.share.core.redis.Redis;
 import com.share.core.riak.Riak;
+import com.share.core.riak.Riak.KV;
 import com.share.core.ssdb.SSDB;
 import com.share.core.system.SystemProperty;
 import com.share.core.threadPool.DefaultThreadPool;
@@ -49,20 +47,15 @@ public class JunitTest {
 	@Autowired
 	private MenuProcessor menuProcessor;
 	@Autowired
-	private SystemProperty systemProperty;
+	private SystemProperty systemProperty;	
 	@Autowired
 	private Riak riak;
 
 	@Test
 	public void junitTest() throws Exception {
 		String bucketName = "user";
-		String key = "key1";
-		
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("a", "a");
-		map.put("b", "b");
-		map.put("c", "c");
-		riak.MAPREDUCE.updateMap(bucketName, key, map);
-		riak.MAPREDUCE.FetchMap(bucketName, key);
+		String key = "key3";
+		riak.KV.store(bucketName, key, 22);
+		System.exit(0);
 	}
 }

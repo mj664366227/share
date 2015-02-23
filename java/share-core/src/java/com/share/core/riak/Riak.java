@@ -109,11 +109,11 @@ public class Riak {
 		public void store(String bucketName, String key, Object value) {
 			Namespace ns = new Namespace(bucketName, bucketName);
 			Location location = new Location(ns, key);
-			StoreValue.Builder store = new StoreValue.Builder(value);
-			store.withLocation(location);
-			store.withOption(Option.W, new Quorum(clusterNum));
+			StoreValue.Builder storeValue = new StoreValue.Builder(value);
+			storeValue.withLocation(location);
+			storeValue.withOption(Option.W, new Quorum(clusterNum));
 			try {
-				client.execute(store.build());
+				client.execute(storeValue.build());
 			} catch (Exception e) {
 				logger.error("", e);
 			}
@@ -128,9 +128,9 @@ public class Riak {
 		public <T> T fetch(String bucketName, String key, Class<T> clazz) {
 			Namespace ns = new Namespace(bucketName);
 			Location location = new Location(ns, key);
-			FetchValue fv = new FetchValue.Builder(location).build();
+			FetchValue.Builder fetchValue = new FetchValue.Builder(location);
 			try {
-				FetchValue.Response response = client.execute(fv);
+				FetchValue.Response response = client.execute(fetchValue.build());
 				return response.getValue(clazz);
 			} catch (Exception e) {
 				logger.error("", e);
@@ -175,20 +175,24 @@ public class Riak {
 		 * @param bucketName
 		 */
 		public List<Location> ListKeys(String bucketName) {
+			Namespace namespace = new Namespace(bucketName);
+			ListKeys.Builder listKeys = new ListKeys.Builder(namespace);
+			ListKeys.Response response = null;
 			try {
-				List<Location> list = new ArrayList<Location>();
-				Namespace namespace = new Namespace(bucketName);
-				ListKeys.Builder listKeys = new ListKeys.Builder(namespace);
-				ListKeys.Response response = client.execute(listKeys.build());
-				Iterator<Location> it = response.iterator();
-				while (it.hasNext()) {
-					list.add(it.next());
-				}
-				return list;
+				response = client.execute(listKeys.build());
 			} catch (Exception e) {
 				logger.error("", e);
+				return null;
 			}
-			return null;
+			if (response == null) {
+				return null;
+			}
+			List<Location> list = new ArrayList<Location>();
+			Iterator<Location> it = response.iterator();
+			while (it.hasNext()) {
+				list.add(it.next());
+			}
+			return list;
 		}
 	}
 
@@ -200,19 +204,22 @@ public class Riak {
 		 * 列出所有bucket
 		 */
 		public List<Namespace> listBuckets() {
+			ListBuckets listBuckets = new ListBuckets.Builder(Namespace.DEFAULT_BUCKET_TYPE).build();
+			ListBuckets.Response response = null;
 			try {
-				List<Namespace> list = new ArrayList<Namespace>();
-				ListBuckets listBuckets = new ListBuckets.Builder(Namespace.DEFAULT_BUCKET_TYPE).build();
-				ListBuckets.Response response = client.execute(listBuckets);
-				Iterator<Namespace> it = response.iterator();
-				while (it.hasNext()) {
-					list.add(it.next());
-				}
-				return list;
+				response = client.execute(listBuckets);
 			} catch (Exception e) {
 				logger.error("", e);
 			}
-			return null;
+			if (response == null) {
+				return null;
+			}
+			List<Namespace> list = new ArrayList<Namespace>();
+			Iterator<Namespace> it = response.iterator();
+			while (it.hasNext()) {
+				list.add(it.next());
+			}
+			return list;
 		}
 	}
 
@@ -252,7 +259,7 @@ public class Riak {
 			FetchMap.Builder fetchMap = new FetchMap.Builder(location);
 			try {
 				FetchMap.Response response = client.execute(fetchMap.build());
-				System.err.println(	response.getDatatype());
+				System.err.println(response.getDatatype());
 			} catch (Exception e) {
 				logger.error("", e);
 			}
