@@ -50,6 +50,12 @@ if [ ! -d $riak_install_path/riak ]; then
 	cd $riak_install_path/riak/dev3/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
 	cd $riak_install_path/riak/dev4/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
 	cd $riak_install_path/riak/dev5/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit
+	
+	cd $riak_install_path/riak/dev1/etc && sed -i 's/127.0.0.1/'$ip'/' vm.args || exit 
+	cd $riak_install_path/riak/dev2/etc && sed -i 's/127.0.0.1/'$ip'/' vm.args || exit 
+	cd $riak_install_path/riak/dev3/etc && sed -i 's/127.0.0.1/'$ip'/' vm.args || exit 
+	cd $riak_install_path/riak/dev4/etc && sed -i 's/127.0.0.1/'$ip'/' vm.args || exit 
+	cd $riak_install_path/riak/dev5/etc && sed -i 's/127.0.0.1/'$ip'/' vm.args || exit
 
 	cd $riak_install_path/riak
 	echo $riak_install_path'/riak/dev1/bin/riak start
@@ -58,10 +64,10 @@ if [ ! -d $riak_install_path/riak ]; then
 '$riak_install_path'/riak/dev4/bin/riak start
 '$riak_install_path'/riak/dev5/bin/riak start
 	
-'$riak_install_path'/riak/dev2/bin/riak-admin cluster join dev1@127.0.0.1
-'$riak_install_path'/riak/dev3/bin/riak-admin cluster join dev1@127.0.0.1
-'$riak_install_path'/riak/dev4/bin/riak-admin cluster join dev1@127.0.0.1
-'$riak_install_path'/riak/dev5/bin/riak-admin cluster join dev1@127.0.0.1' > run.sh || exit
+'$riak_install_path'/riak/dev2/bin/riak-admin cluster join dev1@'$ip'
+'$riak_install_path'/riak/dev3/bin/riak-admin cluster join dev1@'$ip'
+'$riak_install_path'/riak/dev4/bin/riak-admin cluster join dev1@'$ip'
+'$riak_install_path'/riak/dev5/bin/riak-admin cluster join dev1@'$ip > run.sh || exit
 	chmod 777 run.sh
 	echo 'riak '$riak' install finished...'
 fi
