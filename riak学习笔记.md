@@ -56,3 +56,7 @@ riak有两种通信模式：pb  http，pb的性能比较高；http比较简单�
 下面是根据riak-client封装了一些CURD操作
 
 [Riak.java](https://github.com/ruanzhijun/share/blob/master/java/share-core/src/java/com/share/core/riak/Riak.java)
+
+加入集群命令
+
+/usr/local/riak/dev/dev2/bin/riak-admin cluster join dev1@127.0.0.1

@@ -15,7 +15,6 @@ import com.share.core.mongo.Mongodb;
 import com.share.core.nsq.NsqService;
 import com.share.core.redis.Redis;
 import com.share.core.riak.Riak;
-import com.share.core.riak.Riak.KV;
 import com.share.core.ssdb.SSDB;
 import com.share.core.system.SystemProperty;
 import com.share.core.threadPool.DefaultThreadPool;
