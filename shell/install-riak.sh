@@ -53,15 +53,27 @@ if [ ! -d $riak_install_path/riak ]; then
 
 	cd $riak_install_path/riak
 	echo $riak_install_path'/riak/dev1/bin/riak start
-	'$riak_install_path'/riak/dev2/bin/riak start
-	'$riak_install_path'/riak/dev3/bin/riak start
-	'$riak_install_path'/riak/dev4/bin/riak start
-	'$riak_install_path'/riak/dev5/bin/riak start
+'$riak_install_path'/riak/dev2/bin/riak start
+'$riak_install_path'/riak/dev3/bin/riak start
+'$riak_install_path'/riak/dev4/bin/riak start
+'$riak_install_path'/riak/dev5/bin/riak start
 	
-	'$riak_install_path'/riak/dev2/bin/riak-admin cluster join dev1@127.0.0.1
-	'$riak_install_path'/riak/dev3/bin/riak-admin cluster join dev1@127.0.0.1
-	'$riak_install_path'/riak/dev4/bin/riak-admin cluster join dev1@127.0.0.1
-	'$riak_install_path'/riak/dev5/bin/riak-admin cluster join dev1@127.0.0.1' > run.sh || exit
+'$riak_install_path'/riak/dev2/bin/riak-admin cluster join dev1@127.0.0.1
+'$riak_install_path'/riak/dev3/bin/riak-admin cluster join dev1@127.0.0.1
+'$riak_install_path'/riak/dev4/bin/riak-admin cluster join dev1@127.0.0.1
+'$riak_install_path'/riak/dev5/bin/riak-admin cluster join dev1@127.0.0.1' > run.sh || exit
 	chmod 777 run.sh
 	echo 'riak '$riak' install finished...'
+	
+	#安装riak cs control
+	riak_cs_control='1.0.2'
+	cd $base_path
+	if [ ! -f $base_path/riak-cs-control-$riak_cs_control.tar.gz ]; then
+		echo 'riak-cs-control-'$riak_cs_control'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/riak-cs-control-$riak_cs_control.tar.gz http://s3.amazonaws.com/downloads.basho.com/riak-cs-control/1.0/$riak_cs_control/riak-cs-control-$riak_cs_control.tar.gz || exit
+		echo 'download riak-cs-control-'$riak_cs_control' finished...'
+	fi
+	
+	tar zxvf $base_path/riak-cs-control-$riak_cs_control.tar.gz -C $install_path || exit
+	cd $install_path/riak-cs-control-$riak_cs_control
 fi
