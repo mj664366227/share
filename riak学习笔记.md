@@ -49,8 +49,8 @@ riak有两种通信模式：pb  http，pb的性能比较高；http比较简单�
 集群配置
 
 安装的时候，输入命令 make devrel DEVNODES=5，即为创建集群DEVNODES为指定的集群数。
+详细见[riak](https://github.com/ruanzhijun/share/blob/master/shell/install-riak.sh)安装脚本
 
 
 下面是根据riak-client封装了一些CURD操作
-
 [Riak.java](https://github.com/ruanzhijun/share/blob/master/java/share-core/src/java/com/share/core/riak/Riak.java)
