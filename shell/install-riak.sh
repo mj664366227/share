@@ -65,17 +65,3 @@ if [ ! -d $riak_install_path/riak ]; then
 	chmod 777 run.sh
 	echo 'riak '$riak' install finished...'
 fi
-
-#安装riak cs control
-riak_cs_control='1.0.2'
-if [ ! -d $riak_install_path/riak_cs_control ]; then 
-	cd $base_path
-	if [ ! -f $base_path/riak-cs-control-$riak_cs_control.tar.gz ]; then
-		echo 'riak-cs-control-'$riak_cs_control'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/riak-cs-control-$riak_cs_control.tar.gz http://s3.amazonaws.com/downloads.basho.com/riak-cs-control/1.0/$riak_cs_control/riak-cs-control-$riak_cs_control.tar.gz || exit
-		echo 'download riak-cs-control-'$riak_cs_control' finished...'
-	fi
-
-	tar zxvf $base_path/riak-cs-control-$riak_cs_control.tar.gz -C $install_path || exit
-	cd $install_path/riak-cs-control-$riak_cs_control
-fi
