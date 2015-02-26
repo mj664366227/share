@@ -36,4 +36,18 @@ if [ ! -d $riak_install_path/riak ]; then
 	cd $install_path/riak-$riak
 	#make rel || exit
 	make devrel DEVNODES=5 || exit #后面的5是建立5个节点
+	
+	rm -rf $riak_install_path/riak
+	mkdir -p $riak_install_path/riak
+	cd dev
+	yes | cp -rf * $riak_install_path/riak/
+	
+	#获取本机ip
+	ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
+	
+	cd $riak_install_path/riak/dev1/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
+	cd $riak_install_path/riak/dev2/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
+	cd $riak_install_path/riak/dev3/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
+	cd $riak_install_path/riak/dev4/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
+	cd $riak_install_path/riak/dev5/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
 fi
