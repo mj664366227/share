@@ -59,4 +59,6 @@ riak有两种通信模式：pb  http，pb的性能比较高；http比较简单�
 
 加入集群命令
 
+```
 /usr/local/riak/dev/dev2/bin/riak-admin cluster join dev1@127.0.0.1
+```
