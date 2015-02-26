@@ -49,5 +49,9 @@ if [ ! -d $riak_install_path/riak ]; then
 	cd $riak_install_path/riak/dev2/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
 	cd $riak_install_path/riak/dev3/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
 	cd $riak_install_path/riak/dev4/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
-	cd $riak_install_path/riak/dev5/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
+	cd $riak_install_path/riak/dev5/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit
+
+	cd $riak_install_path/riak
+	echo '' > run.sh || exit
+	chmod 777 run.sh
 fi
