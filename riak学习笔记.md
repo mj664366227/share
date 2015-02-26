@@ -46,4 +46,11 @@ Usage: riak {start | stop| restart | reboot | ping | console | attach |
 
 riak有两种通信模式：pb  http，pb的性能比较高；http比较简单方便。
 
-[demo项目](ssssssssssssssssssss)，里面有详细注释。
+集群配置
+
+安装的时候，输入命令 make devrel DEVNODES=5，即为创建集群DEVNODES为指定的集群数。
+
+
+下面是根据riak-client封装了一些CURD操作
+
+[Riak.java](https://github.com/ruanzhijun/share/blob/master/java/share-core/src/java/com/share/core/riak/Riak.java)
