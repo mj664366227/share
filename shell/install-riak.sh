@@ -139,5 +139,5 @@ if [ ! -d $riak_install_path/riak ]; then
 	echo 'riak '$riak' install finished...'
 	
 	rm -rf $riak_install_path'/riak/*.dump'
-	rm -rf $riak_install_path'/riak/*localhost*'
+	rm -rf $riak_install_path'/riak/*@*'
 fi
