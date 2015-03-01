@@ -6,10 +6,25 @@ ntpdate time.nist.gov
 
 #处理外部参数
 riak_install_path=$1
+riak_cluster_num=$2
 if [ ! $riak_install_path ]; then
 	echo 'error command!!! you must input riak install path...'
-	echo 'for example: sh install-riak.sh /usr/local'
+	echo 'for example: sh install-riak.sh /usr/local [cluster num]'
 	exit
+fi
+
+# 如果指定集群数，强制是数字
+if [ $riak_cluster_num ]; then
+	flag=`echo $riak_cluster_num | grep "[^0-9]"`
+	if [ -n $flag ]; then
+		echo 'please inut a number...'
+		exit	
+	fi
+fi
+
+# 如果不输入聚群数，默认是1
+if [ ! $riak_cluster_num ]; then
+	riak_cluster_num=1
 fi
 
 yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc lrzsz openssh-server postfix cronie vim-enhanced readline readline-devel ncurses-devel gdbm-devel glibc-devel tcl-devel openssl-devel curl curl-devel expat-devel db4-devel byacc sqlite-devel libyaml libyaml-devel libffi libffi-devel libxml2 libxml2-devel libxslt libxslt-devel libicu libicu-devel system-config-firewall-tui python-devel crontabs logwatch logrotate perl-Time-HiRes autoconf 
@@ -44,6 +59,12 @@ if [ ! -d $riak_install_path/riak ]; then
 	
 	#获取本机ip
 	ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
+	
+	echo 'riak cluster num is '$riak_cluster_num
+	
+	for i in $(seq $riak_cluster_num); do
+		echo $i;
+	done;
 	
 	cd $riak_install_path/riak/dev1/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
 	cd $riak_install_path/riak/dev2/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
