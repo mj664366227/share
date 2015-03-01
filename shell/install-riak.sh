@@ -2,7 +2,6 @@
 
 #定义本程序的当前目录
 base_path=$(pwd)
-ntpdate time.nist.gov
 
 #处理外部参数
 riak_install_path=$1
@@ -13,6 +12,7 @@ if [ ! $riak_install_path ]; then
 	exit
 fi
 
+ntpdate time.nist.gov
 # 如果指定集群数，强制是数字
 if [ $riak_cluster_num ]; then
 	flag=`echo $riak_cluster_num | grep "[^0-9]"`
