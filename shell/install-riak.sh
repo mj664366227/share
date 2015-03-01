@@ -104,8 +104,6 @@ if [ ! -d $riak_install_path/riak ]; then
 		sed -i 's/riak@127.0.0.1/'$node'@'$ip'/' vm.args || exit
 		
 		# 输出到屏幕 
-		echo ''
-		echo 'node name: '$node
 		echo 'pb port: '$this_pb_port
 		echo 'http port: '$this_http_port
 		echo 'https port: '$this_https_port
@@ -119,12 +117,15 @@ if [ ! -d $riak_install_path/riak ]; then
 		echo $riak_install_path'/riak/'$node'/bin/riak start &' >> run.sh || exit
 	done;
 	
-	echo '' >> run.sh
 	
 	# 默认第一个为主
 	if [ $riak_cluster_num -gt 1 ]; then
+		echo '' >> run.sh
 		for i in $(seq $riak_cluster_num); do
-			echo $riak_install_path'/riak/'$node'/bin/riak-admin cluster join '$base_node'1@'$ip' &' >> run.sh || exit
+			if [ $riak_cluster_num -eq 1 ]; then
+				continue;
+			fi
+			echo $riak_install_path'/riak/'$i'/bin/riak-admin cluster join '$base_node'1@'$ip' &' >> run.sh || exit
 		done;
 	fi
 	
