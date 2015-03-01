@@ -87,7 +87,7 @@ if [ ! -d $riak_install_path/riak ]; then
 		cd $riak_install_path/riak/$node/etc
 		
 		# 计算各个节点的端口
-		i=i-1
+		i=`expr $i - 1`
 		this_pb_port		=`expr $pb_port + $i \* 1000`
 		this_http_port		=`expr $http_port + $i \* 1000`
 		this_https_port		=`expr $https_port + $i \* 1000`
@@ -102,6 +102,7 @@ if [ ! -d $riak_install_path/riak ]; then
 		sed -i 's/riak@127.0.0.1/'$node'@'$ip'/' vm.args || exit
 		
 		# 输出到屏幕
+		echo ''
 		echo 'node name: '$node
 		echo 'pb port: '$this_pb_port
 		echo 'http port: '$this_http_port
