@@ -94,9 +94,9 @@ if [ ! -d $riak_install_path/riak ]; then
 		this_https_port=`expr $https_port + $num \* 1000`
 		this_handoff_port=`expr $handoff_port + $num \* 1000`
 		
-		sed -i 's/{pb, [ {"127.0.0.1", 8087 } ]}/{pb, [ {"'$ip'", '$this_pb_port' } ]}/' app.config || exit 
-		sed -i 's/{http, [ {"127.0.0.1", 8098 } ]}/{http, [ {"'$ip'", '$this_http_port' } ]}/' app.config || exit 
-		sed -i 's/%{https, [{ "127.0.0.1", 8098 }]}/{https, [{ "'$ip'", '$this_https_port' }]}/' app.config || exit 
+		sed -i 's/{pb, \[ {"127.0.0.1", 8087 } \]}/{pb, \[ {"'$ip'", '$this_pb_port' } \]}/' app.config || exit 
+		sed -i 's/{http, \[ {"127.0.0.1", 8098 } \]}/{http, \[ {"'$ip'", '$this_http_port' } \]}/' app.config || exit 
+		sed -i 's/%{https, \[{ "127.0.0.1", 8098 }\]}/{https, \[{ "'$ip'", '$this_https_port' }\]}/' app.config || exit 
 		sed -i 's/{handoff_port, 8099 }/{handoff_port, '$this_handoff_port' }/' app.config || exit 
 		sed -i 's/{enabled, false}/{enabled, true}/' app.config || exit 
 		
@@ -121,16 +121,18 @@ if [ ! -d $riak_install_path/riak ]; then
 	echo '' >> run.sh
 	
 	# 默认第一个为主
-	for i in $(seq $riak_cluster_num); do
-		echo $riak_install_path'/riak/'$node'/bin/riak-admin cluster join '$base_node'1@'$ip' &' >> run.sh || exit
-	done;
+	if [ $riak_cluster_num -gt 1 ]; then
+		for i in $(seq $riak_cluster_num); do
+			echo $riak_install_path'/riak/'$node'/bin/riak-admin cluster join '$base_node'1@'$ip' &' >> run.sh || exit
+		done;
+	fi
 	
 	# 写入文件
 	cd $riak_install_path'/riak'
 	chmod 777 run.sh || exit
 	
 	# 加入自启动
-	echo $riak_install_path'/riak/run.sh' >> /etc/rc.local || exit
+	#echo $riak_install_path'/riak/run.sh' >> /etc/rc.local || exit
 	
 	echo 'riak '$riak' install finished...'
 fi
