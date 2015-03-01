@@ -72,11 +72,10 @@ if [ ! -d $riak_install_path/riak ]; then
 	http_port=8098
 	https_port=8069
 	handoff_port=8099
-	
-	# 脚本文件代码
-	shell=''
-	
+		
 	base_node='riak'
+	
+	rm -rf $riak_install_path/riak/run.sh
 	
 	# 本来用 make devrel DEVNODES=x 就可以解决问题，但是自己写更加可控
 	for i in $(seq $riak_cluster_num); do
@@ -103,7 +102,7 @@ if [ ! -d $riak_install_path/riak ]; then
 		
 		sed -i 's/riak@127.0.0.1/'$node'@'$ip'/' vm.args || exit
 		
-		# 输出到屏幕
+		# 输出到屏幕 
 		echo ''
 		echo 'node name: '$node
 		echo 'pb port: '$this_pb_port
@@ -115,21 +114,20 @@ if [ ! -d $riak_install_path/riak ]; then
 		echo ''
 		
 		# 生成脚本文件
-$shell=$shell$riak_install_path'/riak/'$node'/bin/riak start &
-'
+		cd $riak_install_path'/riak'
+		echo $riak_install_path'/riak/'$node'/bin/riak start &' >> run.sh || exit
 	done;
 	
-$shell=$shell'
-'
+	echo '' >> run.sh
+	
 	# 默认第一个为主
 	for i in $(seq $riak_cluster_num); do
-$shell=$shell$riak_install_path'/riak/'$node'/bin/riak-admin cluster join '$base_node'1@'$ip' &
-'
+		echo $riak_install_path'/riak/'$node'/bin/riak-admin cluster join '$base_node'1@'$ip' &' >> run.sh || exit
 	done;
 	
 	# 写入文件
 	cd $riak_install_path'/riak'
-	echo $shell > run.sh && chmod 777 run.sh || exit
+	chmod 777 run.sh || exit
 	
 	# 加入自启动
 	echo $riak_install_path'/riak/run.sh' >> /etc/rc.local || exit
