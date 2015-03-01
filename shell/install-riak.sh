@@ -95,6 +95,7 @@ if [ ! -d $riak_install_path/riak ]; then
 		this_https_port=`expr $https_port + $num \* 1000`
 		this_handoff_port=`expr $handoff_port + $num \* 1000`
 		
+		# 修改配置文件
 		sed -i 's/{pb, \[ {"127.0.0.1", 8087 } \]}/{pb, \[ {"'$ip'", '$this_pb_port' } \]}/' app.config || exit 
 		sed -i 's/{http, \[ {"127.0.0.1", 8098 } \]}/{http, \[ {"'$ip'", '$this_http_port' } \]}/' app.config || exit 
 		sed -i 's/%{https, \[{ "127.0.0.1", 8098 }\]}/{https, \[{ "'$ip'", '$this_https_port' }\]}/' app.config || exit 
