@@ -56,6 +56,8 @@ if [ ! -d $riak_install_path/riak ]; then
 	
 	#获取本机ip
 	ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
+	echo ''
+	echo ''
 	echo 'self ip: '$ip
 	
 	echo 'riak cluster num is '$riak_cluster_num
@@ -87,11 +89,11 @@ if [ ! -d $riak_install_path/riak ]; then
 		cd $riak_install_path/riak/$node/etc
 		
 		# 计算各个节点的端口
-		i=`expr $i - 1`
-		this_pb_port		=`expr $pb_port + $i \* 1000`
-		this_http_port		=`expr $http_port + $i \* 1000`
-		this_https_port		=`expr $https_port + $i \* 1000`
-		this_handoff_port	=`expr $handoff_port + $i \* 1000`
+		num=`expr $i - 1`
+		this_pb_port=`expr $pb_port + $num \* 1000`
+		this_http_port=`expr $http_port + $num \* 1000`
+		this_https_port=`expr $https_port + $num \* 1000`
+		this_handoff_port=`expr $handoff_port + $num \* 1000`
 		
 		sed -i 's/{pb, [ {"127.0.0.1", 8087 } ]}/{pb, [ {"'$ip'", '$this_pb_port' } ]}/' app.config || exit 
 		sed -i 's/{http, [ {"127.0.0.1", 8098 } ]}/{http, [ {"'$ip'", '$this_http_port' } ]}/' app.config || exit 
