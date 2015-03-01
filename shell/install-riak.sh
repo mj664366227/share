@@ -113,7 +113,7 @@ if [ ! -d $riak_install_path/riak ]; then
 		echo ''
 		
 		# 生成脚本文件
-$shell=$shell$riak_install_path'/riak/'$node'/bin/riak start
+$shell=$shell$riak_install_path'/riak/'$node'/bin/riak start &
 '
 	done;
 	
@@ -121,7 +121,8 @@ $shell=$shell'
 '
 	# 默认第一个为主
 	for i in $(seq $riak_cluster_num); do
-$shell=$shell$riak_install_path'/riak/'$node'/bin/riak-admin cluster join '$base_node'1@'$ip
+$shell=$shell$riak_install_path'/riak/'$node'/bin/riak-admin cluster join '$base_node'1@'$ip' &
+'
 	done;
 	
 	# 写入文件
