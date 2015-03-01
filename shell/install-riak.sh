@@ -49,46 +49,84 @@ if [ ! -d $riak_install_path/riak ]; then
 	fi
 	tar zxvf $base_path/riak-$riak.tar.gz -C $install_path || exit
 	cd $install_path/riak-$riak
-	#make rel || exit
-	make devrel DEVNODES=5 || exit #后面的5是建立5个节点
+	make rel || exit
 	
 	rm -rf $riak_install_path/riak
 	mkdir -p $riak_install_path/riak
-	cd dev
-	yes | cp -rf * $riak_install_path/riak/
 	
 	#获取本机ip
 	ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
+	echo 'self ip: '$ip
 	
 	echo 'riak cluster num is '$riak_cluster_num
+	echo ''
 	
+	# 清理垃圾
+	cd $install_path/riak-$riak/rel/riak/data && rm -rf *
+	cd $install_path/riak-$riak/rel/riak/log && rm -rf *
+	
+	# 定义端口
+	pb_port=8087
+	http_port=8098
+	https_port=8069
+	handoff_port=8099
+	
+	# 脚本文件代码
+	shell=''
+	
+	# 本来用 make devrel DEVNODES=x 就可以解决问题，但是自己写更加可控
 	for i in $(seq $riak_cluster_num); do
-		echo $i;
+		node='riak'$i
+		echo 'creating cluster node '$node'...'
+		mkdir -p $riak_install_path/riak/$node
+		yes | cp -rf $install_path/riak-$riak/rel/riak/* $riak_install_path/riak/$node/
+		
+		# 修改配置文件
+		cd $riak_install_path/riak/$node/etc
+		
+		# 计算各个节点的端口
+		i=i-1
+		this_pb_port		=`expr $pb_port + $i \* 1000`
+		this_http_port		=`expr $http_port + $i \* 1000`
+		this_https_port		=`expr $https_port + $i \* 1000`
+		this_handoff_port	=`expr $handoff_port + $i \* 1000`
+		
+		sed -i 's/{pb, [ {"127.0.0.1", 8087 } ]}/{pb, [ {"'$ip'", '$this_pb_port' } ]}/' app.config || exit 
+		sed -i 's/{http, [ {"127.0.0.1", 8098 } ]}/{http, [ {"'$ip'", '$this_http_port' } ]}/' app.config || exit 
+		sed -i 's/%{https, [{ "127.0.0.1", 8098 }]}/{https, [{ "'$ip'", '$this_https_port' }]}/' app.config || exit 
+		sed -i 's/{handoff_port, 8099 }/{handoff_port, '$this_handoff_port' }/' app.config || exit 
+		sed -i 's/{enabled, false}/{enabled, true}/' app.config || exit 
+		
+		sed -i 's/riak@127.0.0.1/'$node'@'$ip'/' vm.args || exit
+		
+		# 输出到屏幕
+		echo 'node name: '$node
+		echo 'pb port: '$this_pb_port
+		echo 'http port: '$this_http_port
+		echo 'https port: '$this_https_port
+		echo 'handoff port: '$this_handoff_port
+		
+		echo '------------------------------------------------------------------------------------------------------'
+		echo ''
+		
+		# 生成脚本文件
+$shell=$shell$riak_install_path'/riak/'$node'/bin/riak start
+'
 	done;
 	
-	cd $riak_install_path/riak/dev1/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
-	cd $riak_install_path/riak/dev2/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
-	cd $riak_install_path/riak/dev3/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
-	cd $riak_install_path/riak/dev4/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit 
-	cd $riak_install_path/riak/dev5/etc && sed -i 's/127.0.0.1/'$ip'/' app.config || exit
+$shell=$shell'
+'
+	# 默认第一个为主
+	for i in $(seq $riak_cluster_num); do
+$shell=$shell$riak_install_path'/riak/'$node'/bin/riak-admin cluster join riak1@'$ip
+	done;
 	
-	cd $riak_install_path/riak/dev1/etc && sed -i 's/127.0.0.1/'$ip'/' vm.args || exit 
-	cd $riak_install_path/riak/dev2/etc && sed -i 's/127.0.0.1/'$ip'/' vm.args || exit 
-	cd $riak_install_path/riak/dev3/etc && sed -i 's/127.0.0.1/'$ip'/' vm.args || exit 
-	cd $riak_install_path/riak/dev4/etc && sed -i 's/127.0.0.1/'$ip'/' vm.args || exit 
-	cd $riak_install_path/riak/dev5/etc && sed -i 's/127.0.0.1/'$ip'/' vm.args || exit
-
-	cd $riak_install_path/riak
-	echo $riak_install_path'/riak/dev1/bin/riak start
-'$riak_install_path'/riak/dev2/bin/riak start
-'$riak_install_path'/riak/dev3/bin/riak start
-'$riak_install_path'/riak/dev4/bin/riak start
-'$riak_install_path'/riak/dev5/bin/riak start
+	# 写入文件
+	cd $riak_install_path'/riak'
+	echo $shell > run.sh && chmod 777 run.sh || exit
 	
-'$riak_install_path'/riak/dev2/bin/riak-admin cluster join dev1@'$ip'
-'$riak_install_path'/riak/dev3/bin/riak-admin cluster join dev1@'$ip'
-'$riak_install_path'/riak/dev4/bin/riak-admin cluster join dev1@'$ip'
-'$riak_install_path'/riak/dev5/bin/riak-admin cluster join dev1@'$ip > run.sh || exit
-	chmod 777 run.sh
+	# 加入自启动
+	echo $riak_install_path'/riak/run.sh' >> /etc/rc.local || exit
+	
 	echo 'riak '$riak' install finished...'
 fi
