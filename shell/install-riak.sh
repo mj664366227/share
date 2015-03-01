@@ -122,7 +122,7 @@ if [ ! -d $riak_install_path/riak ]; then
 	if [ $riak_cluster_num -gt 1 ]; then
 		echo '' >> run.sh
 		for i in $(seq $riak_cluster_num); do
-			if [ $riak_cluster_num -eq 1 ]; then
+			if [ $i -eq 1 ]; then
 				continue;
 			fi
 			echo $riak_install_path'/riak/'$i'/bin/riak-admin cluster join '$base_node'1@'$ip' &' >> run.sh || exit
