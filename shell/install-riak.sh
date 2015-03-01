@@ -16,7 +16,7 @@ fi
 # 如果指定集群数，强制是数字
 if [ $riak_cluster_num ]; then
 	flag=`echo $riak_cluster_num | grep "[^0-9]"`
-	if [ -n $flag ]; then
+	if [ $flag ]; then
 		echo 'please inut a number...'
 		exit	
 	fi
