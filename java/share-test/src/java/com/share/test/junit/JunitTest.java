@@ -54,7 +54,8 @@ public class JunitTest {
 	public void junitTest() throws Exception {
 		String bucketName = "user";
 		String key = "key3";
-		riak.KV.store(bucketName, key, 22);
+		//riak.KV.store(bucketName, key, 22);
+		System.err.println(riak.KV.fetch(bucketName, key, Object.class));
 		System.exit(0);
 	}
 }
