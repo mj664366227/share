@@ -74,9 +74,11 @@ if [ ! -d $riak_install_path/riak ]; then
 	# 脚本文件代码
 	shell=''
 	
+	base_node='riak'
+	
 	# 本来用 make devrel DEVNODES=x 就可以解决问题，但是自己写更加可控
 	for i in $(seq $riak_cluster_num); do
-		node='riak'$i
+		node=$base_node$i
 		echo 'creating cluster node '$node'...'
 		mkdir -p $riak_install_path/riak/$node
 		yes | cp -rf $install_path/riak-$riak/rel/riak/* $riak_install_path/riak/$node/
@@ -118,7 +120,7 @@ $shell=$shell'
 '
 	# 默认第一个为主
 	for i in $(seq $riak_cluster_num); do
-$shell=$shell$riak_install_path'/riak/'$node'/bin/riak-admin cluster join riak1@'$ip
+$shell=$shell$riak_install_path'/riak/'$node'/bin/riak-admin cluster join '$base_node'1@'$ip
 	done;
 	
 	# 写入文件
