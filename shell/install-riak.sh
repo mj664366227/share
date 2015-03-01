@@ -126,7 +126,7 @@ if [ ! -d $riak_install_path/riak ]; then
 			if [ $i -eq 1 ]; then
 				continue;
 			fi
-			echo $riak_install_path'/riak/'$i'/bin/riak-admin cluster join '$base_node'1@'$ip' &' >> run.sh || exit
+			echo $riak_install_path'/riak/'$base_node$i'/bin/riak-admin cluster join '$base_node'1@'$ip' &' >> run.sh || exit
 		done;
 	fi
 	
