@@ -12,7 +12,6 @@ if [ ! $riak_install_path ]; then
 	exit
 fi
 
-ntpdate time.nist.gov
 # 如果指定集群数，强制是数字
 if [ $riak_cluster_num ]; then
 	flag=`echo $riak_cluster_num | grep "[^0-9]"`
@@ -26,6 +25,8 @@ fi
 if [ ! $riak_cluster_num ]; then
 	riak_cluster_num=1
 fi
+
+ntpdate time.nist.gov
 
 yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc lrzsz openssh-server postfix cronie vim-enhanced readline readline-devel ncurses-devel gdbm-devel glibc-devel tcl-devel openssl-devel curl curl-devel expat-devel db4-devel byacc sqlite-devel libyaml libyaml-devel libffi libffi-devel libxml2 libxml2-devel libxslt libxslt-devel libicu libicu-devel system-config-firewall-tui python-devel crontabs logwatch logrotate perl-Time-HiRes autoconf 
 
