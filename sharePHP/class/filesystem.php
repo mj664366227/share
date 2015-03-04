@@ -3,6 +3,7 @@
  * 文件系统类
  */
 class filesystem{
+	private static $sizes = array('Byte', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 	/**
 	 * 计算某文件的大小(32位系统只能到1.96GB)
 	 * @param $file 文件路径
@@ -10,12 +11,20 @@ class filesystem{
 	 * @return 文件大小
 	 */
 	public static function size($file, $round = 2){
-		$sizes = array('Byte', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 		$size = filesize($file);
 		if ($size == 0) {
-			return '0 '.$sizes[0];
+			return '0 '.self::$sizes[0];
 		}
-		return round($size / pow(1024, ($i = floor(log($size, 1024)))), $round).' '.self::$sizes[$i];
+		return self::bytes($file, $round);
+	}
+	
+	/**
+	 * 字节数转换
+	 * @param $bytes
+	 * @param $round
+	 */
+	public static function bytes($bytes, $round = 2){
+		return round($bytes / pow(1024, ($i = floor(log($bytes, 1024)))), $round).' '.self::$sizes[$i];
 	}
 
 	/**
