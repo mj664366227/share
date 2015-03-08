@@ -6,8 +6,7 @@ button {
 }
 </style>
 <script type="text/javascript">
-document.onkeydown = keyevent;
-
+document.onkeydown = keyevent;  
 $(function(){
 	$('#clear').click(function(){
 		clear();
@@ -175,7 +174,7 @@ function keyevent(){
 		case 67:clear();break;
 		case 111:div();break;
 		case 106:mul();break;
-		case 8:backspace();break;
+		case 8:backspace();return false;break;
 		case 109:subb();break;
 		case 107:add();break;
 		case 187:equal();break;
