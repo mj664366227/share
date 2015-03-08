@@ -16,8 +16,8 @@ import com.share.core.nsq.NsqService;
 import com.share.core.redis.Redis;
 import com.share.core.riak.Riak;
 import com.share.core.ssdb.SSDB;
-import com.share.core.system.SystemProperty;
 import com.share.core.threadPool.DefaultThreadPool;
+import com.share.core.util.SystemUtil;
 import com.share.test.db.AdminDbService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,15 +46,14 @@ public class JunitTest {
 	@Autowired
 	private MenuProcessor menuProcessor;
 	@Autowired
-	private SystemProperty systemProperty;	
-	@Autowired
 	private Riak riak;
 
 	@Test
 	public void junitTest() throws Exception {
+		System.err.println(SystemUtil.getSystemKey());
 		String bucketName = "user";
 		String key = "key3";
-		//riak.KV.store(bucketName, key, 22);
+		riak.KV.store(bucketName, key, 22);
 		System.err.println(riak.KV.fetch(bucketName, key, Object.class));
 		System.exit(0);
 	}

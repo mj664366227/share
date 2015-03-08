@@ -19,7 +19,6 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.entity.ByteArrayEntity;
@@ -30,9 +29,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.share.core.system.SystemProperty;
+import com.share.core.util.SystemUtil;
 
 /**
  * http客户端
@@ -44,22 +42,16 @@ public final class HttpClient {
 	 */
 	private final static Logger logger = LoggerFactory.getLogger(HttpClient.class);
 	/**
-	 * 系统基础配置
-	 */
-	@Autowired
-	private SystemProperty systemProperty;
-	/**
 	 * 默认字符集
 	 */
-	private Charset charset;
+	private final static Charset charset = SystemUtil.getSystemCharset();
 	/**
 	 * 默认超时时间(5秒)
 	 */
 	private int connectTimeout = 5000;
 	/**
 	 * http连接池
-	 */
-	private CloseableHttpClient client;
+	 */		private CloseableHttpClient client;
 	/**
 	 * 连接池管理器
 	 */
@@ -88,7 +80,6 @@ public final class HttpClient {
 		cm.setDefaultMaxPerRoute(100);
 
 		// 设置字符集
-		charset = systemProperty.getSystemCharset();
 		ConnectionConfig.Builder connectionConfigBuilder = ConnectionConfig.custom();
 		connectionConfigBuilder.setCharset(charset);
 		cm.setDefaultConnectionConfig(connectionConfigBuilder.build());

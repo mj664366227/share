@@ -103,7 +103,7 @@ public final class SystemUtil {
 	 * 获取系统字符集
 	 * @return
 	 */
-	public Charset getSystemCharset() {
+	public final static Charset getSystemCharset() {
 		return charset;
 	}
 }
