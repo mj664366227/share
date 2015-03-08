@@ -6,47 +6,209 @@ button {
 }
 </style>
 <script type="text/javascript">
+document.onkeydown = keyevent;
+
 $(function(){
 	$('#clear').click(function(){
-		$('#consol').val('');
+		clear();
 	});
-	$('#div').click(function(){
-		$('#consol').append('÷');
-	});
-	$('#mul').click(function(){
-		$('#consol').append('X');
-	});
-	$('#backspace').click(function(){
-		var str = $('#consol').val();
-		$('#consol').val(str.substring(0,str.length-1));
-	});
-	$('#seven').click(function(){
-		$('#consol').append('7');
-	});
-	$('#eight').click(function(){
-		$('#consol').append('8');
-	});
-	$('#nine').click(function(){
-		$('#consol').append('9');
+	$('#add').click(function(){
+		add();
 	});
 	$('#sub').click(function(){
-		$('#consol').append('-');
+		subb();
+	});
+	$('#div').click(function(){
+		div();
+	});
+	$('#mul').click(function(){
+		mul();
+	});
+	$('#backspace').click(function(){
+		backspace();
+	});
+	$('#equal').click(function(){
+		equal();
+	});
+	$('#dot').click(function(){
+		dot();
+	});
+	$('#fact').click(function(){
+		fact();
+	});
+	$('#kuohao').click(function(){
+		kuohao();
+	});
+	
+	$('#one').click(function(){
+		one();
+	});
+	$('#two').click(function(){
+		two();
+	});
+	$('#three').click(function(){
+		three();
 	});
 	$('#four').click(function(){
-		$('#consol').append('4');
+		four();
 	});
 	$('#five').click(function(){
-		$('#consol').append('5');
+		five();
 	});
 	$('#six').click(function(){
-		$('#consol').append('6');
+		six();
+	});
+	$('#seven').click(function(){
+		seven();
+	});
+	$('#eight').click(function(){
+		eight();
+	});
+	$('#nine').click(function(){
+		nine();
+	});
+	$('#zero').click(function(){
+		zero();
 	});
 })
+// 清屏
+function clear(){
+	$('#consol').val('');
+}
+// 退格
+function backspace(){
+	var str = $('#consol').val();
+	$('#consol').val(str.substring(0,str.length-1));
+}
+// 加
+function add(){
+	append('+');
+}
+// 减
+function subb(){
+	append('-');
+}
+// 乘
+function mul(){
+	append('X');
+}
+// 除
+function div(){
+	append('÷');
+}
+// 等于
+function equal(){
+	var str = String($('#consol').val());
+	if(str.indexOf('!') > -1){
+		str = str.replace('!', '');
+		$('#consol').val(doFact(str));
+	} else {
+		str = str.replace('÷', '/');
+		str = str.replace('X', '*');
+		$('#consol').val(eval(str));
+	}
+}
+// 小数点
+function dot(){
+	append('.');
+}
+// 阶乘
+function fact(){
+	append('!');
+}
+// 括号
+function kuohao(){
+	var str = String($('#consol').val());
+	$('#consol').val('(' + str + ')');
+}
+function doFact(value){
+	value = parseInt(value);
+	if (value <= 0) {
+		return value;
+	}
+	var result = 1;
+	while (value > 0) {
+		result *= value;
+		value -= 1;
+	}
+	return result;
+}
+// 追加
+function append(value){
+	var str = String($('#consol').val());
+	$('#consol').val(str + value);
+}
+
+function one(){
+	append('1');
+}
+function two(){
+	append('2');
+}
+function three(){
+	append('3');
+}
+function four(){
+	append('4');
+}
+function five(){
+	append('5');
+}
+function six(){
+	append('6');
+}
+function seven(){
+	append('7');
+}
+function eight(){
+	append('8');
+}
+function nine(){
+	append('9');
+}
+function zero(){
+	append('0');
+}
+
+function keyevent(){
+	switch(event.keyCode){
+		case 67:clear();break;
+		case 111:div();break;
+		case 106:mul();break;
+		case 8:backspace();break;
+		case 109:subb();break;
+		case 107:add();break;
+		case 187:equal();break;
+		case 96:zero();break;
+		case 97:one();break;
+		case 98:two();break;
+		case 99:three();break;
+		case 100:four();break;
+		case 101:five();break;
+		case 102:six();break;
+		case 103:seven();break;
+		case 104:eight();break;
+		case 105:nine();break;
+		case 48:zero();break;
+		case 49:one();break;
+		case 50:two();break;
+		case 51:three();break;
+		case 52:four();break;
+		case 53:five();break;
+		case 54:six();break;
+		case 55:seven();break;
+		case 56:eight();break;
+		case 57:nine();break;
+		case 110:dot();break;
+		case 190:dot();break;
+		case 13:equal();break;
+	}
+}
 </script>
 <div class="col-lg-12" style="width:400px; float:left;">
   <h1 class="page-header">简易计算器</h1>
   <textarea class="form-control" rows="3" readonly="readonly" style="cursor:text; text-align:right; font-size:20px" id="consol"></textarea>
-  <button type="button" class="btn btn-default" id="clear">清除</button>
+  <button type="button" class="btn btn-default" id="clear">C</button>
   <button type="button" class="btn btn-default" id="div">÷</button>
   <button type="button" class="btn btn-default" id="mul">×</button>
   <button type="button" class="btn btn-default" id="backspace">←</button>
