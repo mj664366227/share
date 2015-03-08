@@ -122,6 +122,8 @@ if [ ! -d $riak_install_path/riak ]; then
 	# 默认第一个为主
 	if [ $riak_cluster_num -gt 1 ]; then
 		echo '' >> run.sh
+		echo 'sleep 10' >> run.sh
+		echo '' >> run.sh
 		for i in $(seq $riak_cluster_num); do
 			if [ $i -eq 1 ]; then
 				continue;
@@ -135,7 +137,7 @@ if [ ! -d $riak_install_path/riak ]; then
 	chmod 777 run.sh || exit
 	
 	# 加入自启动
-	#echo $riak_install_path'/riak/run.sh' >> /etc/rc.local || exit
+	echo $riak_install_path'/riak/run.sh' >> /etc/rc.local || exit
 	
 	echo 'riak '$riak' install finished...'
 	
