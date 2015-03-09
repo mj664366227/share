@@ -531,7 +531,6 @@ public final class FileSystem {
 				fileList[fileList.length - size - i] = list.get(i);
 			}
 		}
-		System.err.println(JSONObject.encode(fileList));
 		if (fileList.length <= 0) {
 			return;
 		}
