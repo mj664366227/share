@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.share.admin.common.Parameter;
 import com.share.admin.common.SessionKey;
 import com.share.admin.common.URL;
 import com.share.admin.util.SessionUtil;
 import com.share.core.annotation.Menu;
 import com.share.core.annotation.processor.MenuProcessor;
+import com.share.core.util.JSONObject;
 import com.share.core.util.Secret;
 
 @Controller
@@ -29,7 +29,7 @@ public class UserController {
 	 * 登录
 	 */
 	@RequestMapping(value = URL.UserLogin)
-	public ModelAndView login(Parameter parameters, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public ModelAndView login(JSONObject parameters, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String username = parameters.getString("username");
 		String password = parameters.getString("password");
 		if ("admin".equals(username) && "admin".equals(password)) {
