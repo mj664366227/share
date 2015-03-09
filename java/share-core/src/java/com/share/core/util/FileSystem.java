@@ -53,6 +53,7 @@ public final class FileSystem {
 	private static Properties property = new Properties();
 	static {
 		loadProperties();
+		loadSpringConfig();
 	}
 
 	private FileSystem() {
@@ -517,7 +518,7 @@ public final class FileSystem {
 	/**
 	 * 自动发现spring配置文件并自动加载
 	 */
-	public final static synchronized void loadSpringConfig() {
+	private final static synchronized void loadSpringConfig() {
 		String[] fileList = ls(getSystemDir() + "bin/");
 		List<String> jarList = lsJAR(getSystemDir() + "lib/");
 		for (String file : jarList) {

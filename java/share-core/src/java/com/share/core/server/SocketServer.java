@@ -9,7 +9,6 @@ import com.share.core.exception.IllegalPortException;
 import com.share.core.interfaces.AbstractServer;
 import com.share.core.interfaces.AbstractSocketServerInitializer;
 import com.share.core.util.Check;
-import com.share.core.util.FileSystem;
 
 /**
  * netty socket 服务器
@@ -51,7 +50,6 @@ public final class SocketServer extends AbstractServer {
 	public void start() {
 		try {
 			serverBootstrap.bind().sync();
-			FileSystem.loadSpringConfig();
 		} catch (InterruptedException e) {
 			logger.error("", e);
 			System.exit(0);
