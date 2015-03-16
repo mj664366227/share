@@ -11,6 +11,9 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
 /**
  * 加密类
  */
@@ -73,6 +76,29 @@ public final class Secret {
 	 */
 	public final static String SHA(String string) {
 		return byteArrayToHexString(sha.digest(string.getBytes()));
+	}
+
+	/**
+	 * base64加密
+	 * @param str
+	 */
+	public final static String base64Encode(String str) {
+		return new BASE64Encoder().encode(str.getBytes());
+	}
+
+	/**
+	 * base64解密
+	 * @param str
+	 */
+	public final static String base64Decode(String str) {
+		BASE64Decoder decoder = new BASE64Decoder();
+		try {
+			byte[] b = decoder.decodeBuffer(str);
+			return new String(b);
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
 	}
 
 	/**
