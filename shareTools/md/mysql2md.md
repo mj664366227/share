@@ -12,6 +12,14 @@ hot|int(11)|否||热度值
 hot_duration|int(11)|否||热度值持续时间(单位：秒)
 score|int(11)|否||排序得分
 
+####索引
+
+索引名|索引类型|字段
+---|---|---
+PRIMARY||id、
+
+
+---
 
 ###gift_free (免费礼物)
 字段名|数据类型|是否为空|额外|注释
@@ -21,6 +29,14 @@ gift_id|int(11)|否||礼物id
 num|int(11)|否||当天已赠送数量
 record_time|date|否||记录时间
 
+####索引
+
+索引名|索引类型|字段
+---|---|---
+player_id||player_id、gift_id、record_time、
+
+
+---
 
 ###gift_property (礼物属性图片)
 字段名|数据类型|是否为空|额外|注释
@@ -28,6 +44,14 @@ record_time|date|否||记录时间
 property_id|int(11)|否||属性id
 img|varchar(500)|否||属性图片
 
+####索引
+
+索引名|索引类型|字段
+---|---|---
+PRIMARY||property_id、
+
+
+---
 
 ###opus_gift (单用户给作品送礼的礼物列表)
 字段名|数据类型|是否为空|额外|注释
@@ -37,6 +61,14 @@ player_id|int(11)|否||送礼人的玩家id
 gift_id|int(11)|否||礼物id
 num|int(11)|否||数量
 
+####索引
+
+索引名|索引类型|字段
+---|---|---
+opus_id||opus_id、player_id、gift_id、
+
+
+---
 
 ###opus_gift_price (作品礼物价值排行榜)
 字段名|数据类型|是否为空|额外|注释
@@ -45,6 +77,14 @@ opus_id|bigint(20)|否||作品id
 player_id|int(11)|否||送礼人玩家id
 price|int(11)|否||赠送总价值
 
+####索引
+
+索引名|索引类型|字段
+---|---|---
+opus_id||opus_id、player_id、
+
+
+---
 
 ###player_consumed_record (消费流水表)
 字段名|数据类型|是否为空|额外|注释
@@ -56,6 +96,14 @@ money|int(11)|否||消费金额
 create_time|bigint(20)|否||创建时间
 consumed_type|int(2)|否||消费类型：1:作品赠礼 2:赠送K币
 
+####索引
+
+索引名|索引类型|字段
+---|---|---
+comsumed_id_idx||id、
+
+
+---
 
 ###player_money (玩家金钱)
 字段名|数据类型|是否为空|额外|注释
@@ -64,6 +112,14 @@ player_id|int(11)|否||
 total_kb|int(11)|是||k币总额
 update_time|bigint(20)|否||最后修改时间
 
+####索引
+
+索引名|索引类型|字段
+---|---|---
+PRIMARY||player_id、
+
+
+---
 
 ###player_money_change (玩家金钱变动表)
 字段名|数据类型|是否为空|额外|注释
@@ -75,6 +131,14 @@ insert_time|bigint(20)|是||变动时间
 consumed_record_id|bigint(20)|是||消费流水id
 consumed_type|int(2)|是||消费类型：1:作品赠礼 2:赠送K币
 
+####索引
+
+索引名|索引类型|字段
+---|---|---
+PRIMARY||player_id、
+
+
+---
 
 ###player_order (订单表)
 字段名|数据类型|是否为空|额外|注释
@@ -90,4 +154,12 @@ status|tinyint(1)|否||订单状态 0:未产生流水 1:产生流水
 create_time|bigint(20)|否||创建时间
 modify_time|bigint(20)|是||修改时间
 
+####索引
+
+索引名|索引类型|字段
+---|---|---
+order_id_idx||id、
+
+
+---
 
