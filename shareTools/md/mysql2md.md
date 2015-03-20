@@ -16,7 +16,7 @@ score|int(11)|否||排序得分
 
 索引名|索引类型|字段
 ---|---|---
-PRIMARY||id、
+PRIMARY||id<br>
 
 
 ---
@@ -33,7 +33,7 @@ record_time|date|否||记录时间
 
 索引名|索引类型|字段
 ---|---|---
-player_id||player_id、gift_id、record_time、
+player_id||player_id<br>gift_id<br>record_time<br>
 
 
 ---
@@ -48,7 +48,7 @@ img|varchar(500)|否||属性图片
 
 索引名|索引类型|字段
 ---|---|---
-PRIMARY||property_id、
+PRIMARY||property_id<br>
 
 
 ---
@@ -65,7 +65,7 @@ num|int(11)|否||数量
 
 索引名|索引类型|字段
 ---|---|---
-opus_id||opus_id、player_id、gift_id、
+opus_id||opus_id<br>player_id<br>gift_id<br>
 
 
 ---
@@ -81,7 +81,7 @@ price|int(11)|否||赠送总价值
 
 索引名|索引类型|字段
 ---|---|---
-opus_id||opus_id、player_id、
+opus_id||opus_id<br>player_id<br>
 
 
 ---
@@ -100,7 +100,7 @@ consumed_type|int(2)|否||消费类型：1:作品赠礼 2:赠送K币
 
 索引名|索引类型|字段
 ---|---|---
-comsumed_id_idx||id、
+comsumed_id_idx||id<br>
 
 
 ---
@@ -116,7 +116,7 @@ update_time|bigint(20)|否||最后修改时间
 
 索引名|索引类型|字段
 ---|---|---
-PRIMARY||player_id、
+PRIMARY||player_id<br>
 
 
 ---
@@ -135,7 +135,7 @@ consumed_type|int(2)|是||消费类型：1:作品赠礼 2:赠送K币
 
 索引名|索引类型|字段
 ---|---|---
-PRIMARY||player_id、
+PRIMARY||player_id<br>
 
 
 ---
@@ -158,7 +158,7 @@ modify_time|bigint(20)|是||修改时间
 
 索引名|索引类型|字段
 ---|---|---
-order_id_idx||id、
+order_id_idx||id<br>
 
 
 ---
