@@ -1,10 +1,17 @@
 <?php
 
-mysql2md('192.168.0.152', 'root', 'kugou', 'kugou_sing', "F:\work\doc.git\sing\dataDictionary\kugou_sing.md");
-mysql2md('192.168.0.152', 'root', 'kugou', 'kugou_sing_admin', "F:\work\doc.git\sing\dataDictionary\kugou_sing_admin.md");
-mysql2md('192.168.0.152', 'root', 'kugou', 'kugou_sing_consume', "F:\work\doc.git\sing\dataDictionary\kugou_sing_consume.md");
-mysql2md('192.168.0.152', 'root', 'kugou', 'kugou_sing_log', "F:\work\doc.git\sing\dataDictionary\kugou_sing_log.md");
-mysql2md('192.168.0.152', 'root', 'kugou', 'kugou_sing_second', "F:\work\doc.git\sing\dataDictionary\kugou_sing_second.md");
+exec('cd /doc/sing/dataDictionary/ && git pull');
+
+mysql2md('192.168.0.152', 'root', 'kugou', 'kugou_sing', "/doc/sing/dataDictionary/kugou_sing.md");
+mysql2md('192.168.0.152', 'root', 'kugou', 'kugou_sing_admin', "/doc/sing/dataDictionary/kugou_sing_admin.md");
+mysql2md('192.168.0.152', 'root', 'kugou', 'kugou_sing_consume', "/doc/sing/dataDictionary/kugou_sing_consume.md");
+mysql2md('192.168.0.152', 'root', 'kugou', 'kugou_sing_log', "/doc/sing/dataDictionary/kugou_sing_log.md");
+mysql2md('192.168.0.152', 'root', 'kugou', 'kugou_sing_second', "/doc/sing/dataDictionary/kugou_sing_second.md");
+
+
+exec('cd /doc/sing/dataDictionary/ && git add .');
+exec('cd /doc/sing/dataDictionary/ && git commit -m "更新数据字典'.date('Y-m-d H:i:s').'"');
+exec('cd /doc/sing/dataDictionary/ && git push');
 
 function mysql2md($host, $user, $pass, $db, $file){	
 	$conn = mysql_connect($host, $user, $pass);
@@ -52,7 +59,7 @@ function mysql2md($host, $user, $pass, $db, $file){
 			foreach($index as $key_name => $key){
 				$data .= $key_name."|".$key['index_type']."|".$key['type']."|";
 				foreach($key['index_info'] as $value){
-					$data .= $value."<br>";
+					$data .= $value."    ";
 				}
 				$data = substr($data, 0, -4);
 				$data .= "\r\n";
