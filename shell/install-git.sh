@@ -54,7 +54,7 @@ if [ ! -d $git_install_path/curl ]; then
 fi
 
 # 安装OpenSSL
-openssl='openssl-1.0.1j'
+openssl='openssl-1.0.2a'
 if [ ! -d $git_install_path/openssl ]; then
 	echo 'installing '$openssl' ...'
 	if [ ! -f $base_path/$openssl.tar.gz ]; then
