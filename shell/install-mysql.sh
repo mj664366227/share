@@ -59,7 +59,7 @@ chown mysql.mysql -R $mysql_data_path || exit
 
 #安装mysql
 echo 'installing mysql...'
-mysql='mysql-5.6.22'
+mysql='mysql-5.6.23'
 if [ ! -d $install_path/$mysql ]; then
 	if [ ! -f $base_path/$mysql.tar.gz ]; then
 		echo $mysql'.tar.gz is not exists, system will going to download it...'
