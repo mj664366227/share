@@ -27,7 +27,7 @@ if [ ! -d $mysql_install_path/cmake ]; then
 	echo 'installing '$cmake'...'
 	if [ ! -f $base_path/$cmake.tar.gz ]; then
 		echo $cmake'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$cmake.tar.gz http://www.cmake.org/files/v3.0/$cmake.tar.gz || exit
+		wget -O $base_path/$cmake.tar.gz http://www.cmake.org/files/v3.2/$cmake.tar.gz || exit
 		echo 'download '$cmake' finished...'
 	fi
 	tar zxvf $base_path/$cmake.tar.gz -C $install_path || exit
