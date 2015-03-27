@@ -29,7 +29,7 @@ if [ ! -d $nsq_install_path/curl ]; then
 fi
 
 # 安装nsq 
-nsq_version='nsq-0.3.0.linux-amd64.go1.3.3'
+nsq_version='nsq-0.3.2.linux-amd64.go1.4.1'
 rm -rf /usr/bin/nsq*
 if [ ! -f $base_path/nsq.tar.gz ]; then
 	curl -o $base_path/nsq.tar.gz https://s3.amazonaws.com/bitly-downloads/nsq/$nsq_version.tar.gz
