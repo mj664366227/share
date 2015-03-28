@@ -3,7 +3,6 @@ package com.share.core.mongo;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -76,29 +75,24 @@ public final class Mongodb {
 	 * 初始化	
 	 */
 	public void init() {
-		try {
-			// mongodb连接选项
-			MongoClientOptions options = new MongoClientOptions.Builder().build();
+		// mongodb连接选项
+		MongoClientOptions options = new MongoClientOptions.Builder().build();
 
-			// mongodb地址列表
-			List<ServerAddress> serverAddressList = new ArrayList<ServerAddress>(1);
-			serverAddressList.add(new ServerAddress(host, port));
+		// mongodb地址列表
+		List<ServerAddress> serverAddressList = new ArrayList<ServerAddress>(1);
+		serverAddressList.add(new ServerAddress(host, port));
 
-			if (password.isEmpty()) {
-				// 无密码连接
-				mongo = new MongoClient(serverAddressList, options);
-			} else {
-				// 有密码连接
-				List<MongoCredential> credentialsList = new ArrayList<MongoCredential>(1);
-				credentialsList.add(MongoCredential.createCredential(user, dbName, password.toCharArray()));
-				mongo = new MongoClient(serverAddressList, credentialsList, options);
-			}
-			db = mongo.getDB(dbName);
-			logger.info("mongodb init " + host + ":" + port + ", database: " + dbName);
-		} catch (UnknownHostException e) {
-			logger.error("", e);
-			System.exit(0);
+		if (password.isEmpty()) {
+			// 无密码连接
+			mongo = new MongoClient(serverAddressList, options);
+		} else {
+			// 有密码连接
+			List<MongoCredential> credentialsList = new ArrayList<MongoCredential>(1);
+			credentialsList.add(MongoCredential.createCredential(user, dbName, password.toCharArray()));
+			mongo = new MongoClient(serverAddressList, credentialsList, options);
 		}
+		db = mongo.getDB(dbName);
+		logger.info("mongodb init " + host + ":" + port + ", database: " + dbName);
 	}
 
 	/**
