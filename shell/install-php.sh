@@ -186,7 +186,7 @@ fi
 # 安装GD库
 # # libpng
 if [ ! -d $php_install_path/libpng ]; then
-	libpng='1.6.15'
+	libpng='1.6.17'
 	if [ ! -f $base_path/libpng-$libpng.tar.gz ]; then
 		wget -O $base_path/libpng-$libpng.tar.gz http://jaist.dl.sourceforge.net/project/libpng/libpng16/$libpng/libpng-$libpng.tar.gz || exit
 	fi
