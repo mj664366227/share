@@ -74,12 +74,12 @@ if [ ! -d $php_install_path/zlib ]; then
 fi
 
 # 安装python 
-python='Python-3.4.2'
+python='Python-3.4.3'
 if [ ! -d $php_install_path/python ]; then
 	echo 'installing '$python' ...'
 	if [ ! -f $base_path/$python.tgz ]; then
 		echo $python'.tar.xz is not exists, system will going to download it...'
-		wget -O $base_path/$python.tgz --no-check-certificate http://www.python.org/ftp/python/3.4.2/$python.tgz || exit
+		wget -O $base_path/$python.tgz --no-check-certificate http://www.python.org/ftp/python/3.4.3/$python.tgz || exit
 		echo 'download '$python' finished...'
 	fi
 	tar xvf $base_path/$python.tgz -C $install_path || exit
