@@ -7,7 +7,7 @@ ntpdate time.nist.gov
 
 #处理外部参数
 php_version=$1
-php_install_path=$2
+php_install_path=$2 
 if [ ! $php_version ] || [ ! $php_install_path ]; then
 	echo 'error command!!! you must input php version and install path...'
 	echo 'for example: sh install-php.sh 5.6.6 /usr/local'
