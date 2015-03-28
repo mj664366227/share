@@ -13,7 +13,7 @@ if [ ! $git_install_path ]; then
 	exit
 fi
 
-yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc lrzsz
+yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc lrzsz zlib-devel curl curl-devel zlib-devel openssl-devel perl perl-devel cpio expat-devel gettext-devel
 
 #建立临时安装目录
 echo 'preparing working path...'
