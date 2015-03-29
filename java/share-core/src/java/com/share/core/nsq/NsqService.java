@@ -11,8 +11,8 @@ import com.share.core.annotation.NsqCallback;
 import com.share.core.exception.ParametersIncorrectException;
 import com.share.core.exception.UnimplementsException;
 import com.share.core.interfaces.NsqMessageHandler;
-import com.share.core.util.FileSystem;
 import com.share.core.util.Ip;
+import com.share.core.util.SystemUtil;
 import com.trendrr.nsq.NSQConsumer;
 import com.trendrr.nsq.NSQLookup;
 import com.trendrr.nsq.NSQMessage;
@@ -95,7 +95,7 @@ public final class NsqService {
 
 		try {
 			for (String pkgName : packageName.split(",")) {
-				for (Class<?> clazz : FileSystem.getClasses(pkgName)) {
+				for (Class<?> clazz : SystemUtil.getClasses(pkgName)) {
 					Class<?>[] interfaces = clazz.getInterfaces();
 					if (interfaces.length != 1) {
 						throw new UnimplementsException(clazz + " have no implements any interface, must implements " + NsqMessageHandler.class);

@@ -9,12 +9,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.share.core.annotation.processor.MenuProcessor;
 import com.share.core.annotation.processor.ProtocolProcessor;
+import com.share.core.aspect.AspectHaHaHa;
 import com.share.core.client.HttpClient;
 import com.share.core.memory.Memory;
 import com.share.core.mongo.Mongodb;
 import com.share.core.nsq.NsqService;
 import com.share.core.redis.Redis;
-import com.share.core.riak.Riak;
 import com.share.core.ssdb.SSDB;
 import com.share.core.threadPool.DefaultThreadPool;
 import com.share.test.db.AdminDbService;
@@ -45,14 +45,10 @@ public class JunitTest {
 	@Autowired
 	private MenuProcessor menuProcessor;
 	@Autowired
-	private Riak riak;
+	private AspectHaHaHa aspectHaHaHa;
 
 	@Test
 	public void junitTest() throws Exception {
-		String bucketName = "user";
-		String key = "key3";
-		//riak.KV.store(bucketName, key, 22);
-		System.err.println(riak.KV.fetch(bucketName, key, Object.class));
-		System.exit(0);
+		aspectHaHaHa.test1();
 	}
 }

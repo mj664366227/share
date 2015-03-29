@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.share.core.exception.ParametersIncorrectException;
-import com.share.core.util.FileSystem;
+import com.share.core.util.SystemUtil;
 
 /**
  * 注解解析器
@@ -67,7 +67,7 @@ abstract class AnnotationProcessor {
 		}
 		try {
 			for (String pkgName : packageName.split(",")) {
-				for (Class<?> c : FileSystem.getClasses(pkgName)) {
+				for (Class<?> c : SystemUtil.getClasses(pkgName)) {
 					Object o = c.newInstance();
 
 					// 首先判断类有没有目标注解
