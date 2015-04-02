@@ -135,15 +135,15 @@ interactive-timeout" > /etc/my.cnf || exit
 #启动mysql服务
 yes|cp -rf $mysql_install_path/mysql/support-files/mysql.server /etc/init.d/mysqld || exit
 chmod 755 /etc/init.d/mysqld
-
-service mysqld start
 yes|cp -rf $mysql_install_path/mysql/bin/* /usr/bin/ || exit
+
+#初始化数据库
+$mysql_install_path/mysql/scripts/mysql_install_db --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path
 
 #修改root密码
 mysqladmin -u root password root || exit
 
-#初始化数据库
-$mysql_install_path/mysql/scripts/mysql_install_db --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path
+service mysqld start
 
 #开机自启动
 echo '' >> /etc/rc.d/rc.local
