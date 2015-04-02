@@ -34,6 +34,5 @@ yes|cp -rf $ssdb_install_path/ssdb-cli /usr/bin/
 
 #添加自启动
 echo 'rm -rf '$ssdb_install_path'/var/ssdb.pid && ssdb-server -d '$ssdb_install_path'/ssdb.conf' >> /etc/rc.local
-$(source /etc/rc.d/rc.local)
-
+source /etc/rc.d/rc.local
 echo 'ssdb install success'
