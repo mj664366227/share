@@ -1,5 +1,5 @@
 #linux mongodb自动安装程序 
-#运行例子：sh install-mongodb.sh 2.6.5 /usr/local
+#运行例子：sh install-mongodb.sh 3.0.1 /usr/local
 
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ mongodb_version=$1
 mongodb_install_path=$2
 if [ ! $mongodb_version ] || [ ! $mongodb_install_path ] ; then
 	echo 'error command!!! you must input mongodb version and install path...'
-	echo 'for example: sh install-mongodb.sh 2.6.5 /usr/local'
+	echo 'for example: sh install-mongodb.sh 3.0.1 /usr/local'
 	exit
 fi
 
