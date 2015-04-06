@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -67,6 +68,20 @@ public final class FileSystem {
 	 */
 	public final static boolean isWindows() {
 		return isWindows;
+	}
+
+	/**
+	 * 获取类文件所在路径
+	 * @param clazz
+	 */
+	public final static String getResourcePath(Class<?> clazz) {
+		String className = clazz.getName();
+		String classNamePath = className.replace(".", "/") + ".class";
+		URL is = clazz.getClassLoader().getResource(classNamePath);
+		String path = is.getFile();
+		path = StringUtils.replace(path, "%20", " ");
+		path = path.replace(clazz.getSimpleName() + ".class", "");
+		return StringUtils.removeStart(path, "/");
 	}
 
 	/**
@@ -425,7 +440,7 @@ public final class FileSystem {
 		}
 		return !o.toString().trim().isEmpty();
 	}
-	
+
 	/**
 	 * 自动发现spring配置文件并自动加载
 	 */
