@@ -18,7 +18,7 @@ import com.share.core.util.Check;
  * @author ruan
  *
  */
-public final class HttpServer extends AbstractServer {
+public class HttpServer extends AbstractServer {
 	/**
 	 * jetty server 对象
 	 */
