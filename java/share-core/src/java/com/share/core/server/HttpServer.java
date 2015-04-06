@@ -12,7 +12,6 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import com.share.core.exception.IllegalPortException;
 import com.share.core.interfaces.AbstractServer;
 import com.share.core.util.Check;
-import com.share.core.util.FileSystem;
 
 /**
  * jetty http 服务器
@@ -73,7 +72,6 @@ public final class HttpServer extends AbstractServer {
 	private String getWebappPath() {
 		for (String webappPath : webappPaths) {
 			File webappFile = new File(webappPath, webXmlPath);
-			logger.info(FileSystem.getResourcePath(HttpServer.class) + "\t" + webappFile.getAbsolutePath());
 			if (webappFile.exists()) {
 				logger.warn("find " + webappFile.getAbsolutePath());
 				return webappPath;
