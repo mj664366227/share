@@ -38,7 +38,7 @@ if [ ! -d $git_install_path/python ]; then
 fi
 
 # 安装curl
-curl='curl-7.39.0'
+curl='curl-7.41.0'
 if [ ! -d $git_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then
