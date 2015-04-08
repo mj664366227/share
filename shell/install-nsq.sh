@@ -20,20 +20,25 @@ if [ ! -f $base_path/nsq.tar.gz ]; then
 fi
 
 tar zxvf $base_path/nsq.tar.gz -C $install_path || exit
-chmod -R 777 $install_path/$nsq_version/bin/* 
-yes | cp -rf $install_path/$nsq_version/bin/* /usr/bin/
+yes | cp -rf $install_path/$nsq_version/* $nsq_install_path/nsq/
+chmod -R 777 $nsq_install_path/nsq/bin/*
+yes | cp -rf $nsq_install_path/nsq/bin/* /usr/bin/
 
 nsq_path='/nsq/data'
 mkdir -p $nsq_path
 
+#生成启动nsq脚本
+shell='ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
+nsqlookupd &
+nsqd --lookupd-tcp-address=$ip:4160 &
+nsqadmin --lookupd-http-address=$ip:4161 -http-address=$ip:4171 &
+nsq_to_file --output-dir=$nsq_path --lookupd-http-address=$ip:4161 &
+'
+echo $shell > $nsq_install_path/nsq/start_nsq.sh
+chmod 777 $nsq_install_path/nsq/start_nsq.sh
+
 #获取本机ip
 ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
-
-echo '' >> /etc/rc.local
-echo "nsqlookupd &" >> /etc/rc.local
-echo "nsqd --lookupd-tcp-address=$ip:4160 &" >> /etc/rc.local
-echo "nsqadmin --lookupd-http-address=$ip:4161 -http-address=$ip:4171 &" >> /etc/rc.local
-echo "nsq_to_file --output-dir=$nsq_path --lookupd-http-address=$ip:4161 &" >> /etc/rc.local
 
 nsqlookupd &
 nsqd --lookupd-tcp-address=$ip:4160 &
