@@ -97,7 +97,6 @@ net_buffer_length = 8K
 read_buffer_size = 4M
 read_rnd_buffer_size = 4M
 myisam_sort_buffer_size = 1M
-thread_concurrency = "$(cat /proc/cpuinfo | grep name | cut -f3 -d: | uniq -c | cut -b 7)"
 max_connections = 10000
 join_buffer_size = 2M
 thread_cache_size = 1024
