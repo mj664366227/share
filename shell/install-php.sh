@@ -1,5 +1,5 @@
 #linux php自动安装程序
-#运行例子：sh install-php.sh 5.6.6 /usr/local
+#运行例子：sh install-php.sh 5.6.7 /usr/local
 
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ php_version=$1
 php_install_path=$2 
 if [ ! $php_version ] || [ ! $php_install_path ]; then
 	echo 'error command!!! you must input php version and install path...'
-	echo 'for example: sh install-php.sh 5.6.6 /usr/local'
+	echo 'for example: sh install-php.sh 5.6.7 /usr/local'
 	exit
 fi
 
@@ -138,7 +138,7 @@ if [ ! -d $php_install_path/pcre ]; then
 fi
 
 # 安装curl
-curl='curl-7.40.0'
+curl='curl-7.41.0'
 if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then
@@ -207,7 +207,7 @@ if [ ! -d $php_install_path/jpeg ]; then
 fi
 # freetype
 if [ ! -d $php_install_path/freetype ]; then
-	freetype='freetype-2.5.3'
+	freetype='freetype-2.5.5'
 	if [ ! -f $base_path/$freetype.tar.gz ]; then
 		wget -O $base_path/$freetype.tar.gz http://download.savannah.gnu.org/releases/freetype/$freetype.tar.gz || exit
 	fi

@@ -59,7 +59,7 @@ chown mysql.mysql -R $mysql_data_path || exit
 
 #安装mysql
 echo 'installing mysql...'
-mysql='mysql-5.6.23'
+mysql='mysql-5.6.24'
 if [ ! -d $install_path/$mysql ]; then
 	if [ ! -f $base_path/$mysql.tar.gz ]; then
 		echo $mysql'.tar.gz is not exists, system will going to download it...'
@@ -140,10 +140,10 @@ yes|cp -rf $mysql_install_path/mysql/bin/* /usr/bin/ || exit
 #初始化数据库
 $mysql_install_path/mysql/scripts/mysql_install_db --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path
 
+service mysqld start
+
 #修改root密码
 mysqladmin -u root password root || exit
-
-service mysqld start
 
 #开机自启动
 echo '' >> /etc/rc.d/rc.local

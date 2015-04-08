@@ -1,5 +1,5 @@
 #linux nginx自动安装程序 
-#运行例子：sh install-nginx.sh 1.7.8 /usr/local
+#运行例子：sh install-nginx.sh 1.7.12 /usr/local
 ntpdate time.nist.gov
 
 #乌班图系统比较特别，需要bash才可以使用source命令和read命令
@@ -23,7 +23,7 @@ nginx_version=$1
 nginx_install_path=$2
 if [ ! $nginx_version ] || [ ! $nginx_install_path ]; then
 	echo 'error command!!! you must input nginx version and install path...'
-	echo 'for example: sh install-nginx.sh 1.7.8 /usr/local'
+	echo 'for example: sh install-nginx.sh 1.7.12 /usr/local'
 	exit
 fi
 
@@ -70,12 +70,12 @@ fi
 tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
 
 #安装libatomic
-libatomic='libatomic_ops-1.1'
+libatomic='libatomic_ops-7.4.2'
 if [ ! -d $install_path/$libatomic ]; then
 	echo 'installing '$libatomic' ...'
 	if [ ! -f $base_path/$libatomic.tar.gz ]; then
 		echo $libatomic'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libatomic.tar.gz http://www.hpl.hp.com/research/linux/atomic_ops/download/$libatomic.tar.gz || exit
+		wget -O $base_path/$libatomic.tar.gz http://www.ivmaisoft.com/_bin/atomic_ops/$libatomic.tar.gz || exit
 		echo 'download '$libatomic' finished...'
 	fi
 	tar zxvf $base_path/$libatomic.tar.gz -C $install_path || exit
