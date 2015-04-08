@@ -31,6 +31,7 @@ yes | cp -rf $nsq_install_path/nsq/bin/* /usr/bin/
 
 #生成启动nsq脚本
 rm -rf $nsq_install_path/nsq/start_nsq.sh
+echo 'cd '$nsq_install_path'/nsq/' >> $nsq_install_path/nsq/start_nsq.sh
 echo 'ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")' >> $nsq_install_path/nsq/start_nsq.sh
 echo 'nsqlookupd &' >> $nsq_install_path/nsq/start_nsq.sh
 echo 'nsqd --lookupd-tcp-address=$ip:4160 &' >> $nsq_install_path/nsq/start_nsq.sh
