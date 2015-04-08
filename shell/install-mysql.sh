@@ -150,5 +150,5 @@ service mysqld restart
 
 #开机自启动
 echo '' >> /etc/rc.d/rc.local
-echo 'service mysqld start' >> /etc/rc.d/rc.local
+echo 'service mysqld start' >> /etc/rc.local
 source /etc/rc.d/rc.local
