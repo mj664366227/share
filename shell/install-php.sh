@@ -243,7 +243,7 @@ cp $install_path/php-$php_version/php.ini-production $php_install_path/php/etc/p
 sed -i 's/expose_php = On/expose_php = Off/' $php_install_path/php/etc/php.ini || exit   #屏蔽php的版本
 sed -i 's/display_errors = Off/display_errors = On/' $php_install_path/php/etc/php.ini || exit   #让php显示报错
 sed -i 's/;date.timezone =/date.timezone = Asia\/Shanghai/' $php_install_path/php/etc/php.ini || exit #根据系统的时区设置php的时区
-#sed -i 's/error_reporting = E_ALL \& ~E_DEPRECATED \& ~E_STRICT/error_reporting = E_ALL \& ~E_DEPRECATED \& ~E_STRICT \& ~E_NOTICE/' $php_install_path/php/etc/php.ini || exit #修改报错等级
+#sed -i 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE/' $php_install_path/php/etc/php.ini || exit #修改报错等级
 
 # 新建php-fpm.conf
 echo 'create php-fpm.conf...'
