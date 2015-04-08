@@ -37,10 +37,4 @@ nsq_to_file --output-dir=$nsq_path --lookupd-http-address=$ip:4161 &
 echo $shell > $nsq_install_path/nsq/start_nsq.sh
 chmod 777 $nsq_install_path/nsq/start_nsq.sh
 
-#获取本机ip
-ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
-
-nsqlookupd &
-nsqd --lookupd-tcp-address=$ip:4160 &
-nsqadmin --lookupd-http-address=$ip:4161 -http-address=$ip:4171 &
-nsq_to_file --output-dir=$nsq_path --lookupd-http-address=$ip:4161 &
+$nsq_install_path/nsq/start_nsq.sh
