@@ -27,6 +27,7 @@ mkdir -p $nsq_install_path/nsq/data
 mv $install_path/$nsq_version/ $install_path/nsq
 mv $install_path/nsq/* $nsq_install_path/nsq/
 chmod -R 777 $nsq_install_path/nsq/bin/*
+yes | cp -rf $nsq_install_path/nsq/bin/* /usr/bin/
 
 #生成启动nsq脚本
 rm -rf $nsq_install_path/nsq/start_nsq.sh
