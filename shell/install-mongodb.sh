@@ -20,21 +20,7 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-# 安装curl
-curl='curl-7.41.0'
-if [ ! -d $php_install_path/curl ]; then
-	echo 'installing '$curl' ...'
-	if [ ! -f $base_path/$curl.tar.gz ]; then
-		echo $curl'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$curl.tar.gz http://curl.haxx.se/download/$curl.tar.gz || exit
-		echo 'download '$curl' finished...'
-	fi
-	tar zxvf $base_path/$curl.tar.gz -C $install_path || exit
-	cd $install_path/$curl
-	./configure --prefix=$php_install_path/curl && make && make install || exit
-	yes|cp $php_install_path/curl/bin/* /usr/bin/
-	echo $curl' install finished...'
-fi
+yum -y install libtool sed gcc gcc-c++ make net-snmp curl net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz git
 
 bit=$(getconf LONG_BIT)
 if [ $bit = 32 ]; then
