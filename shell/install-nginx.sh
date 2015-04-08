@@ -70,12 +70,12 @@ fi
 tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
 
 #安装libatomic
-libatomic='libatomic_ops-7.4.2'
+libatomic='libatomic_ops-1.1'
 if [ ! -d $install_path/$libatomic ]; then
 	echo 'installing '$libatomic' ...'
 	if [ ! -f $base_path/$libatomic.tar.gz ]; then
 		echo $libatomic'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libatomic.tar.gz http://www.ivmaisoft.com/_bin/atomic_ops/$libatomic.tar.gz || exit
+		wget -O $base_path/$libatomic.tar.gz http://www.hpl.hp.com/research/linux/atomic_ops/download/$libatomic.tar.gz || exit
 		echo 'download '$libatomic' finished...'
 	fi
 	tar zxvf $base_path/$libatomic.tar.gz -C $install_path || exit
