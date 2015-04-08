@@ -79,6 +79,7 @@ make || exit
 make install || exit
 
 #复制配置文件
+rm -rf /etc/my.cnf
 echo "[client]
 port = 3306
 socket = "$mysql_install_path"/mysql/data/mysql.sock
