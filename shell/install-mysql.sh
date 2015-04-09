@@ -93,7 +93,7 @@ key_buffer_size = 100M
 max_allowed_packet = 2M
 table_open_cache = 64
 sort_buffer_size = 1M
-net_buffer_length = 8K
+net_buffer_length = 1M
 read_buffer_size = 4M
 read_rnd_buffer_size = 4M
 myisam_sort_buffer_size = 1M
@@ -101,9 +101,9 @@ max_connections = 10000
 join_buffer_size = 2M
 thread_cache_size = 1024
 server-id  = 1
-innodb_buffer_pool_size = 1M
-innodb_log_file_size = 0M
-innodb_log_buffer_size = 0M
+innodb_buffer_pool_size = 2M
+innodb_log_file_size = 2M
+innodb_log_buffer_size = 2M
 innodb_flush_log_at_trx_commit = 0
 innodb_lock_wait_timeout = 50
 key_buffer_size = 2M
@@ -115,6 +115,7 @@ log_queries_not_using_indexes = 0
 #log-slow-queries = "$mysql_install_path"/mysql/data/slowquery.log
 #log-slow-admin-statements
 #log-queries-not-using-indexes
+explicit_defaults_for_timestamp = true
 
 [mysqldump]
 quick
@@ -138,9 +139,7 @@ chmod 755 /etc/init.d/mysqld
 yes|cp -rf $mysql_install_path/mysql/bin/* /usr/bin/ || exit
 
 #初始化数据库
-$mysql_install_path/mysql/scripts/mysql_install_db --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path
-
-service mysqld start
+$mysql_install_path/mysql/scripts/mysql_install_db --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path --srcdir=$install_path/$mysql
 
 #修改root密码
 mysqladmin -u root password root || exit
