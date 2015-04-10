@@ -140,7 +140,7 @@ yes|cp -rf $mysql_install_path/mysql/bin/* /usr/bin/ || exit
 
 #初始化数据库
 #$mysql_install_path/mysql/scripts/mysql_install_db --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path
-mysql_secure_installation || exit
+echo y | mysql_secure_installation || exit
 
 #修改root密码
 mysqladmin -u root password root || exit
