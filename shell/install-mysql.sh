@@ -89,25 +89,25 @@ port = 3306
 socket = "$mysql_install_path"/mysql/data/mysql.sock
 #skip-grant-tables
 skip-external-locking
-key_buffer_size = 100M
-max_allowed_packet = 2M
+key_buffer_size = 100K
+max_allowed_packet = 200K
 table_open_cache = 64
-sort_buffer_size = 1M
-net_buffer_length = 1M
-read_buffer_size = 4M
-read_rnd_buffer_size = 4M
-myisam_sort_buffer_size = 1M
+sort_buffer_size = 100K
+net_buffer_length = 100K
+read_buffer_size = 400K
+read_rnd_buffer_size = 400K
+myisam_sort_buffer_size = 100K
 max_connections = 10000
-join_buffer_size = 2M
+join_buffer_size = 200K
 thread_cache_size = 1024
 server-id  = 1
-innodb_buffer_pool_size = 2M
-innodb_log_file_size = 2M
-innodb_log_buffer_size = 2M
+innodb_buffer_pool_size = 200K
+innodb_log_file_size = 200K
+innodb_log_buffer_size = 200K
 innodb_flush_log_at_trx_commit = 0
 innodb_lock_wait_timeout = 50
-key_buffer_size = 2M
-sort_buffer_size = 2M
+key_buffer_size = 200K
+sort_buffer_size = 200K
 sql-mode=\"NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\"
 long_query_time = 0
 slow_query_log = 0
@@ -119,16 +119,16 @@ explicit_defaults_for_timestamp = true
 
 [mysqldump]
 quick
-max_allowed_packet = 2M
+max_allowed_packet = 200K
 
 [mysql]
 no-auto-rehash
 
 [myisamchk]
-key_buffer_size = 2M
-sort_buffer_size = 4M
-read_buffer = 2M
-write_buffer = 2M
+key_buffer_size = 200K
+sort_buffer_size = 400K
+read_buffer = 200K
+write_buffer = 200K
 
 [mysqlhotcopy]
 interactive-timeout" > /etc/my.cnf || exit
