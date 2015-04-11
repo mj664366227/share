@@ -318,17 +318,18 @@ public final class FileSystem {
 	 * 自动发现property文件并自动加载
 	 */
 	private final static synchronized void loadProperties() {
+		String path = classLoader.getResource("config.properties").toString().replace("file:", "").trim();
 		try {
-			property.putAll(loadProperties(classLoader.getResource("config.properties").toString().replace("file:", "").trim()));
+			property.putAll(loadProperties(path));
 		} catch (Exception e) {
-			logger.error("can not find config.properties", e);
+			logger.error("can not find config.properties, path: " + path, e);
 			System.exit(0);
 		}
 		if (isWindows) {
-			String path = classLoader.getResource("config.properties").toString().replace("file:", "").replace("config.properties", "").trim();
+			path = classLoader.getResource("config.properties").toString().replace("file:", "").replace("config.properties", "").trim();
 			loadProperties0(path);
 		}
-		String path = classLoader.getResource("").toString().replace("file:", "");
+		path = classLoader.getResource("").toString().replace("file:", "");
 		loadProperties0(path);
 
 	}
