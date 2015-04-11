@@ -51,7 +51,7 @@ public final class FileSystem {
 	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
 	private static Properties property = new Properties();
 	static {
-		logger.info((classLoader.getResource("log4j.properties").toString().replace("file:", "").trim()));
+		logger.info((classLoader.getResource("config.properties").toString().replace("file:", "").trim()));
 		loadProperties();
 	}
 
