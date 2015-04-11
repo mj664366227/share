@@ -72,9 +72,7 @@ public class HttpServer extends AbstractServer {
 	 */
 	private String getWebappPath() {
 		for (String webappPath : webappPaths) {
-			logger.info("*************   {}",FileSystem.getSystemDir());
-			File webappFile = new File(webappPath, webXmlPath);
-			logger.info("----------------  {}",webappFile.getAbsolutePath());
+			File webappFile = new File(FileSystem.getSystemDir() + webappPath, webXmlPath);
 			if (webappFile.exists()) {
 				logger.warn("find " + webappFile.getAbsolutePath());
 				return webappPath;
