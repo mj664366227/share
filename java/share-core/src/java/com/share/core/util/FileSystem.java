@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -41,17 +40,12 @@ import com.share.core.util.SortUtil.Order;
  * 文件系统
  */
 public final class FileSystem {
-	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
 	private final static ClassLoader classLoader = FileSystem.class.getClassLoader();
-	private final static String systemDir = isWindows ? System.getProperty("user.dir").trim() + "/" : classLoader.getResource("").toString().replace("file:", "").trim();
-	static {
-		if (!isWindows) {
-			PropertyConfigurator.configure(systemDir + "../etc/log4j.properties");
-		}
-	}
 	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
+	private final static String systemDir = System.getProperty("user.dir").trim() + "/";
+	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
 	private static Properties property = new Properties();
 	static {
 		loadProperties();
@@ -294,21 +288,43 @@ public final class FileSystem {
 	}
 
 	/**
+	 * 自动发现指定路径内property文件并自动加载
+	 * @param path
+	 */
+	private final static synchronized void loadProperties0(String path) {
+		String[] fileList = ls(path);
+		if (fileList.length <= 0) {
+			return;
+		}
+		for (String file : fileList) {
+			if (file.lastIndexOf(".properties") <= -1) {
+				continue;
+			}
+			if ("config.properties".equals(file) || "log4j.properties".equals(file)) {
+				// 这两个文件一定加载，所以不用再加载了
+				continue;
+			}
+			property.putAll(loadProperties(path + file));
+		}
+	}
+
+	/**
 	 * 自动发现property文件并自动加载
 	 */
 	private final static synchronized void loadProperties() {
-		String path = systemDir + "../etc/config.properties";
-		if (isWindows) {
-			path = classLoader.getResource("config.properties").toString().replace("file:", "").replace("config.properties", "").trim();
-			property.putAll(loadProperties(path + "config.properties"));
-		} else {
-			try {
-				property.putAll(loadProperties(path));
-			} catch (Exception e) {
-				logger.error("can not find config.properties, path: " + path, e);
-				System.exit(0);
-			}
+		try {
+			property.putAll(loadProperties(classLoader.getResource("config.properties").toString().replace("file:", "").trim()));
+		} catch (Exception e) {
+			logger.error("can not find config.properties", e);
+			System.exit(0);
 		}
+		if (isWindows) {
+			String path = classLoader.getResource("config.properties").toString().replace("file:", "").replace("config.properties", "").trim();
+			loadProperties0(path);
+		}
+		String path = classLoader.getResource("").toString().replace("file:", "");
+		loadProperties0(path);
+
 	}
 
 	/**
