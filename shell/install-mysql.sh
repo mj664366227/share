@@ -141,10 +141,10 @@ yes|cp -rf $mysql_install_path/mysql/support-files/mysql.server /etc/init.d/mysq
 chmod 755 /etc/init.d/mysqld
 yes|cp -rf $mysql_install_path/mysql/bin/* /usr/bin/ || exit
 
+service mysqld start
+
 #修改root密码
 mysqladmin -u root password root || exit
-
-service mysqld restart
 
 #开机自启动
 echo '' >> /etc/rc.d/rc.local
