@@ -3,7 +3,6 @@
 path=$1 #项目路径
 project=$2 #项目名称
 mainClass=$3 #main入口
-path=$4 #程序路径
 
 if [ ! $path ]; then
 	echo 'please input the project path!'
@@ -17,17 +16,13 @@ if [ ! $mainClass ]; then
 	echo 'please input the main class!'
 	exit;
 fi
-if [ ! $path ]; then
-	echo 'please input the path!'
-	exit;
-fi
 
-classpath=$path'/../etc/'
+classpath=$path
 for jar in `ls $path/lib/*.jar`
 do
 	classpath="$classpath:""$jar"
 done
 
-cmd='java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:'$path'/log/gc.log -classpath '$classpath' '$mainClass'  '$path
+cmd='java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:'$path'/log/gc.log -classpath '$classpath' '$mainClass
 
 $cmd

@@ -62,13 +62,6 @@ public final class FileSystem {
 	}
 
 	/**
-	 * 获取classpath的绝对路径
-	 */
-	public final static String getClasspath() {
-		return classLoader.getResource("config.properties").toString().replace("config.properties", "").replace("file:", "").trim();
-	}
-
-	/**
 	 * 判断是否为windows
 	 * @return
 	 */
@@ -300,7 +293,7 @@ public final class FileSystem {
 	 */
 	private final static synchronized void loadProperties0(String path) {
 		String[] fileList = ls(path);
-		if (fileList == null || fileList.length <= 0) {
+		if (fileList.length <= 0) {
 			return;
 		}
 		for (String file : fileList) {
@@ -320,17 +313,16 @@ public final class FileSystem {
 	 */
 	private final static synchronized void loadProperties() {
 		try {
-			System.err.println(getClasspath());
-			property.putAll(loadProperties(getClasspath() + "config.properties"));
+			property.putAll(loadProperties(classLoader.getResource("config.properties").toString().replace("file:", "").trim()));
 		} catch (Exception e) {
 			logger.error("can not find config.properties", e);
 			System.exit(0);
 		}
 		if (isWindows) {
-			String path = getClasspath() + "config.properties";
+			String path = classLoader.getResource("config.properties").toString().replace("file:", "").replace("config.properties", "").trim();
 			loadProperties0(path);
 		}
-		String path = getClasspath() + "config.properties";
+		String path = classLoader.getResource("").toString().replace("file:", "");
 		loadProperties0(path);
 
 	}
