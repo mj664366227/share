@@ -21,10 +21,6 @@ import com.share.core.util.FileSystem;
  */
 public class HttpServer extends AbstractServer {
 	/**
-	 * classLoader
-	 */
-	private final static ClassLoader classLoader = HttpServer.class.getClassLoader();
-	/**
 	 * jetty server 对象
 	 */
 	private Server server;
@@ -76,8 +72,9 @@ public class HttpServer extends AbstractServer {
 	 */
 	private String getWebappPath() {
 		for (String webappPath : webappPaths) {
-			File webappFile = new File(FileSystem.getSystemDir() + webappPath, webXmlPath);
-			logger.info("----------------  {}", classLoader.getResource("").toString().replace("file:", ""));
+			File webappFile = new File( webappPath, webXmlPath);
+			logger.info("----------------  {}", FileSystem.getClasspath());
+			logger.info("----------------  {}", webappFile.getAbsolutePath());
 			if (webappFile.exists()) {
 				logger.warn("find " + webappFile.getAbsolutePath());
 				return webappPath;
