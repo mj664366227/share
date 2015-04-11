@@ -41,16 +41,16 @@ import com.share.core.util.SortUtil.Order;
  * 文件系统
  */
 public final class FileSystem {
+	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
 	private final static ClassLoader classLoader = FileSystem.class.getClassLoader();
-	private final static String systemDir = System.getProperty("user.dir").trim() + "/";
+	private final static String systemDir = isWindows ? System.getProperty("user.dir").trim() + "/" : classLoader.getResource("").toString().replace("file:", "").trim();
 	static {
-		System.err.println(classLoader.getResource("").toString().replace("file:", "").trim());
+		System.err.println(systemDir);
 		PropertyConfigurator.configure(classLoader.getResource("").toString().replace("file:", "").trim() + "/../etc/log4j.properties");
 	}
 	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
-	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
 	private static Properties property = new Properties();
 	static {
 		loadProperties();
