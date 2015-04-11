@@ -61,6 +61,6 @@ do
 	fi
 		
 	rsync -av /share/java/$project/compile/ /srv/server/$project/lib/
-	echo "sh /srv/run.sh /srv/server/$project $project com.share.admin.start.AdminMain" > /srv/server/$project/run.sh
+	echo "sh /srv/run.sh '/srv/server/$project' '$project' 'com.share.admin.start.AdminMain'" > /srv/server/$project/run.sh
 	chmod 777 /srv/server/$project/run.sh
 done
