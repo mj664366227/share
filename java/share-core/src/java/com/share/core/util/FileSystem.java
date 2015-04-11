@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -41,6 +42,9 @@ import com.share.core.util.SortUtil.Order;
  */
 public final class FileSystem {
 	private final static ClassLoader classLoader = FileSystem.class.getClassLoader();
+	static {
+		PropertyConfigurator.configure(classLoader.getResource("").toString().replace("file:", "").trim() + "/../etc/log4j.properties");
+	}
 	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");

@@ -17,7 +17,7 @@ if [ ! $mainClass ]; then
 	exit;
 fi
 
-classpath=$path'/../etc/'
+classpath=$path
 for jar in `ls $path/lib/*.jar`
 do
 	classpath="$classpath:""$jar"
