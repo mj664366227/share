@@ -318,6 +318,8 @@ public final class FileSystem {
 	 * 自动发现property文件并自动加载
 	 */
 	private final static synchronized void loadProperties() {
+		System.err.println(systemDir);
+		System.err.println(systemDir+"../etc/config.properties");
 		String path = classLoader.getResource("config.properties").toString().replace("file:", "").trim();
 		try {
 			property.putAll(loadProperties(path));
