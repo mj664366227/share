@@ -43,7 +43,7 @@ import com.share.core.util.SortUtil.Order;
 public final class FileSystem {
 	private final static ClassLoader classLoader = FileSystem.class.getClassLoader();
 	static {
-		System.err.println(classLoader.getResource("").toString());
+		System.err.println(classLoader.getResource("").toString().replace("file:", "").trim() + "/../etc/log4j.properties");
 		PropertyConfigurator.configure(classLoader.getResource("").toString().replace("file:", "").trim() + "/../etc/log4j.properties");
 	}
 	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
