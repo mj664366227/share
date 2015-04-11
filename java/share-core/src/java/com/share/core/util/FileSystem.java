@@ -313,8 +313,6 @@ public final class FileSystem {
 	 */
 	private final static synchronized void loadProperties() {
 		try {
-			logger.info(classLoader.getResource("config.properties").toString());
-			logger.info(classLoader.getResource("").toString());
 			property.putAll(loadProperties(classLoader.getResource("config.properties").toString().replace("file:", "").trim()));
 		} catch (Exception e) {
 			logger.error("can not find config.properties", e);
