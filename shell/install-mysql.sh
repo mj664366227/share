@@ -146,6 +146,8 @@ service mysqld start
 #修改root密码
 mysqladmin -u root password root || exit
 
+service mysqld restart
+
 #开机自启动
 echo '' >> /etc/rc.d/rc.local
 echo 'service mysqld start' >> /etc/rc.local
