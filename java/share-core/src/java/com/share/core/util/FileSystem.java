@@ -45,8 +45,9 @@ public final class FileSystem {
 	private final static ClassLoader classLoader = FileSystem.class.getClassLoader();
 	private final static String systemDir = isWindows ? System.getProperty("user.dir").trim() + "/" : classLoader.getResource("").toString().replace("file:", "").trim();
 	static {
-		System.err.println(systemDir);
-		PropertyConfigurator.configure(classLoader.getResource("").toString().replace("file:", "").trim() + "/../etc/log4j.properties");
+		if (!isWindows) {
+			PropertyConfigurator.configure(systemDir + "../etc/log4j.properties");
+		}
 	}
 	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
