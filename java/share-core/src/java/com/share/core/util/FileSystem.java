@@ -294,46 +294,21 @@ public final class FileSystem {
 	}
 
 	/**
-	 * 自动发现指定路径内property文件并自动加载
-	 * @param path
-	 */
-	private final static synchronized void loadProperties0(String path) {
-		String[] fileList = ls(path);
-		if (fileList.length <= 0) {
-			return;
-		}
-		for (String file : fileList) {
-			if (file.lastIndexOf(".properties") <= -1) {
-				continue;
-			}
-			if ("config.properties".equals(file) || "log4j.properties".equals(file)) {
-				// 这两个文件一定加载，所以不用再加载了
-				continue;
-			}
-			property.putAll(loadProperties(path + file));
-		}
-	}
-
-	/**
 	 * 自动发现property文件并自动加载
 	 */
 	private final static synchronized void loadProperties() {
-		System.err.println(systemDir);
-		System.err.println(systemDir+"../etc/config.properties");
-		String path = classLoader.getResource("config.properties").toString().replace("file:", "").trim();
-		try {
-			property.putAll(loadProperties(path));
-		} catch (Exception e) {
-			logger.error("can not find config.properties, path: " + path, e);
-			System.exit(0);
-		}
+		String path = systemDir + "../etc/config.properties";
 		if (isWindows) {
 			path = classLoader.getResource("config.properties").toString().replace("file:", "").replace("config.properties", "").trim();
-			loadProperties0(path);
+			property.putAll(loadProperties(path + "config.properties"));
+		} else {
+			try {
+				property.putAll(loadProperties(path));
+			} catch (Exception e) {
+				logger.error("can not find config.properties, path: " + path, e);
+				System.exit(0);
+			}
 		}
-		path = classLoader.getResource("").toString().replace("file:", "");
-		loadProperties0(path);
-
 	}
 
 	/**
