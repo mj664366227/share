@@ -41,10 +41,10 @@ import com.share.core.util.SortUtil.Order;
  */
 public final class FileSystem {
 	private final static ClassLoader classLoader = FileSystem.class.getClassLoader();
+	private final static String systemDir = classLoader.getResource("").toString();
 	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
-	private final static String systemDir = System.getProperty("user.dir").trim() + "/";
 	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
 	private static Properties property = new Properties();
 	static {
