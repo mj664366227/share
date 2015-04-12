@@ -41,7 +41,8 @@ import com.share.core.util.SortUtil.Order;
  */
 public final class FileSystem {
 	private final static ClassLoader classLoader = FileSystem.class.getClassLoader();
-	private final static String systemDir = classLoader.getResource("").toString() + StringUtil.getString(System.getProperty("project")) + "/";
+	private final static String projectName = StringUtil.getString(System.getProperty("project"));
+	private final static String systemDir = classLoader.getResource("").toString().replace("etc", "") + (projectName.isEmpty() ? "" : projectName + "/");
 	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
