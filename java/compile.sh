@@ -9,6 +9,26 @@ yes | cp -rf /share/java/run.sh /srv/
 yes | cp -rf /share/shell/*.sh /shell/
 chmod 777 /srv/*.sh /shell/*.sh
 
+git pull
+rm -rf /share/java/.gradle
+
+rm -rf /srv/*.sh /shell/*.sh
+mkdir -p /shell
+yes | cp -rf /share/java/compile.sh /srv/
+yes | cp -rf /share/java/run.sh /srv/
+yes | cp -rf /share/shell/*.sh /shell/
+chmod 777 /srv/*.sh /shell/*.sh
+
+git pull
+rm -rf /share/java/.gradle
+
+rm -rf /srv/*.sh /shell/*.sh
+mkdir -p /shell
+yes | cp -rf /share/java/compile.sh /srv/
+yes | cp -rf /share/java/run.sh /srv/
+yes | cp -rf /share/shell/*.sh /shell/
+chmod 777 /srv/*.sh /shell/*.sh
+
 for dir in /share/java/*
 do 
 	flag=$(echo $dir | grep 'share-')
