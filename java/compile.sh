@@ -61,6 +61,12 @@ do
 	fi
 		
 	rsync -av /share/java/$project/compile/ /srv/server/$project/lib/
-	echo "sh /srv/run.sh '/srv/server/$project' '$project' 'com.share.admin.start.AdminMain'" > /srv/server/$project/run.sh
+	classpath=$path'/../etc/'
+	for jar in `ls $path/lib/*.jar`
+	do
+		classpath="$classpath:""$jar"
+	done
+	cmd='java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:'$path'/log/gc.log -Dproject='$project' -classpath '$classpath' '$mainClass >> $path'/log/log.log'
+	echo $cmd > /srv/server/$project/run.sh
 	chmod 777 /srv/server/$project/run.sh
 done
