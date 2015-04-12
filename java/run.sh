@@ -23,6 +23,6 @@ do
 	classpath="$classpath:""$jar"
 done
 
-cmd='java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:'$path'/log/gc.log -classpath '$classpath' '$mainClass >> $path'/log/log.log'
+cmd='java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:'$path'/log/gc.log -Dproject '$project' -classpath '$classpath' '$mainClass >> $path'/log/log.log'
 
 $cmd
