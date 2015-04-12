@@ -63,6 +63,13 @@ public final class FileSystem {
 	}
 
 	/**
+	 * 获取项目名称
+	 */
+	public final static String getProjectName() {
+		return projectName;
+	}
+
+	/**
 	 * 判断是否为windows
 	 * @return
 	 */
