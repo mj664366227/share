@@ -31,7 +31,7 @@ do
 done
 
 cd /share/java
-gradle --info clean deploy 
+gradle clean deploy 
 
 for dir in /share/java/*
 do 
