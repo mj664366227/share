@@ -37,7 +37,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #安装erlang
-sh install-erlang.sh $riak_install_path 'R14B04'
+sh install-erlang.sh $riak_install_path '17.5'
 
 #安装riak
 riak='2.1.0'
