@@ -40,7 +40,7 @@ mkdir -p $install_path
 sh install-erlang.sh $riak_install_path 'R14B04'
 
 #安装riak
-riak='1.4.2'
+riak='2.1.0'
 if [ ! -d $riak_install_path/riak ]; then 
 	echo 'installing riak '$riak'...'
 	if [ ! -f $base_path/riak-$riak.tar.gz ]; then

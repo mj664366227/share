@@ -1,4 +1,4 @@
-#运行例子：sh install-erlang.sh /usr/local 17.4
+#运行例子：sh install-erlang.sh /usr/local 17.5
 
 #定义本程序的当前目录
 base_path=$(pwd)
