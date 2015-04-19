@@ -50,9 +50,6 @@ if [ ! -d $riak_install_path/riak ]; then
 	fi
 	tar zxvf $base_path/riak-$riak.tar.gz -C $install_path || exit
 	cd $install_path/riak-$riak
-	rm -rf $install_path/riak-$riak/deps/yokozuna/build/ || exit
-	mkdir -p $install_path/riak-$riak/deps/yokozuna/build/ || exit
-	cp -rf $base_path/solr-4.7.0-yz-1.tgz $install_path/riak-$riak/deps/yokozuna/build/solr-4.7.0-yz-1.tgz || exit
 	make rel || exit
 	
 	rm -rf $riak_install_path/riak
