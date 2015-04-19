@@ -15,6 +15,7 @@ import com.share.core.memory.Memory;
 import com.share.core.mongo.Mongodb;
 import com.share.core.nsq.NsqService;
 import com.share.core.redis.Redis;
+import com.share.core.riak.Riak;
 import com.share.core.ssdb.SSDB;
 import com.share.core.threadPool.DefaultThreadPool;
 import com.share.test.db.AdminDbService;
@@ -46,9 +47,11 @@ public class JunitTest {
 	private MenuProcessor menuProcessor;
 	@Autowired
 	private AspectHaHaHa aspectHaHaHa;
+	@Autowired
+	private Riak riak;
 
 	@Test
 	public void junitTest() throws Exception {
-		aspectHaHaHa.test1();
+		riak.KV.store("a", "a", "a");
 	}
 }

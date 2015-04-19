@@ -111,7 +111,7 @@ public class Riak {
 			Location location = new Location(ns, key);
 			StoreValue.Builder storeValue = new StoreValue.Builder(value);
 			storeValue.withLocation(location);
-			storeValue.withOption(Option.W, new Quorum(clusterNum));
+			//storeValue.withOption(Option.PW, new Quorum(clusterNum));
 			try {
 				client.execute(storeValue.build());
 			} catch (Exception e) {

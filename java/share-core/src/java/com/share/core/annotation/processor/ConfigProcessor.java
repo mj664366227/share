@@ -84,7 +84,7 @@ public final class ConfigProcessor extends AnnotationProcessor {
 		String path = getFilePath(object);
 
 		// 读取文件
-		List<List<String>> list = FileSystem.readCSV(FileSystem.getSystemDir() + (FileSystem.isWindows() ? "bin/" : "") + path);
+		List<List<String>> list = FileSystem.readCSV(FileSystem.getSystemDir() + path);
 
 		// 检查字段名称和顺序是否一致
 		List<String> column = list.remove(0);

@@ -139,6 +139,9 @@
 		<property name="poolSize" value="1" />
 	</bean>
 	
+	<bean class="com.share.core.riak.Riak" init-method="init">
+	</bean>
+	
 	<!-- 视图配置 -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
