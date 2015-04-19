@@ -136,7 +136,7 @@ project(':share-core') {
 		compile 'com.thoughtworks.paranamer:paranamer:2.7'
 		compile 'com.belerweb:pinyin4j:2.5.0' 
 		compile 'com.google.protobuf:protobuf-java:2.5.0'
-		compile 'com.basho.riak:riak-client:1.4.4'
+		compile 'com.basho.riak:riak-client:2.0.0'
 		compile 'com.basho.riak.protobuf:riak-pb:2.0.0.16'
 		compile 'javax.servlet:jstl:1.2'
 		compile 'org.slf4j:slf4j-api:1.7.7'
