@@ -61,7 +61,7 @@ do
 	fi
 		
 	rsync -av /share/java/$project/compile/ /srv/server/$project/lib/
-	classpath=''
+	classpath='/srv/server/etc/'
 	for jar in `ls /srv/server/$project/lib/*.jar`
 	do
 		classpath="$classpath:""$jar"
