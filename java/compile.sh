@@ -65,7 +65,7 @@ do
 	do
 		classpath="$classpath:""$jar"
 	done
-	cmd='java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:/srv/server/'$project'/log/gc.log -Dproject='$project' -classpath '$classpath' '$mainClass >> $dir'/log/log.log'
+	cmd='java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:/srv/server/'$project'/log/gc.log -Dproject='$project' -classpath '$classpath' '$mainClass' >> /srv/server/'$project'/log/log.log'
 	echo $cmd > /srv/server/$project/run.sh
 	chmod 777 /srv/server/$project/run.sh
 done
