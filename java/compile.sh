@@ -66,7 +66,8 @@ do
 		classpath="$classpath:""$jar"
 	done
 	startName=${project#*-}
-	mainClass='com.share.'$startName'.start.'${startName:0:1| tr '[a-z]' '[A-Z]'}${startName:1}'Main'
+	className${startName:0:1| tr '[a-z]' '[A-Z]'}
+	mainClass='com.share.'$startName'.start.'$className'Main'
 	cmd='java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:/srv/server/'$project'/log/gc.log -Dproject='$project' -classpath '$classpath' '$mainClass' >> /srv/server/'$project'/log/log.log'
 	echo $cmd > /srv/server/$project/run.sh
 	chmod 777 /srv/server/$project/run.sh
