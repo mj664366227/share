@@ -60,18 +60,18 @@ do
 	fi
 		
 	rsync -av /share/java/$project/compile/ /srv/server/$project/lib/
-	classpath='/srv/server/etc'
 	startName=${project#*-}
 	className=${startName:0:1}
 	mainClass='com.share.'$startName'.start.'$(echo $className | tr '[a-z]' '[A-Z]')${startName:1}'Main'
 	
-	cmd='for jar in `ls /srv/server/'$project'/lib/*.jar`
+	cmd="classpath='/srv/server/etc'
+for jar in `ls /srv/server/$project/lib/*.jar`
 do
-	classpath="'$classpath':""'$jar'"
+	classpath=$classpath:$jar
 done
 
-java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:/srv/server/'$project'/log/gc.log -Dproject='$project' -classpath '$classpath' '$mainClass' >> /srv/server/'$project'/log/log.log
-'
+java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:/srv/server/$project/log/gc.log -Dproject=$project -classpath $classpath $mainClass >> /srv/server/$project/log/log.log
+"
 	echo $cmd > /srv/server/$project/run.sh
 	chmod 777 /srv/server/$project/run.sh
 done
