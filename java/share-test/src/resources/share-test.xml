@@ -41,7 +41,7 @@
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 
 		<!-- 基本属性 url、user、password -->
-		<property name="url" value="jdbc:mysql://localhost/share?autoReconnect=true" />
+		<property name="url" value="jdbc:mysql://localhost/mysql?autoReconnect=true" />
 		<property name="username" value="root" />
 		<property name="password" value="root" />
 
@@ -137,9 +137,6 @@
 		<property name="scanPackage" value="com.share.test.nsq" />
 		<!-- 线程池大小 -->
 		<property name="poolSize" value="1" />
-	</bean>
-	
-	<bean class="com.share.core.riak.Riak" init-method="init">
 	</bean>
 	
 	<!-- 视图配置 -->

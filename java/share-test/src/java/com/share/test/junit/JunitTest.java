@@ -47,11 +47,9 @@ public class JunitTest {
 	private MenuProcessor menuProcessor;
 	@Autowired
 	private AspectHaHaHa aspectHaHaHa;
-	@Autowired
-	private Riak riak;
 
 	@Test
 	public void junitTest() throws Exception {
-		riak.KV.store("a", "a", "a");
+		aspectHaHaHa.test1();
 	}
 }
