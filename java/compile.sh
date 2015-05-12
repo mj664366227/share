@@ -70,7 +70,7 @@ do
 	classpath=$classpath:$jar
 done
 
-java -server -Xms128m -Xmx128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:/srv/server/'$project'/log/gc.log -Dproject='$project' -classpath $classpath '$mainClass' >> /srv/server/'$project'/log/log.log
+java -server -Xms128m -Xmx128m -Dfile.encoding=utf8 -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC -Xloggc:/srv/server/'$project'/log/gc.log -Dproject='$project' -classpath $classpath '$mainClass' >> /srv/server/'$project'/log/log.log
 '   > /srv/server/$project/run.sh
 	chmod 777 /srv/server/$project/run.sh
 done
