@@ -34,7 +34,7 @@ rm -rf $nsq_install_path/nsq/start_nsq.sh
 echo 'cd '$nsq_install_path'/nsq/' >> $nsq_install_path/nsq/start_nsq.sh
 echo 'ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")' >> $nsq_install_path/nsq/start_nsq.sh
 echo 'nsqlookupd &' >> $nsq_install_path/nsq/start_nsq.sh
-echo 'nsqd --lookupd-tcp-address=$ip:4160 &' >> $nsq_install_path/nsq/start_nsq.sh
+echo 'nsqd --lookupd-tcp-address=$ip:4160 --broadcast-address=$ip &' >> $nsq_install_path/nsq/start_nsq.sh
 echo 'nsqadmin --lookupd-http-address=$ip:4161 -http-address=$ip:4171 &' >> $nsq_install_path/nsq/start_nsq.sh
 echo 'nsq_to_file --output-dir='$nsq_install_path'/nsq/data --lookupd-http-address=$ip:4161 &' >> $nsq_install_path/nsq/start_nsq.sh
 chmod 777 $nsq_install_path/nsq/start_nsq.sh
