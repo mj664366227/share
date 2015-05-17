@@ -168,6 +168,8 @@ project(':share-client') {
 project(':share-test') {
 	dependencies{
 	   compile project(':share-core')
+	   compile project(':share-dao')
+	   compile project(':share-service')
 	   compile fileTree( dir: "lib", include: '*.jar' )
 	}
 	task deploy(dependsOn: [copyLib, copyWebapp])
