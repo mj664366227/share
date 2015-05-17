@@ -179,3 +179,17 @@ project(':share-admin') {
 	}
 	task deploy(dependsOn: [copyLib, copyWebapp])
 }
+project(':share-dao') {
+	dependencies{
+	   compile project(':share-core')
+	   compile fileTree( dir: "lib", include: '*.jar' )
+	}
+	task deploy(dependsOn: [copyLib, copyWebapp])
+}
+project(':share-service') {
+	dependencies{
+	   compile project(':share-core')
+	   compile fileTree( dir: "lib", include: '*.jar' )
+	}
+	task deploy(dependsOn: [copyLib, copyWebapp])
+}

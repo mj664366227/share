@@ -1,1 +1,1 @@
-include 'share-core','share-client','share-test','share-admin'
+include 'share-core','share-client','share-test','share-admin','share-dao','share-service'
