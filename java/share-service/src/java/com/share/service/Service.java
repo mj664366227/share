@@ -1,4 +1,5 @@
+package com.share.service;
 
-public class Dao {
+public class Service {
 
 }
