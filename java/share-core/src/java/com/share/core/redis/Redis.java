@@ -170,7 +170,7 @@ public class Redis {
 			logger.error("", e);
 			System.exit(0);
 		} finally {
-			jedisPool.returnResource(jedis);
+			jedis.close();
 		}
 
 		// 显示redis服务器版本号
@@ -201,7 +201,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -228,7 +228,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -246,7 +246,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -265,7 +265,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -283,7 +283,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -301,7 +301,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -320,7 +320,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -337,7 +337,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -354,7 +354,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -372,7 +372,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -392,7 +392,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -412,7 +412,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -434,7 +434,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -450,7 +450,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -468,7 +468,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -486,7 +486,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -504,7 +504,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -522,7 +522,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return false;
 		}
@@ -540,7 +540,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -559,7 +559,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -576,7 +576,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -593,7 +593,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -610,7 +610,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -627,7 +627,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -645,7 +645,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -668,7 +668,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -686,7 +686,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -703,7 +703,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -722,7 +722,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -741,7 +741,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -760,7 +760,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -779,7 +779,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -798,7 +798,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return false;
 		}
@@ -816,7 +816,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -834,7 +834,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -854,7 +854,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -871,7 +871,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -890,7 +890,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -909,7 +909,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -927,7 +927,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -945,7 +945,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -963,7 +963,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -988,7 +988,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1007,7 +1007,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1025,7 +1025,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1044,7 +1044,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1065,7 +1065,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1085,7 +1085,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1105,7 +1105,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1124,7 +1124,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1143,7 +1143,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1162,7 +1162,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1182,7 +1182,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1202,7 +1202,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1222,7 +1222,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1241,7 +1241,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1260,7 +1260,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1280,7 +1280,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1299,7 +1299,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1319,7 +1319,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1339,7 +1339,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1359,7 +1359,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1378,7 +1378,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1397,7 +1397,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1417,7 +1417,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1437,7 +1437,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1457,7 +1457,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1477,7 +1477,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1499,7 +1499,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1521,7 +1521,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1545,7 +1545,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1563,7 +1563,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return false;
 		}
@@ -1582,7 +1582,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1601,7 +1601,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1619,7 +1619,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1637,7 +1637,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1657,7 +1657,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1677,7 +1677,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1697,7 +1697,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1717,7 +1717,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1735,7 +1735,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1753,7 +1753,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1773,7 +1773,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1793,7 +1793,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1813,7 +1813,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1833,7 +1833,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1851,7 +1851,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1869,7 +1869,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1887,7 +1887,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1905,7 +1905,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -1924,7 +1924,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1943,7 +1943,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1962,7 +1962,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -1981,7 +1981,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2004,7 +2004,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2022,7 +2022,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2041,7 +2041,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2060,7 +2060,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2079,7 +2079,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2118,7 +2118,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2138,7 +2138,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2158,7 +2158,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2177,7 +2177,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2196,7 +2196,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2215,7 +2215,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2234,7 +2234,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2253,7 +2253,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2273,7 +2273,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2292,7 +2292,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2310,7 +2310,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2328,7 +2328,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2346,7 +2346,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2384,7 +2384,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2401,7 +2401,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2432,7 +2432,7 @@ public class Redis {
 		 * @param value
 		 * @return
 		 */
-		public String psetex(String key, int milliseconds, String value) {
+		public String psetex(String key, long milliseconds, String value) {
 			Jedis jedis = null;
 			try {
 				jedis = jedisPool.getResource();
@@ -2440,7 +2440,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2452,7 +2452,7 @@ public class Redis {
 		 * @param value
 		 * @return
 		 */
-		public String psetex(byte[] key, int milliseconds, byte[] value) {
+		public String psetex(byte[] key, long milliseconds, byte[] value) {
 			Jedis jedis = null;
 			try {
 				jedis = jedisPool.getResource();
@@ -2460,7 +2460,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2483,7 +2483,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2501,7 +2501,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2521,7 +2521,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2541,7 +2541,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2562,7 +2562,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2583,7 +2583,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2602,7 +2602,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2621,7 +2621,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2639,7 +2639,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2657,7 +2657,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2675,7 +2675,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2693,7 +2693,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2712,7 +2712,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2731,7 +2731,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2750,7 +2750,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2769,7 +2769,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2788,7 +2788,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2807,7 +2807,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2826,7 +2826,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2845,7 +2845,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2865,7 +2865,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2885,7 +2885,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2905,7 +2905,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2925,7 +2925,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -2945,7 +2945,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2965,7 +2965,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -2985,7 +2985,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3005,7 +3005,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3025,7 +3025,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3045,7 +3045,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3065,7 +3065,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3085,7 +3085,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3106,7 +3106,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3127,7 +3127,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3169,7 +3169,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0L;
 		}
@@ -3187,7 +3187,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3203,7 +3203,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3221,7 +3221,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3237,7 +3237,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0;
 		}
@@ -3260,7 +3260,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3276,7 +3276,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3293,7 +3293,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3316,7 +3316,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3334,7 +3334,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return false;
 		}
@@ -3352,7 +3352,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3368,7 +3368,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3384,7 +3384,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3402,7 +3402,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3422,7 +3422,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3442,7 +3442,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3460,7 +3460,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3480,7 +3480,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3500,7 +3500,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3524,7 +3524,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3542,7 +3542,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3561,7 +3561,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3580,7 +3580,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3598,7 +3598,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3619,7 +3619,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3635,7 +3635,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3651,7 +3651,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return 0L;
 		}
@@ -3676,7 +3676,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3697,7 +3697,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3716,7 +3716,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3734,7 +3734,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3752,7 +3752,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3771,7 +3771,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
@@ -3790,7 +3790,7 @@ public class Redis {
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
-				jedisPool.returnResource(jedis);
+				jedis.close();
 			}
 			return null;
 		}
