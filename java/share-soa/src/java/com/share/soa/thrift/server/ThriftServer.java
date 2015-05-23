@@ -1,6 +1,6 @@
 package com.share.soa.thrift.server;
 
-import org.apache.thrift.protocol.TCompactProtocol;
+import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -29,7 +29,7 @@ public class ThriftServer {
 		TServerTransport serverTransport = new TServerSocket(port);
 
 		//使用高密度二进制协议  
-		TProtocolFactory proFactory = new TCompactProtocol.Factory();
+		TProtocolFactory proFactory = new TBinaryProtocol.Factory();
 
 		ShareObjectService.Processor<ShareObjectServiceImpl> processor = new ShareObjectService.Processor<ShareObjectServiceImpl>(new ShareObjectServiceImpl());
 
