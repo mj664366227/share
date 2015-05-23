@@ -1,9 +1,11 @@
 ﻿@echo off
 set thrift=%cd%\thrift-0.9.2.exe
 
-cd %cd%\thrift
+rd /s /q ..\..\share-soa\src\java
+
+cd %cd%\share
 for /f "tokens=*" %%a in ('dir /b') do (
-	%thrift% -r --gen java -out sing-soa\src\main\java sing-soa\src\main\thrift\kvservices.thrift
+	echo %%a | findstr "\.thrift" && %thrift% -r --gen java -out ..\..\share-soa\src\java %cd%\%%a || cd %cd%
 )
 
 pause
