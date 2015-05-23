@@ -195,3 +195,10 @@ project(':share-service') {
 	}
 	task deploy(dependsOn: [copyLib, copyWebapp])
 }
+project(':share-soa') {
+	dependencies{
+	   compile project(':share-core')
+	   compile fileTree( dir: "lib", include: '*.jar' )
+	}
+	task deploy(dependsOn: [copyLib, copyWebapp])
+}
