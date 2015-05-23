@@ -5,7 +5,7 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
-import com.share.soa.thrift.protocol.TestShareObject;
+import com.share.soa.thrift.protocol.ShareObjectService;
 
 public class ThriftClient {
 
@@ -13,12 +13,12 @@ public class ThriftClient {
 		TTransport transport = new TSocket("127.0.0.1", 9394);
 		TProtocol protocol = new TBinaryProtocol(transport);
 
-		TestShareObject.Client client = new TestShareObject.Client(protocol);
+		ShareObjectService.Client client = new ShareObjectService.Client(protocol);
 
 		transport.open();
 
 		client.test(1);
 
 		transport.close();
-	}
+		}
 }
