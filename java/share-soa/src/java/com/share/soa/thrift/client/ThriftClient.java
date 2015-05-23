@@ -17,7 +17,5 @@ public class ThriftClient {
 		transport.open();
 
 		client.test(1);
-
-		transport.close();
 	}
 }

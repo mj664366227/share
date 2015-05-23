@@ -1,4 +1,4 @@
-package com.share.soa.thrift.protocol;
+package com.share.soa.thrift.server;
 
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ public class ShareObjectServiceImpl implements Iface {
 	@Override
 	public int test(int a) throws TException {
 		logger.info(a + "\ttest");
-		return 0;
+		return 10;
 	}
 
 	@Override
