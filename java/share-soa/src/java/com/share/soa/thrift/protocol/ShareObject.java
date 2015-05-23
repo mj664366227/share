@@ -41,7 +41,7 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
   private static final org.apache.thrift.protocol.TField ID1_FIELD_DESC = new org.apache.thrift.protocol.TField("id1", org.apache.thrift.protocol.TType.I32, (short)1);
   private static final org.apache.thrift.protocol.TField ID2_FIELD_DESC = new org.apache.thrift.protocol.TField("id2", org.apache.thrift.protocol.TType.I16, (short)2);
   private static final org.apache.thrift.protocol.TField CONTENT_FIELD_DESC = new org.apache.thrift.protocol.TField("content", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField MEDIA_FROM_FIELD_DESC = new org.apache.thrift.protocol.TField("media_from", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField MEDIA_FROM_FIELD_DESC = new org.apache.thrift.protocol.TField("mediaFrom", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField AUTHOR_FIELD_DESC = new org.apache.thrift.protocol.TField("author", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -53,7 +53,7 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
   public int id1; // required
   public short id2; // required
   public String content; // required
-  public String media_from; // required
+  public String mediaFrom; // required
   public String author; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -61,7 +61,7 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
     ID1((short)1, "id1"),
     ID2((short)2, "id2"),
     CONTENT((short)3, "content"),
-    MEDIA_FROM((short)4, "media_from"),
+    MEDIA_FROM((short)4, "mediaFrom"),
     AUTHOR((short)5, "author");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -139,7 +139,7 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I16)));
     tmpMap.put(_Fields.CONTENT, new org.apache.thrift.meta_data.FieldMetaData("content", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.MEDIA_FROM, new org.apache.thrift.meta_data.FieldMetaData("media_from", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.MEDIA_FROM, new org.apache.thrift.meta_data.FieldMetaData("mediaFrom", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.AUTHOR, new org.apache.thrift.meta_data.FieldMetaData("author", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -154,7 +154,7 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
     int id1,
     short id2,
     String content,
-    String media_from,
+    String mediaFrom,
     String author)
   {
     this();
@@ -163,7 +163,7 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
     this.id2 = id2;
     setId2IsSet(true);
     this.content = content;
-    this.media_from = media_from;
+    this.mediaFrom = mediaFrom;
     this.author = author;
   }
 
@@ -177,8 +177,8 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
     if (other.isSetContent()) {
       this.content = other.content;
     }
-    if (other.isSetMedia_from()) {
-      this.media_from = other.media_from;
+    if (other.isSetMediaFrom()) {
+      this.mediaFrom = other.mediaFrom;
     }
     if (other.isSetAuthor()) {
       this.author = other.author;
@@ -196,7 +196,7 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
     setId2IsSet(false);
     this.id2 = 0;
     this.content = null;
-    this.media_from = null;
+    this.mediaFrom = null;
     this.author = null;
   }
 
@@ -270,27 +270,27 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
     }
   }
 
-  public String getMedia_from() {
-    return this.media_from;
+  public String getMediaFrom() {
+    return this.mediaFrom;
   }
 
-  public ShareObject setMedia_from(String media_from) {
-    this.media_from = media_from;
+  public ShareObject setMediaFrom(String mediaFrom) {
+    this.mediaFrom = mediaFrom;
     return this;
   }
 
-  public void unsetMedia_from() {
-    this.media_from = null;
+  public void unsetMediaFrom() {
+    this.mediaFrom = null;
   }
 
-  /** Returns true if field media_from is set (has been assigned a value) and false otherwise */
-  public boolean isSetMedia_from() {
-    return this.media_from != null;
+  /** Returns true if field mediaFrom is set (has been assigned a value) and false otherwise */
+  public boolean isSetMediaFrom() {
+    return this.mediaFrom != null;
   }
 
-  public void setMedia_fromIsSet(boolean value) {
+  public void setMediaFromIsSet(boolean value) {
     if (!value) {
-      this.media_from = null;
+      this.mediaFrom = null;
     }
   }
 
@@ -346,9 +346,9 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
 
     case MEDIA_FROM:
       if (value == null) {
-        unsetMedia_from();
+        unsetMediaFrom();
       } else {
-        setMedia_from((String)value);
+        setMediaFrom((String)value);
       }
       break;
 
@@ -375,7 +375,7 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
       return getContent();
 
     case MEDIA_FROM:
-      return getMedia_from();
+      return getMediaFrom();
 
     case AUTHOR:
       return getAuthor();
@@ -398,7 +398,7 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
     case CONTENT:
       return isSetContent();
     case MEDIA_FROM:
-      return isSetMedia_from();
+      return isSetMediaFrom();
     case AUTHOR:
       return isSetAuthor();
     }
@@ -445,12 +445,12 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
         return false;
     }
 
-    boolean this_present_media_from = true && this.isSetMedia_from();
-    boolean that_present_media_from = true && that.isSetMedia_from();
-    if (this_present_media_from || that_present_media_from) {
-      if (!(this_present_media_from && that_present_media_from))
+    boolean this_present_mediaFrom = true && this.isSetMediaFrom();
+    boolean that_present_mediaFrom = true && that.isSetMediaFrom();
+    if (this_present_mediaFrom || that_present_mediaFrom) {
+      if (!(this_present_mediaFrom && that_present_mediaFrom))
         return false;
-      if (!this.media_from.equals(that.media_from))
+      if (!this.mediaFrom.equals(that.mediaFrom))
         return false;
     }
 
@@ -485,10 +485,10 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
     if (present_content)
       list.add(content);
 
-    boolean present_media_from = true && (isSetMedia_from());
-    list.add(present_media_from);
-    if (present_media_from)
-      list.add(media_from);
+    boolean present_mediaFrom = true && (isSetMediaFrom());
+    list.add(present_mediaFrom);
+    if (present_mediaFrom)
+      list.add(mediaFrom);
 
     boolean present_author = true && (isSetAuthor());
     list.add(present_author);
@@ -536,12 +536,12 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetMedia_from()).compareTo(other.isSetMedia_from());
+    lastComparison = Boolean.valueOf(isSetMediaFrom()).compareTo(other.isSetMediaFrom());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetMedia_from()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.media_from, other.media_from);
+    if (isSetMediaFrom()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.mediaFrom, other.mediaFrom);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -592,11 +592,11 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("media_from:");
-    if (this.media_from == null) {
+    sb.append("mediaFrom:");
+    if (this.mediaFrom == null) {
       sb.append("null");
     } else {
-      sb.append(this.media_from);
+      sb.append(this.mediaFrom);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -678,8 +678,8 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
             break;
           case 4: // MEDIA_FROM
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.media_from = iprot.readString();
-              struct.setMedia_fromIsSet(true);
+              struct.mediaFrom = iprot.readString();
+              struct.setMediaFromIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -718,9 +718,9 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
         oprot.writeString(struct.content);
         oprot.writeFieldEnd();
       }
-      if (struct.media_from != null) {
+      if (struct.mediaFrom != null) {
         oprot.writeFieldBegin(MEDIA_FROM_FIELD_DESC);
-        oprot.writeString(struct.media_from);
+        oprot.writeString(struct.mediaFrom);
         oprot.writeFieldEnd();
       }
       if (struct.author != null) {
@@ -755,7 +755,7 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
       if (struct.isSetContent()) {
         optionals.set(2);
       }
-      if (struct.isSetMedia_from()) {
+      if (struct.isSetMediaFrom()) {
         optionals.set(3);
       }
       if (struct.isSetAuthor()) {
@@ -771,8 +771,8 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
       if (struct.isSetContent()) {
         oprot.writeString(struct.content);
       }
-      if (struct.isSetMedia_from()) {
-        oprot.writeString(struct.media_from);
+      if (struct.isSetMediaFrom()) {
+        oprot.writeString(struct.mediaFrom);
       }
       if (struct.isSetAuthor()) {
         oprot.writeString(struct.author);
@@ -796,8 +796,8 @@ public class ShareObject implements org.apache.thrift.TBase<ShareObject, ShareOb
         struct.setContentIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.media_from = iprot.readString();
-        struct.setMedia_fromIsSet(true);
+        struct.mediaFrom = iprot.readString();
+        struct.setMediaFromIsSet(true);
       }
       if (incoming.get(4)) {
         struct.author = iprot.readString();
