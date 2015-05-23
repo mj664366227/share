@@ -8,8 +8,7 @@ import org.apache.thrift.transport.TTransport;
 import com.share.soa.thrift.protocol.ShareObjectService;
 
 public class ThriftClient {
-
-	public static void main(String[] aaa) throws Exception {
+	public static void main(String[] aa) throws Exception {
 		TTransport transport = new TSocket("127.0.0.1", 9394);
 		TProtocol protocol = new TBinaryProtocol(transport);
 
@@ -20,5 +19,5 @@ public class ThriftClient {
 		client.test(1);
 
 		transport.close();
-		}
+	}
 }

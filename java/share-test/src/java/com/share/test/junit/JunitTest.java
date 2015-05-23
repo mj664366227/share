@@ -15,7 +15,6 @@ import com.share.core.memory.Memory;
 import com.share.core.mongo.Mongodb;
 import com.share.core.nsq.NsqService;
 import com.share.core.redis.Redis;
-import com.share.core.riak.Riak;
 import com.share.core.ssdb.SSDB;
 import com.share.core.threadPool.DefaultThreadPool;
 import com.share.test.db.AdminDbService;
@@ -50,6 +49,5 @@ public class JunitTest {
 
 	@Test
 	public void junitTest() throws Exception {
-		aspectHaHaHa.test1();
 	}
 }
