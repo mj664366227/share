@@ -1,6 +1,6 @@
 package com.share.soa.thrift.server;
 
-import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.share.core.util.FileSystem;
+import com.share.soa.thrift.http.TServletExample;
 import com.share.soa.thrift.protocol.ShareObjectService;
 
 @Component
@@ -28,8 +29,8 @@ public class ThriftServer {
 		//设置传输通道，普通通道  
 		TServerTransport serverTransport = new TServerSocket(port);
 
-		//使用高密度二进制协议  
-		TProtocolFactory proFactory = new TBinaryProtocol.Factory();
+		//使用高密度二进制协议  	
+		TProtocolFactory proFactory = new TComactProtocol.Factory();
 
 		ShareObjectService.Processor<ShareObjectServiceImpl> processor = new ShareObjectService.Processor<ShareObjectServiceImpl>(new ShareObjectServiceImpl());
 
@@ -38,5 +39,7 @@ public class ThriftServer {
 
 		logger.info("start server on port " + port + "...");
 		server.serve();
+
+		TServletExample tServletExample = new TServletExample(processor, proFactory);
 	}
 }
