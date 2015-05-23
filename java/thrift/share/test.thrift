@@ -1,4 +1,4 @@
-namespace java com.share.soa.thrift
+namespace java com.share.soa.thrift.model
 
 struct  ShareObject{
 	1:i32 id1;
