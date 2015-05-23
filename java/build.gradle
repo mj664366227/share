@@ -117,6 +117,8 @@ project(':share-core') {
 		compile 'org.agilewiki.jid:jid:2.0.5.2'
 		compile 'net.sourceforge.jexcelapi:jxl:2.6.12'
 		compile 'log4j:log4j:1.2.17'
+		compile 'org.slf4j:slf4j-api:1.7.12'
+		compile 'org.slf4j:slf4j-log4j12:1.7.12'
 		compile 'javax.mail:mail:1.4.7'
 		compile 'com.codahale.metrics:metrics-core:3.0.2'
 		compile 'com.codahale.metrics:metrics-graphite:3.0.2'
@@ -138,8 +140,6 @@ project(':share-core') {
 		compile 'com.basho.riak:riak-client:2.0.0'
 		compile 'com.basho.riak.protobuf:riak-pb:2.0.0.16'
 		compile 'javax.servlet:jstl:1.2'
-		compile 'org.slf4j:slf4j-api:1.7.12'
-		compile 'org.slf4j:slf4j-log4j12:1.7.12'
 		compile 'org.xerial.snappy:snappy-java:1.1.1.6'
 		compile 'org.springframework:spring-aop:4.1.6.RELEASE'
 		compile 'org.springframework:spring-aspects:4.1.6.RELEASE'
@@ -196,8 +196,11 @@ project(':share-service') {
 }
 project(':share-soa') {
 	dependencies{
-	   compile fileTree( dir: "lib", include: '*.jar' )
-	   compile 'org.apache.thrift:libthrift:0.9.2'
+		compile fileTree( dir: "lib", include: '*.jar' )
+		compile 'org.apache.thrift:libthrift:0.9.2'
+		compile 'log4j:log4j:1.2.17'
+		compile 'org.slf4j:slf4j-api:1.7.12'
+		compile 'org.slf4j:slf4j-log4j12:1.7.12'
 	}
 	task deploy(dependsOn: [copyLib, copyWebapp])
 }
