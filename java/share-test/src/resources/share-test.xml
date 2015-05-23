@@ -19,6 +19,7 @@
 
 
 	<import resource="classpath:share-core.xml" />
+	<import resource="classpath:share-soa.xml" />
 	
 	<!-- 数据格式转换器 -->
 	<mvc:annotation-driven>

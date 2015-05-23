@@ -49,5 +49,6 @@ public class JunitTest {
 
 	@Test
 	public void junitTest() throws Exception {
+		Thread.sleep(Long.MAX_VALUE);
 	}
 }

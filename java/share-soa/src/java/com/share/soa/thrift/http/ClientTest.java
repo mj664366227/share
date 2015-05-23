@@ -17,6 +17,7 @@ import org.apache.thrift.transport.THttpClient;
 import org.apache.thrift.transport.TTransportException;
 
 import com.share.soa.thrift.protocol.ShareObject;
+import com.share.soa.thrift.protocol.ShareObjectService;
 
 public class ClientTest {
 	private static BasicHttpParams params;
@@ -42,14 +43,13 @@ public class ClientTest {
 		schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 8080));
 		cm = new ThreadSafeClientConnManager(params, schemeRegistry);
 
-		String servletUrl = "http://localhost:8080/MyThriftWebTest/TServletExample";
-
+		String servletUrl = "http://127.0.0.1:9394/ThriftServer/aaaaa.do";
+	
 		THttpClient thc = new THttpClient(servletUrl, new DefaultHttpClient(cm, params));
 		TProtocol loPFactory = new TCompactProtocol(thc);
-		ShareObject.Client client = new ShareObject.Client(loPFactory);
+		ShareObjectService.Client client = new ShareObjectService.Client(loPFactory);
 
-		ShareObject bean = client.getBean(1, "string");
 		//Assert.assertEquals("OK", bean.getStringObject());
-		System.out.println(bean);
+		System.out.println(client.test(111));
 	}
 }
