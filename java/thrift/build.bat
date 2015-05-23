@@ -1,7 +1,7 @@
 ﻿@echo off
 set thrift=%cd%\thrift-0.9.2.exe
 
-rd /s /q %cd%\..\share-soa\src\java\com\share\soa\thrift\model
+rd /s /q %cd%\..\share-soa\src\java\com\share\soa\thrift\protocol
 
 cd %cd%\share
 for /f "tokens=*" %%a in ('dir /b') do (
