@@ -9,7 +9,7 @@ struct  ShareObject{
 }
 
 #注释 ...
-service TestShareObject {
+service TestShareObjectService {
 	i32 test(1:i32 a),
 	string testString(1:i32 n,2:bool aaa)
 }

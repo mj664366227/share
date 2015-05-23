@@ -10,7 +10,7 @@ import com.share.soa.thrift.protocol.TestShareObject;
 public class ThriftClient {
 
 	public static void main(String[] aaa) throws Exception {
-		TTransport transport = new TSocket("127.0.0.1", 9813);
+		TTransport transport = new TSocket("127.0.0.1", 9394);
 		TProtocol protocol = new TBinaryProtocol(transport);
 
 		TestShareObject.Client client = new TestShareObject.Client(protocol);
