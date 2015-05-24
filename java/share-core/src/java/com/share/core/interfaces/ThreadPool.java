@@ -10,6 +10,8 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.share.core.util.SystemUtil;
+
 /**
  * 系统线程池(如果不设置默认是cpu core x 2)
  * @author ruan
@@ -26,7 +28,7 @@ public abstract class ThreadPool {
 	/**
 	 * 线程池大小
 	 */
-	private int poolSize = Runtime.getRuntime().availableProcessors() * 2;
+	private int poolSize = SystemUtil.getCore();
 	/**
 	 * 线程池名字
 	 */
@@ -74,7 +76,11 @@ public abstract class ThreadPool {
 	 * @param task 任务
 	 */
 	public void execute(AbstractTask task) {
-		executor.execute(task);
+		try {
+			executor.execute(task);
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 	}
 
 	/**

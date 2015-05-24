@@ -5,13 +5,19 @@ import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadedSelectorServer;
 import org.apache.thrift.server.TThreadedSelectorServer.Args;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TNonblockingServerSocket;
 import org.apache.thrift.transport.TNonblockingServerTransport;
-import org.apache.thrift.transport.TServerSocket;
 
 import com.share.core.exception.IllegalPortException;
 import com.share.core.interfaces.AbstractServer;
 import com.share.core.util.Check;
+import com.share.core.util.FileSystem;
+import com.share.core.util.SystemUtil;
 
+/**
+ * thrift socket 服务器
+ */
 public class ThriftSocketServer extends AbstractServer {
 	private TServer server;
 	private int port;
@@ -31,25 +37,41 @@ public class ThriftSocketServer extends AbstractServer {
 	 * 
 	 * <pre>
 	 * 例如：
-	 * ShareObjectService.Processor<ShareObjectServiceImpl> processor = new ShareObjectService.Processor<ShareObjectServiceImpl>(new ShareObjectServiceImpl());
+	 * ShareObjectService.Processor<ShareObjectServiceHandler> processor = new ShareObjectService.Processor<ShareObjectServiceHandler>(new ShareObjectServiceHandler());
 	 * ThriftSocketServer t = new ThriftSocketServer(10086, new TCompactProtocol.Factory(), processor);
 	 * t.start();
 	 * </pre>
 	 */
 	public ThriftSocketServer(int port, TProtocolFactory protocolFactory, TProcessor tProcessor) {
-		this.port = port;
 		if (!Check.isPort(port)) {
 			throw new IllegalPortException("Illegal port: " + port);
 		}
+		this.port = port;
 
 		try {
 			// 设置传输通道，普通通道  
-			TNonblockingServerTransport serverTransport = new TServerSocket(port);
+			TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(port);
 
 			// 构造连接参数
 			Args args = new Args(serverTransport);
+			args.transportFactory(new TFramedTransport.Factory());
 			args.protocolFactory(protocolFactory);
 			args.processor(tProcessor);
+
+			// 设置selector线程和worker线程
+			int selectorThreads = FileSystem.getPropertyInt("thrift.selectorThreads");
+			int workerThreads = FileSystem.getPropertyInt("thrift.workerThreads");
+			// 如果没有设置，就用cpu核心数x2
+			if (selectorThreads <= 0) {
+				selectorThreads = SystemUtil.getCore();
+			}
+			if (workerThreads <= 0) {
+				workerThreads = SystemUtil.getCore();
+			}
+
+			args.selectorThreads(selectorThreads);
+			args.workerThreads(workerThreads);
+			logger.info("selectorThreads: {}, workerThreads: {}", selectorThreads, workerThreads);
 
 			// 创建服务器 
 			server = new TThreadedSelectorServer(args);
@@ -57,7 +79,6 @@ public class ThriftSocketServer extends AbstractServer {
 			logger.error("", e);
 			System.exit(0);
 		}
-
 	}
 
 	/**

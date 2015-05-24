@@ -50,8 +50,19 @@ public final class SystemUtil {
 	 * 系统字符集
 	 */
 	private final static Charset charset = Charset.forName(systemCharset);
+	/**
+	 * CPU核心数 x 2
+	 */
+	private final static int core = Runtime.getRuntime().availableProcessors() * 2;
 
 	private SystemUtil() {
+	}
+
+	/**
+	 * 获取CPU核心数 x 2
+	 */
+	public final static int getCore() {
+		return core;
 	}
 
 	/**

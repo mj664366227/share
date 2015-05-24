@@ -1,13 +1,11 @@
 package com.share.soa.thrift.impl;
 
 import org.apache.thrift.TException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.share.core.interfaces.BaseHandler;
 import com.share.soa.thrift.protocol.ShareObjectService.Iface;
 
-public class ShareObjectServiceImpl implements Iface {
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+public class ShareObjectServiceHandler extends BaseHandler implements Iface {
 	@Override
 	public int test(int a) throws TException {
 		logger.info(a + "\ttest");
