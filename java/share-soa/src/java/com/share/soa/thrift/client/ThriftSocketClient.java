@@ -28,6 +28,18 @@ public class ThriftSocketClient {
 	 * 反射方法对象缓存map
 	 */
 	private static Map<String, Method> reflectMethodMap = new ConcurrentHashMap<>();
+	/**
+	 * 传输通道
+	 */
+	private TTransport transport;
+	/**
+	 * TServiceClient
+	 */
+	private TServiceClient client;
+	/**
+	 * 要处理的接口
+	 */
+	private Class<? extends TServiceClient> tServiceClient;
 
 	/**
 	 * 构造函数
@@ -43,16 +55,14 @@ public class ThriftSocketClient {
 	 * TDebugProtocol      使用易懂的可读的文本格式以便于debug
 	 * </pre>	
 	 * @param tServiceClient 要处理的接口
-	 * @param methodName 方法名
-	 * @param parameters 参数列表
 	 */
-	public ThriftSocketClient(String host, int port, Class<? extends TProtocol> tProtocol, Class<? extends TServiceClient> tServiceClient, String methodName, Object... parameters) {
+	public ThriftSocketClient(String host, int port, Class<? extends TProtocol> tProtocol, Class<? extends TServiceClient> tServiceClient) {
 		if (!Check.isPort(port)) {
 			throw new IllegalPortException("Illegal port: " + port);
 		}
 
 		// 连接thrift服务器
-		TTransport transport = new TFramedTransport(new TSocket(host, port));
+		transport = new TFramedTransport(new TSocket(host, port));
 
 		try {
 			// 通过反射，生成指定是协议传输通道
@@ -61,26 +71,43 @@ public class ThriftSocketClient {
 
 			// 通过反射，请求指定接口
 			Constructor<? extends TServiceClient> tServiceClientConstructor = tServiceClient.getConstructor(new Class<?>[] { TProtocol.class });
-			TServiceClient client = tServiceClientConstructor.newInstance(tp);
+			client = tServiceClientConstructor.newInstance(tp);
 
+			this.tServiceClient = tServiceClient;
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+	}
+
+	/**
+	 * 请求thrift服务器获取数据
+	 * @author ruan
+	 * @param methodName 方法名
+	 * @param parameters 参数列表
+	 */
+	public Object getData(String methodName, Object... parameters) {
+		Method method = cacheMethod(tServiceClient, methodName);
+		if (method == null) {
+			return null;
+		}
+
+		try {
 			// 开启传输通道
 			transport.open();
 
-			Method method = cacheMethod(tServiceClient, "test");
-
-			System.err.println(tServiceClient + "\t" + method);
-			//System.err.println(method.invoke(client, 1));
+			// 反射调用
+			return method.invoke(client, parameters);
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
 			// 关闭传输通道
 			transport.close();
 		}
+		return null;
 	}
 
 	/**
 	 * 获取反射方法
-	 * @author ruan
 	 * @param clazz 类
 	 * @param methodName 方法名
 	 */

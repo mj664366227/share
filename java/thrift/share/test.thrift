@@ -12,4 +12,5 @@ struct  ShareObject{
 service ShareObjectService {
 	i32 test(1:i32 a),
 	string testString(1:i32 n,2:bool aaa)
+	string shareObject(1:ShareObject shareObject)
 }
