@@ -5,14 +5,17 @@
 	version="4.1">
 
 	<servlet>
-		<servlet-name>TServletExample</servlet-name>
-		<servlet-class>com.share.soa.thrift.http.TServletExample</servlet-class>
+		<servlet-name>TServletExample1</servlet-name>
+		<servlet-class>com.share.soa.thrift.server.ThriftClientServer</servlet-class>
 		<async-supported>true</async-supported>
 		<load-on-startup>1</load-on-startup>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:share-test.xml</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>TServletExample</servlet-name>
-		<url-pattern>/</url-pattern>
+		<servlet-name>TServletExample1</servlet-name>
+		<url-pattern>/TServletExample1</url-pattern>
 	</servlet-mapping>
-
 </web-app>
