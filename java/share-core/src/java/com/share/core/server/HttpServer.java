@@ -74,7 +74,7 @@ public class HttpServer extends AbstractServer {
 		for (String webappPath : webappPaths) {
 			File webappFile = new File((FileSystem.isWindows() ? "" : FileSystem.getSystemDir()) + webappPath, webXmlPath);
 			if (webappFile.exists()) {
-				logger.warn("find " + webappFile.getAbsolutePath());
+				logger.info("find " + webappFile.getAbsolutePath());
 				return webappPath;
 			}
 		}
