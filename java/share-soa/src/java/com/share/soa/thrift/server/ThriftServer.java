@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.share.core.util.FileSystem;
-import com.share.soa.thrift.http.TServletExample;
 import com.share.soa.thrift.protocol.ShareObjectService;
 
 @Component
@@ -38,8 +37,5 @@ public class ThriftServer {
 
 		//logger.info("start server on port " + port + "...");
 		//server.serve();
-
-		TServletExample tServletExample = new TServletExample();
-		tServletExample.init();
 	}
 }
