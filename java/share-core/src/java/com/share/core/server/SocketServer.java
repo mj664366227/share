@@ -31,7 +31,7 @@ public final class SocketServer extends AbstractServer {
 			throw new IllegalPortException("Illegal port: " + port);
 		}
 		serverBootstrap = new ServerBootstrap();
-		
+
 		// boss线程和worker线程不需要太多
 		serverBootstrap.group(new NioEventLoopGroup(4), new NioEventLoopGroup(4));
 		serverBootstrap.channel(NioServerSocketChannel.class);
@@ -40,7 +40,7 @@ public final class SocketServer extends AbstractServer {
 		serverBootstrap.option(ChannelOption.TCP_NODELAY, true);
 		serverBootstrap.option(ChannelOption.SO_KEEPALIVE, true);
 		serverBootstrap.childHandler(initializer);
-		logger.info("socket server bind port " + port);
+		logger.info("socket server bind port {}", port);
 		logger.info(serverBootstrap.toString());
 	}
 
