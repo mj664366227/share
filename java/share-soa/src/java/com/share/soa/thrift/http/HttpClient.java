@@ -9,7 +9,7 @@ import com.share.soa.thrift.protocol.ShareObjectService;
 public class HttpClient {
 
 	public static void main(String[] args) throws Exception {
-		String servletUrl = "http://localhost:9394/TServletExample4";
+		String servletUrl = "http://localhost:9394/TServletExample1";
 
 		THttpClient thc = new THttpClient(servletUrl);
 		TProtocol loPFactory = new TCompactProtocol(thc);

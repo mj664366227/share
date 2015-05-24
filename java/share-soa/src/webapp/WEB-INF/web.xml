@@ -6,7 +6,7 @@
 
 	<servlet>
 		<servlet-name>TServletExample1</servlet-name>
-		<servlet-class>com.share.soa.thrift.server.ThriftClientServer</servlet-class>
+		<servlet-class>com.share.soa.thrift.server.ThriftHttpServer</servlet-class>
 		<async-supported>true</async-supported>
 		<load-on-startup>1</load-on-startup>
 		<init-param>
