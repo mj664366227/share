@@ -35,7 +35,7 @@ public class ThriftServer {
 		//创建服务器  
 		TServer server = new TThreadPoolServer(new Args(serverTransport).protocolFactory(proFactory).processor(processor));
 
-		//logger.info("start server on port " + port + "...");
-		//server.serve();
+		logger.info("start server on port " + port + "...");
+		server.serve();
 	}
 }

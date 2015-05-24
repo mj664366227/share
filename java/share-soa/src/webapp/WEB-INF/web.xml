@@ -5,13 +5,14 @@
 	version="4.1">
 
 	<servlet>
-		<description></description>
-		<display-name>TServletExample</display-name>
 		<servlet-name>TServletExample</servlet-name>
 		<servlet-class>com.share.soa.thrift.http.TServletExample</servlet-class>
+		<async-supported>true</async-supported>
+		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>TServletExample</servlet-name>
-		<url-pattern>/TServletExample</url-pattern>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+
 </web-app>
