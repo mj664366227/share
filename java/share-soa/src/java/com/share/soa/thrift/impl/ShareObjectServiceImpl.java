@@ -1,4 +1,4 @@
-package com.share.soa.thrift.server;
+package com.share.soa.thrift.impl;
 
 import org.apache.thrift.TException;
 import org.slf4j.Logger;

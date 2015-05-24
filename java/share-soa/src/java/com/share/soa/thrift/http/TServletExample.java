@@ -3,8 +3,8 @@ package com.share.soa.thrift.http;
 import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.server.TServlet;
 
+import com.share.soa.thrift.impl.ShareObjectServiceImpl;
 import com.share.soa.thrift.protocol.ShareObjectService;
-import com.share.soa.thrift.server.ShareObjectServiceImpl;
 
 @SuppressWarnings("serial")
 public class TServletExample extends TServlet {
