@@ -175,6 +175,7 @@ public final class ThriftSocketClient {
 	 */
 	public void close() {
 		transport.close();
+		logger.info("thrift closed");
 	}
 
 	/**

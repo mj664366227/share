@@ -79,7 +79,7 @@
 	<bean class="com.share.core.mongo.Mongodb" init-method="init" destroy-method="close"></bean>
 	
 	<!-- 启动thrift socket客户端 -->
-	<bean class="com.share.soa.thrift.client.ThriftSocketClient" init-method="init">
+	<bean class="com.share.soa.thrift.client.ThriftSocketClient" init-method="init" destroy-method="close">
 		<!-- 服务器地址 -->
 		<property name="host" value="127.0.0.1" />
 		<!-- 服务器端口 -->
