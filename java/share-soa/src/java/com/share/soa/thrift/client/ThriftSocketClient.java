@@ -155,7 +155,7 @@ public final class ThriftSocketClient {
 	 * @param methodName 方法名
 	 * @param parameters 参数列表
 	 */
-	public Object getData(String methodName, Object... parameters) {
+	public Object invoke(String methodName, Object... parameters) {
 		Method method = cacheMethod(tServiceClient, methodName);
 		if (method == null) {
 			return null;

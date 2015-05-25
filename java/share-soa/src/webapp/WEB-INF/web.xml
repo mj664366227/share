@@ -5,17 +5,23 @@
 	version="4.1">
 
 	<servlet>
-		<servlet-name>TServletExample1</servlet-name>
+		<servlet-name>TServletExample</servlet-name>
 		<servlet-class>com.share.soa.thrift.server.ThriftHttpServer</servlet-class>
 		<async-supported>true</async-supported>
 		<load-on-startup>1</load-on-startup>
 		<init-param>
-			<param-name>contextConfigLocation</param-name>
+			<!-- 需要处理哪个接口 -->
+			<param-name>tProcessor</param-name>
 			<param-value>classpath:share-test.xml</param-value>
+		</init-param>
+		<init-param>
+			<!-- 数据传输协议 -->
+			<param-name>tProtocol</param-name>
+			<param-value>org.apache.thrift.protocol.TCompactProtocol</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>TServletExample1</servlet-name>
-		<url-pattern>/TServletExample1</url-pattern>
+		<servlet-name>TServletExample</servlet-name>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 </web-app>

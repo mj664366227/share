@@ -54,19 +54,7 @@ public class JunitTest {
 	@Test
 	public void junitTest() throws Exception {
 		long t = System.nanoTime();
-		thriftSocketClient.getData("test", 123232);
-		System.err.println(Time.showTime(System.nanoTime() - t));
-		t = System.nanoTime();
-		thriftSocketClient.getData("test", 123232);
-		System.err.println(Time.showTime(System.nanoTime() - t));
-		t = System.nanoTime();
-		thriftSocketClient.getData("test", 123232);
-		System.err.println(Time.showTime(System.nanoTime() - t));
-		t = System.nanoTime();
-		thriftSocketClient.getData("test", 123232);
-		System.err.println(Time.showTime(System.nanoTime() - t));
-		t = System.nanoTime();
-		thriftSocketClient.getData("test", 123232);
+		thriftSocketClient.invoke("test", 123232);
 		System.err.println(Time.showTime(System.nanoTime() - t));
 	}
 }

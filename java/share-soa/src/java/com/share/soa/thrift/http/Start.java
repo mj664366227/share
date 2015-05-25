@@ -6,7 +6,7 @@ import com.share.core.util.FileSystem;
 public class Start {
 
 	public static void main(String[] args) {
-		HttpServer s = new HttpServer(FileSystem.getPropertyInt("thrift.port"));
+		HttpServer s = new HttpServer(FileSystem.getPropertyInt("thrift.http.port"));
 		s.start();
 	}
 
