@@ -19,7 +19,7 @@ import com.share.core.util.Check;
 /**
  * thrift socket 客户端
  */
-public class ThriftSocketClient {
+public final class ThriftSocketClient {
 	/**
 	 * logger
 	 */
@@ -33,6 +33,10 @@ public class ThriftSocketClient {
 	 */
 	private TTransport transport;
 	/**
+	 * 数据传输协议
+	 */
+	private Class<? extends TProtocol> tProtocol;
+	/**
 	 * TServiceClient
 	 */
 	private TServiceClient client;
@@ -40,10 +44,17 @@ public class ThriftSocketClient {
 	 * 要处理的接口
 	 */
 	private Class<? extends TServiceClient> tServiceClient;
+	/**
+	 * 服务器地址
+	 */
+	private String host;
+	/**
+	 * 服务器端口
+	 */
+	private int port;
 
 	/**
 	 * 构造函数
-	 * @param <T>
 	 * @param host 服务器地址
 	 * @param port 服务器端口
 	 * @param tProtocol 数据传输协议，与客户端对应，有以下几种可选：	
@@ -57,10 +68,27 @@ public class ThriftSocketClient {
 	 * @param tServiceClient 要处理的接口
 	 */
 	public ThriftSocketClient(String host, int port, Class<? extends TProtocol> tProtocol, Class<? extends TServiceClient> tServiceClient) {
+		this();
 		if (!Check.isPort(port)) {
 			throw new IllegalPortException("Illegal port: " + port);
 		}
 
+		construct(host, port, tProtocol, tServiceClient);
+	}
+
+	/**
+	 * 构造函数
+	 */
+	private ThriftSocketClient() {
+	}
+
+	/**
+	 * @param host 服务器地址
+	 * @param port 服务器端口
+	 * @param tProtocol 数据传输协议	
+	 * @param tServiceClient 要处理的接口
+	 */
+	private void construct(String host, int port, Class<? extends TProtocol> tProtocol, Class<? extends TServiceClient> tServiceClient) {
 		// 连接thrift服务器
 		transport = new TFramedTransport(new TSocket(host, port));
 
@@ -74,9 +102,51 @@ public class ThriftSocketClient {
 			client = tServiceClientConstructor.newInstance(tp);
 
 			this.tServiceClient = tServiceClient;
+
+			// 打开传输通道
+			transport.open();
 		} catch (Exception e) {
 			logger.error("", e);
 		}
+	}
+
+	/**
+	 * 初始化
+	 */
+	public void init() {
+		construct(host, port, tProtocol, tServiceClient);
+	}
+
+	/**
+	 * 设置服务器地址
+	 * @param host 服务器地址
+	 */
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	/**
+	 * 设置服务器端口
+	 * @param port 服务器端口
+	 */
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	/**
+	 * 设置传输协议
+	 * @param tProtocol 传输协议
+	 */
+	public void settProtocol(Class<? extends TProtocol> tProtocol) {
+		this.tProtocol = tProtocol;
+	}
+
+	/**
+	 * 设置要处理的接口
+	 * @param tServiceClient 要处理的接口
+	 */
+	public void settServiceClient(Class<? extends TServiceClient> tServiceClient) {
+		this.tServiceClient = tServiceClient;
 	}
 
 	/**
@@ -92,18 +162,19 @@ public class ThriftSocketClient {
 		}
 
 		try {
-			// 开启传输通道
-			transport.open();
-
 			// 反射调用
 			return method.invoke(client, parameters);
 		} catch (Exception e) {
 			logger.error("", e);
-		} finally {
-			// 关闭传输通道
-			transport.close();
 		}
 		return null;
+	}
+
+	/**
+	 * 关闭客户端	
+	 */
+	public void close() {
+		transport.close();
 	}
 
 	/**

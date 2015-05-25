@@ -11,7 +11,7 @@ public class TestThriftSocketServer {
 
 	public static void main(String[] args) {
 		ShareObjectService.Processor<ShareObjectServiceHandler> processor = new ShareObjectService.Processor<ShareObjectServiceHandler>(new ShareObjectServiceHandler());
-		ThriftSocketServer thriftSocketServer = new ThriftSocketServer(FileSystem.getPropertyInt("thrift.port"), new TCompactProtocol.Factory(), processor);
+		ThriftSocketServer thriftSocketServer = new ThriftSocketServer(FileSystem.getPropertyInt("thrift.socket.port"), new TCompactProtocol.Factory(), processor);
 		thriftSocketServer.start();
 	}
 
