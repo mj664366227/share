@@ -19,7 +19,6 @@
 
 
 	<import resource="classpath:share-core.xml" />
-	<import resource="classpath:share-soa.xml" />
 	
 	<!-- 数据格式转换器 -->
 	<mvc:annotation-driven>
@@ -77,19 +76,7 @@
 
 	<!-- 启动Mongodb -->
 	<bean class="com.share.core.mongo.Mongodb" init-method="init" destroy-method="close"></bean>
-	
-	<!-- 启动thrift socket客户端 -->
-	<bean class="com.share.soa.thrift.client.ThriftSocketClient" init-method="init" destroy-method="close">
-		<!-- 服务器地址 -->
-		<property name="host" value="127.0.0.1" />
-		<!-- 服务器端口 -->
-		<property name="port" value="9394" />
-		<!-- 数据传输协议 -->
-		<property name="tProtocol" value="org.apache.thrift.protocol.TCompactProtocol" />
-		<!-- 要处理的接口 -->
-		<property name="tServiceClient" value="com.share.soa.thrift.protocol.ShareObjectService.Client" />
-	</bean>
-	
+		
 	<!-- 自动加载配置 -->
 	<bean class="com.share.core.annotation.processor.ConfigProcessor" init-method="init">
 		<!-- 定义要扫描的包，可用逗号分割 -->
@@ -158,6 +145,22 @@
 		<property name="prefix" value="/default/" /><!-- 这里定义皮肤的名字 -->
 		<property name="suffix" value=".jsp" />
 	</bean>
+
+
+
+
+
+	<bean id="servletHandlerAdapter" class="org.springframework.web.servlet.handler.SimpleServletHandlerAdapter" />
+	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+		<property name="order" value="2"></property>
+	</bean>
+	<bean name="/soa/test" class="com.share.soa.thrift.ThriftHttpServlet">
+		<constructor-arg index="0" value="com.share.soa.thrift.protocol.ShareObjectService$Processor" />
+		<constructor-arg index="1" value="com.share.soa.thrift.impl.ShareObjectServiceHandler" />
+	</bean>
+	
+	
+	
 	
 	<!-- 定时器配置 -->
 	<task:annotation-driven executor="shareExecutor" scheduler="shareScheduler" />
