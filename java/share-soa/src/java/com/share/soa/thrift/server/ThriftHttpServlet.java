@@ -25,16 +25,15 @@ import org.slf4j.LoggerFactory;
  */
 public class ThriftHttpServlet extends HttpServlet {
 	private static final long serialVersionUID = -2355023383614264213L;
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(ThriftHttpServlet.class);
 	private TProcessor processor;
-	private TProtocolFactory compactProtocolFactory = new TCompactProtocol.Factory();
-	private TProtocolFactory jsonProtocolFactory = new TJSONProtocol.Factory();
-	private TProtocolFactory binaryProtocolFactory = new TBinaryProtocol.Factory();
+	private TProtocolFactory protocolFactory;
 
-	public ThriftHttpServlet(String processor, String handler) {
+	public ThriftHttpServlet(Class<? extends TProcessor> processor, String handler) {
+		System.err.println(processor);
 		try {
-			Constructor<?> constructor = Class.forName(processor).getConstructor(new Class<?>[] { com.share.soa.thrift.protocol.ShareObjectService.Iface.class });
-			this.processor = (TProcessor) constructor.newInstance(Class.forName(handler).newInstance());
+			//Constructor<?> constructor = Class.forName(processor).getConstructor(new Class<?>[] { com.share.soa.thrift.protocol.ShareObjectService.Iface.class });
+			//this.processor = (TProcessor) constructor.newInstance(Class.forName(handler).newInstance());
 		} catch (Exception e) {
 			logger.error("", e);
 		}
