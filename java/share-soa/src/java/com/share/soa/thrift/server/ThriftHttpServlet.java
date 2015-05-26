@@ -9,11 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.thrift.TException;
 import org.apache.thrift.TProcessor;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TCompactProtocol;
-import org.apache.thrift.protocol.TJSONProtocol;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.transport.TIOStreamTransport;
 import org.apache.thrift.transport.TTransport;
@@ -29,30 +25,38 @@ public class ThriftHttpServlet extends HttpServlet {
 	private TProcessor processor;
 	private TProtocolFactory protocolFactory;
 
-	public ThriftHttpServlet(Class<? extends TProcessor> processor, String handler) {
-		System.err.println(processor);
+	/**
+	 * 构造函数
+	 * @param serviceClassName 接口类名
+	 * @param tProtocolClassName 通讯协议类名
+	 * @param handlerClassName 处理器类名
+	 */
+	public ThriftHttpServlet(String serviceClassName, String tProtocolClassName, String handlerClassName) {
 		try {
-			//Constructor<?> constructor = Class.forName(processor).getConstructor(new Class<?>[] { com.share.soa.thrift.protocol.ShareObjectService.Iface.class });
-			//this.processor = (TProcessor) constructor.newInstance(Class.forName(handler).newInstance());
+			// 初始化通讯协议
+			protocolFactory = (TProtocolFactory) Class.forName(tProtocolClassName + "$Factory").newInstance();
+
+			// 初始化Iface
+			Class<?> IfaceClazz = Class.forName(serviceClassName + "$Iface");
+
+			// 初始化处理器
+			Constructor<?> constructor = Class.forName(serviceClassName + "$Processor").getConstructor(new Class<?>[] { IfaceClazz });
+			processor = (TProcessor) constructor.newInstance(Class.forName(handlerClassName).newInstance());
 		} catch (Exception e) {
 			logger.error("", e);
+			System.exit(0);
 		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String protocol = request.getHeader("protocol");
-		System.err.println("protocol:  " + protocol);
-		TProtocolFactory protocolFactory = new TCompactProtocol.Factory();
-
 		response.setContentType("application/x-thrift");
 		OutputStream output = response.getOutputStream();
 		TTransport transport = new TIOStreamTransport(request.getInputStream(), output);
 		try {
 			processor.process(protocolFactory.getProtocol(transport), protocolFactory.getProtocol(transport));
 			output.flush();
-		} catch (TException e) {
-			throw new RuntimeException(e);
+		} catch (Exception e) {
+			logger.error("", e);
 		}
-
 	}
 }

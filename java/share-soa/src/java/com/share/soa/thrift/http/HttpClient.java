@@ -17,13 +17,6 @@ public class HttpClient {
 
 		System.err.println(client.test(1));
 		
-		servletUrl = "http://localhost:8080/soa/test2";
-
-		thc = new THttpClient(servletUrl);
-		loPFactory = new TCompactProtocol(thc);
-		client = new ShareObjectService.Client(loPFactory);
-
-		System.err.println(client.test(2));
 	}
 
 }

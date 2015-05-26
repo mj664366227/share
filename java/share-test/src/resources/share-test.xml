@@ -146,23 +146,16 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-
-
-
-
+	<!-- thrift http server -->
 	<bean id="servletHandlerAdapter" class="org.springframework.web.servlet.handler.SimpleServletHandlerAdapter" />
 	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
-		<property name="order" value="2"></property>
+		<property name="order" value="1"></property>
 	</bean>
-	<bean name="/soa/test" class="com.share.soa.thrift.ThriftHttpServlet">
-		<constructor-arg index="0" value="com.share.soa.thrift.protocol.ShareObjectService$Processor" />
-		<constructor-arg index="1" value="com.share.soa.thrift.impl.ShareObjectServiceHandler" />
+	<bean name="/soa/test" class="com.share.soa.thrift.server.ThriftHttpServlet">
+		<constructor-arg index="0" value="com.share.soa.thrift.protocol.ShareObjectService" />
+		<constructor-arg index="1" value="org.apache.thrift.protocol.TCompactProtocol" />
+		<constructor-arg index="2" value="com.share.soa.thrift.impl.ShareObjectServiceHandler" />
 	</bean>
-	<bean name="/soa/test2" class="com.share.soa.thrift.ThriftHttpServlet">
-		<constructor-arg index="0" value="com.share.soa.thrift.protocol.ShareObjectService$Processor" />
-		<constructor-arg index="1" value="com.share.soa.thrift.impl.ShareObjectServiceHandler" />
-	</bean>
-	
 	
 	
 	
