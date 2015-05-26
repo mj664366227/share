@@ -17,8 +17,6 @@ import com.share.core.nsq.NsqService;
 import com.share.core.redis.Redis;
 import com.share.core.ssdb.SSDB;
 import com.share.core.threadPool.DefaultThreadPool;
-import com.share.core.util.Time;
-import com.share.soa.thrift.client.ThriftSocketClient;
 import com.share.test.db.AdminDbService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -48,13 +46,8 @@ public class JunitTest {
 	private MenuProcessor menuProcessor;
 	@Autowired
 	private AspectHaHaHa aspectHaHaHa;
-	@Autowired
-	private ThriftSocketClient thriftSocketClient;
 
 	@Test
 	public void junitTest() throws Exception {
-		long t = System.nanoTime();
-		thriftSocketClient.invoke("test", 123232);
-		System.err.println(Time.showTime(System.nanoTime() - t));
 	}
 }

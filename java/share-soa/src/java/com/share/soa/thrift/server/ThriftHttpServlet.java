@@ -1,4 +1,4 @@
-package com.share.soa.thrift;
+package com.share.soa.thrift.server;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,6 +20,9 @@ import org.apache.thrift.transport.TTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * thrift http servlet
+ */
 public class ThriftHttpServlet extends HttpServlet {
 	private static final long serialVersionUID = -2355023383614264213L;
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -30,37 +33,27 @@ public class ThriftHttpServlet extends HttpServlet {
 
 	public ThriftHttpServlet(String processor, String handler) {
 		try {
-			Constructor<?> constructor = Class.forName(processor).getConstructor(new Class<?>[]{com.share.soa.thrift.protocol.ShareObjectService.Iface.class});
+			Constructor<?> constructor = Class.forName(processor).getConstructor(new Class<?>[] { com.share.soa.thrift.protocol.ShareObjectService.Iface.class });
 			this.processor = (TProcessor) constructor.newInstance(Class.forName(handler).newInstance());
 		} catch (Exception e) {
 			logger.error("", e);
 		}
 	}
 
-//	@Override
-//	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		String protocol = request.getHeader("protocol");
-//		TProtocolFactory protocolFactory;
-//		if ("json".equals(protocol)) {
-//			protocolFactory = jsonProtocolFactory;
-//		} else if ("compact".equals(protocol)) {
-//			protocolFactory = compactProtocolFactory;
-//		} else if ("binary".equals(protocol)) {
-//			protocolFactory = binaryProtocolFactory;
-//		} else {
-//			//默认协议改成binary
-//			protocolFactory = binaryProtocolFactory;
-//		}
-//
-//		response.setContentType("application/x-thrift");
-//		OutputStream output = response.getOutputStream();
-//		TTransport transport = new TIOStreamTransport(request.getInputStream(), output);
-//		try {
-//			processor.process(protocolFactory.getProtocol(transport), protocolFactory.getProtocol(transport));
-//			output.flush();
-//		} catch (TException e) {
-//			throw new RuntimeException(e);
-//		}
-//
-//	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String protocol = request.getHeader("protocol");
+		System.err.println("protocol:  " + protocol);
+		TProtocolFactory protocolFactory = new TCompactProtocol.Factory();
+
+		response.setContentType("application/x-thrift");
+		OutputStream output = response.getOutputStream();
+		TTransport transport = new TIOStreamTransport(request.getInputStream(), output);
+		try {
+			processor.process(protocolFactory.getProtocol(transport), protocolFactory.getProtocol(transport));
+			output.flush();
+		} catch (TException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
 }
