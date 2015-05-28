@@ -150,7 +150,7 @@
 	<bean id="servletHandlerAdapter" class="org.springframework.web.servlet.handler.SimpleServletHandlerAdapter" />
 	<bean name="/soa/test" class="com.share.soa.thrift.server.ThriftHttpServlet" init-method="init">
 		<property name="serviceClass" value="com.share.soa.thrift.protocol.ShareObjectService"></property>
-		<property name="tProtocolClass" value="org.apache.thrift.protocol.TCompactProtocol"></property>
+		<property name="protocolClass" value="org.apache.thrift.protocol.TCompactProtocol"></property>
 		<property name="handlerClass" value="com.share.soa.thrift.impl.ShareObjectServiceHandler"></property>
 	</bean>
 

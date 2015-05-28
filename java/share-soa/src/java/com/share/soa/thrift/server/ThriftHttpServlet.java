@@ -26,7 +26,7 @@ public class ThriftHttpServlet extends HttpServlet {
 	private TProcessor processor;
 	private TProtocolFactory protocolFactory;
 	private Class<?> serviceClass;
-	private Class<? extends TProtocol> tProtocolClass;
+	private Class<? extends TProtocol> protocolClass;
 	private Class<?> handlerClass;
 
 	/**
@@ -43,12 +43,12 @@ public class ThriftHttpServlet extends HttpServlet {
 		this.serviceClass = serviceClass;
 	}
 
-	public Class<? extends TProtocol> gettProtocolClass() {
-		return tProtocolClass;
+	public Class<? extends TProtocol> getProtocolClass() {
+		return protocolClass;
 	}
 
-	public void settProtocolClass(Class<? extends TProtocol> tProtocolClass) {
-		this.tProtocolClass = tProtocolClass;
+	public void settProtocolClass(Class<? extends TProtocol> protocolClass) {
+		this.protocolClass = protocolClass;
 	}
 
 	public Class<?> getHandlerClass() {
@@ -65,7 +65,7 @@ public class ThriftHttpServlet extends HttpServlet {
 	public void init() {
 		try {
 			// 初始化通讯协议
-			protocolFactory = (TProtocolFactory) Class.forName(tProtocolClass.getName() + "$Factory").newInstance();
+			protocolFactory = (TProtocolFactory) Class.forName(protocolClass.getName() + "$Factory").newInstance();
 
 			// 初始化Iface
 			Class<?> IfaceClazz = Class.forName(serviceClass.getName() + "$Iface");
