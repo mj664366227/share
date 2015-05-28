@@ -148,17 +148,14 @@
 
 	<!-- thrift http server -->
 	<bean id="servletHandlerAdapter" class="org.springframework.web.servlet.handler.SimpleServletHandlerAdapter" />
-	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
-		<property name="order" value="1"></property>
-	</bean>
-	<bean name="/soa/test" class="com.share.soa.thrift.server.ThriftHttpServlet">
-		<constructor-arg index="0" value="com.share.soa.thrift.protocol.ShareObjectService" />
-		<constructor-arg index="1" value="org.apache.thrift.protocol.TCompactProtocol" />
-		<constructor-arg index="2" value="com.share.soa.thrift.impl.ShareObjectServiceHandler" />
+	<bean name="/soa/test" class="com.share.soa.thrift.server.ThriftHttpServlet" init-method="init">
+		<property name="serviceClass" value="com.share.soa.thrift.protocol.ShareObjectService"></property>
+		<property name="tProtocolClass" value="org.apache.thrift.protocol.TCompactProtocol"></property>
+		<property name="handlerClass" value="com.share.soa.thrift.impl.ShareObjectServiceHandler"></property>
 	</bean>
 
 
-	<!-- thrift http client 
+	<!-- thrift http client -->
 	<bean id="thrfitHttpService" class="com.share.soa.thrift.ThriftHttpService" autowire="byName" />
 	<bean id="thriftClient" class="com.share.soa.thrift.ThriftClient">
 		<property name="httpService" ref="thrfitHttpService"></property>
@@ -166,7 +163,7 @@
 
 	<bean id="shareObject" class="com.share.soa.thrift.ThriftHttpClientFactory" autowire="byName">
 		<property name="className" value="com.share.soa.thrift.protocol.ShareObjectService" />
-	</bean>-->
+	</bean>
 	
 	
 	

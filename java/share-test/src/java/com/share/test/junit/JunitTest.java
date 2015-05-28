@@ -52,10 +52,10 @@ public class JunitTest {
 	private ShareObjectService.Iface shareObjectService;
 	@Autowired
 	private ThriftHttpService thriftHttpService;
+	
 
 	@Test
 	public void junitTest() throws Exception {
-		System.err.println(shareObjectService);
-		System.err.println(thriftHttpService);
+		System.err.println(shareObjectService.test(111));
 	}
 }

@@ -25,14 +25,44 @@ public class ThriftHttpServlet extends HttpServlet {
 	private static final Logger logger = LoggerFactory.getLogger(ThriftHttpServlet.class);
 	private TProcessor processor;
 	private TProtocolFactory protocolFactory;
+	private Class<?> serviceClass;
+	private Class<? extends TProtocol> tProtocolClass;
+	private Class<?> handlerClass;
 
 	/**
-	 * 构造函数
-	 * @param serviceClass 接口类
-	 * @param tProtocolClass 通讯协议类
-	 * @param handlerClass 处理器类
+	 * 私有构造函数
 	 */
-	public ThriftHttpServlet(Class<?> serviceClass, Class<? extends TProtocol> tProtocolClass, Class<?> handlerClass) {
+	private ThriftHttpServlet() {
+	}
+
+	public Class<?> getServiceClass() {
+		return serviceClass;
+	}
+
+	public void setServiceClass(Class<?> serviceClass) {
+		this.serviceClass = serviceClass;
+	}
+
+	public Class<? extends TProtocol> gettProtocolClass() {
+		return tProtocolClass;
+	}
+
+	public void settProtocolClass(Class<? extends TProtocol> tProtocolClass) {
+		this.tProtocolClass = tProtocolClass;
+	}
+
+	public Class<?> getHandlerClass() {
+		return handlerClass;
+	}
+
+	public void setHandlerClass(Class<?> handlerClass) {
+		this.handlerClass = handlerClass;
+	}
+
+	/**
+	 * 初始化
+	 */
+	public void init() {
 		try {
 			// 初始化通讯协议
 			protocolFactory = (TProtocolFactory) Class.forName(tProtocolClass.getName() + "$Factory").newInstance();

@@ -1,17 +1,18 @@
 package com.share.soa.thrift;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
-public class ThriftHttpClientFactory implements FactoryBean, InitializingBean {
-	private Class ifaceClass;
-	private Class clientClass;
-
+public class ThriftHttpClientFactory implements FactoryBean<Object>, InitializingBean {
+	private static final Logger logger = LoggerFactory.getLogger(ThriftHttpClientFactory.class);
+	private Class<?> ifaceClass;
+	private Class<?> clientClass;
 	private String className;
 	private ThriftClient thriftClient;
 
@@ -55,14 +56,12 @@ public class ThriftHttpClientFactory implements FactoryBean, InitializingBean {
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			//modified by jesseling at 2015-3-12 to add detail of exception
 			try {
 				return method.invoke(thriftClient.get(className), args);
-			} catch (InvocationTargetException e) {
-				throw e.getCause();
 			} catch (Exception e) {
-				throw e.getCause();
+				logger.error("", e);
 			}
+			return null;
 		}
 	}
 }

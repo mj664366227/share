@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
 import org.apache.thrift.transport.TTransportException;
@@ -57,7 +58,7 @@ public class ThriftClient implements InitializingBean {
             if (obj == null) {
                 try {
                     THttpClient transport = new THttpClient(url, httpService.getClient());
-                    TProtocol protocol = new TBinaryProtocol(transport);
+                    TProtocol protocol = new TCompactProtocol(transport);
                     obj = Class.forName(className+"$Client").getDeclaredConstructor(TProtocol.class).newInstance(protocol);
                     local.set(obj);
                 } catch (TTransportException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
