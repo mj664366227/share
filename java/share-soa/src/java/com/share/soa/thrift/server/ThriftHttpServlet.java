@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.thrift.TProcessor;
+import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.transport.TIOStreamTransport;
 import org.apache.thrift.transport.TTransport;
@@ -27,21 +28,21 @@ public class ThriftHttpServlet extends HttpServlet {
 
 	/**
 	 * 构造函数
-	 * @param serviceClassName 接口类名
-	 * @param tProtocolClassName 通讯协议类名
-	 * @param handlerClassName 处理器类名
+	 * @param serviceClass 接口类
+	 * @param tProtocolClass 通讯协议类
+	 * @param handlerClass 处理器类
 	 */
-	public ThriftHttpServlet(String serviceClassName, String tProtocolClassName, String handlerClassName) {
+	public ThriftHttpServlet(Class<?> serviceClass, Class<? extends TProtocol> tProtocolClass, Class<?> handlerClass) {
 		try {
 			// 初始化通讯协议
-			protocolFactory = (TProtocolFactory) Class.forName(tProtocolClassName + "$Factory").newInstance();
+			protocolFactory = (TProtocolFactory) Class.forName(tProtocolClass.getName() + "$Factory").newInstance();
 
 			// 初始化Iface
-			Class<?> IfaceClazz = Class.forName(serviceClassName + "$Iface");
+			Class<?> IfaceClazz = Class.forName(serviceClass.getName() + "$Iface");
 
 			// 初始化处理器
-			Constructor<?> constructor = Class.forName(serviceClassName + "$Processor").getConstructor(new Class<?>[] { IfaceClazz });
-			processor = (TProcessor) constructor.newInstance(Class.forName(handlerClassName).newInstance());
+			Constructor<?> constructor = Class.forName(serviceClass.getName() + "$Processor").getConstructor(new Class<?>[] { IfaceClazz });
+			processor = (TProcessor) constructor.newInstance(handlerClass.newInstance());
 		} catch (Exception e) {
 			logger.error("", e);
 			System.exit(0);

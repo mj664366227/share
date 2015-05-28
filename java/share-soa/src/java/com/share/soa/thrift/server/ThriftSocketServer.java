@@ -1,6 +1,9 @@
 package com.share.soa.thrift.server;
 
+import java.lang.reflect.Constructor;
+
 import org.apache.thrift.TProcessor;
+import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadedSelectorServer;
@@ -25,24 +28,11 @@ public class ThriftSocketServer extends AbstractServer {
 	/**
 	 * 构造函数
 	 * @param port 端口
-	 * @param protocolFactory 数据传输协议，与客户端对应，有以下几种可选：	
-	 * <pre>
-	 * TBinaryProtocol     二进制格式
-	 * TCompactProtocol    压缩格式
-	 * TJSONProtocol       JSON格式
-	 * TSimpleJSONProtocol 提供JSON只写协议，生成的文件很容易通过脚本语言解析
-	 * TDebugProtocol      使用易懂的可读的文本格式以便于debug
-	 * </pre>
-	 * @param tProcessor 需要处理哪个接口
-	 * 
-	 * <pre>
-	 * 例如：
-	 * ShareObjectService.Processor<ShareObjectServiceHandler> processor = new ShareObjectService.Processor<ShareObjectServiceHandler>(new ShareObjectServiceHandler());
-	 * ThriftSocketServer t = new ThriftSocketServer(10086, new TCompactProtocol.Factory(), processor);
-	 * t.start();
-	 * </pre>
+	 * @param serviceClass 接口类
+	 * @param tProtocolClass 通讯协议类	
+	 * @param handlerClass 处理器类
 	 */
-	public ThriftSocketServer(int port, TProtocolFactory protocolFactory, TProcessor tProcessor) {
+	public ThriftSocketServer(int port, Class<?> serviceClass, Class<? extends TProtocol> tProtocolClass, Class<?> handlerClass) {
 		if (!Check.isPort(port)) {
 			throw new IllegalPortException("Illegal port: " + port);
 		}
@@ -51,6 +41,16 @@ public class ThriftSocketServer extends AbstractServer {
 		try {
 			// 设置传输通道，普通通道  
 			TNonblockingServerTransport serverTransport = new TNonblockingServerSocket(port);
+
+			// 初始化通讯协议
+			TProtocolFactory protocolFactory = (TProtocolFactory) Class.forName(tProtocolClass.getName() + "$Factory").newInstance();
+
+			// 初始化Iface
+			Class<?> IfaceClazz = Class.forName(serviceClass.getName() + "$Iface");
+
+			// 初始化处理器
+			Constructor<?> constructor = Class.forName(serviceClass.getName() + "$Processor").getConstructor(new Class<?>[] { IfaceClazz });
+			TProcessor tProcessor = (TProcessor) constructor.newInstance(handlerClass.newInstance());
 
 			// 构造连接参数
 			Args args = new Args(serverTransport);
