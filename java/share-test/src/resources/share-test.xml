@@ -156,6 +156,17 @@
 		<constructor-arg index="1" value="org.apache.thrift.protocol.TCompactProtocol" />
 		<constructor-arg index="2" value="com.share.soa.thrift.impl.ShareObjectServiceHandler" />
 	</bean>
+
+
+	<!-- thrift client -->
+	<bean id="thrfitHttpService" class="com.share.soa.thrift.ThriftHttpService" autowire="byName" />
+	<bean id="thriftClient" class="com.share.soa.thrift.ThriftClient">
+		<property name="httpService" ref="thrfitHttpService"></property>
+	</bean>
+
+	<bean id="shareObject" class="com.share.soa.thrift.ThriftHttpClientFactory" autowire="byName">
+		<property name="className" value="com.share.soa.thrift.protocol.ShareObjectService" />
+	</bean>
 	
 	
 	

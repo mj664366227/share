@@ -49,7 +49,6 @@ public class ThriftHttpServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("application/x-thrift");
 		OutputStream output = response.getOutputStream();
 		TTransport transport = new TIOStreamTransport(request.getInputStream(), output);
 		try {

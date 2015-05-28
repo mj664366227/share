@@ -17,6 +17,7 @@ import com.share.core.nsq.NsqService;
 import com.share.core.redis.Redis;
 import com.share.core.ssdb.SSDB;
 import com.share.core.threadPool.DefaultThreadPool;
+import com.share.soa.thrift.protocol.ShareObjectService;
 import com.share.test.db.AdminDbService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,8 +47,12 @@ public class JunitTest {
 	private MenuProcessor menuProcessor;
 	@Autowired
 	private AspectHaHaHa aspectHaHaHa;
+	@Autowired
+	private ShareObjectService.Iface shareObjectService;
 
 	@Test
 	public void junitTest() throws Exception {
+		System.err.println(shareObjectService);
+		System.err.println(shareObjectService.test(1));
 	}
 }
