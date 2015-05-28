@@ -17,6 +17,7 @@ import com.share.core.nsq.NsqService;
 import com.share.core.redis.Redis;
 import com.share.core.ssdb.SSDB;
 import com.share.core.threadPool.DefaultThreadPool;
+import com.share.soa.thrift.ThriftHttpService;
 import com.share.soa.thrift.protocol.ShareObjectService;
 import com.share.test.db.AdminDbService;
 
@@ -49,10 +50,12 @@ public class JunitTest {
 	private AspectHaHaHa aspectHaHaHa;
 	@Autowired
 	private ShareObjectService.Iface shareObjectService;
+	@Autowired
+	private ThriftHttpService thriftHttpService;
 
 	@Test
 	public void junitTest() throws Exception {
 		System.err.println(shareObjectService);
-		System.err.println(shareObjectService.test(1));
+		System.err.println(thriftHttpService);
 	}
 }

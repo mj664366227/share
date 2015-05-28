@@ -158,7 +158,7 @@
 	</bean>
 
 
-	<!-- thrift client -->
+	<!-- thrift http client -->
 	<bean id="thrfitHttpService" class="com.share.soa.thrift.ThriftHttpService" autowire="byName" />
 	<bean id="thriftClient" class="com.share.soa.thrift.ThriftClient">
 		<property name="httpService" ref="thrfitHttpService"></property>
