@@ -56,7 +56,7 @@ class filesystem{
 					self::rmdir($file);
 				}
 			}
-			rmdir($dir);
+			rm($dir);
 		} elseif (is_file($dir)){
 			unlink($dir);
 		}
