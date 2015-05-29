@@ -53,10 +53,10 @@ class filesystem{
 					unlink($file);
 				}
 				if(is_dir($file)){
-					self::rmdir($file);
+					self::rm($file);
 				}
 			}
-			rm($dir);
+			rmdir($dir);
 		} elseif (is_file($dir)){
 			unlink($dir);
 		}
