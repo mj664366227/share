@@ -77,6 +77,7 @@ public final class ThriftHttpClient implements InitializingBean {
 			}
 		} catch (Exception e) {
 			logger.error("", e);
+			logger.error("can not find thrift.properties!");
 			System.exit(0);
 		}
 	}
