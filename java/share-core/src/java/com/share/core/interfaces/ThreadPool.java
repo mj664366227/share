@@ -99,7 +99,7 @@ public abstract class ThreadPool {
 			} else {
 				execute(task);
 			}
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
+		} catch (Exception e) {
 			future.cancel(true);
 			logger.error("", e);
 		}
