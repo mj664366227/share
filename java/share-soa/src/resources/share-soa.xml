@@ -20,14 +20,14 @@
 	<!-- thrift http server -->
 	<bean id="servletHandlerAdapter" class="org.springframework.web.servlet.handler.SimpleServletHandlerAdapter" />
 	<bean name="/soa/test" class="com.share.soa.thrift.server.ThriftHttpServlet" init-method="init">
-		<property name="serviceClass" value="com.share.soa.thrift.protocol.ShareObjectService"></property>
-		<property name="protocolClass" value="org.apache.thrift.protocol.TCompactProtocol"></property>
-		<property name="handlerClass" value="com.share.soa.thrift.impl.ShareObjectServiceHandler"></property>
+		<property name="serviceClass" value="com.share.soa.thrift.protocol.ShareObjectService"/>
+		<property name="protocolClass" value="org.apache.thrift.protocol.TCompactProtocol"/>
+		<property name="handlerClass" value="com.share.soa.thrift.impl.ShareObjectServiceHandler"/>
 	</bean>
 	<bean name="/soa/test2" class="com.share.soa.thrift.server.ThriftHttpServlet" init-method="init">
-		<property name="serviceClass" value="com.share.soa.thrift.protocol.Userf"></property>
-		<property name="protocolClass" value="org.apache.thrift.protocol.TCompactProtocol"></property>
-		<property name="handlerClass" value="com.share.soa.thrift.impl.UserHandler"></property>
+		<property name="serviceClass" value="com.share.soa.thrift.protocol.Userf"/>
+		<property name="protocolClass" value="org.apache.thrift.protocol.TCompactProtocol"/>
+		<property name="handlerClass" value="com.share.soa.thrift.impl.UserHandler"/>
 	</bean>
 
 
