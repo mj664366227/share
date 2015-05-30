@@ -156,9 +156,8 @@
 
 
 	<!-- thrift http client -->
-	<bean id="thriftHttpClient" class="com.share.soa.thrift.client.ThriftHttpClient" autowire="byName"/>
-
-	<bean id="shareObject" class="com.share.soa.thrift.client.ThriftHttpClientFactory" autowire="byName">
+	<bean class="com.share.soa.thrift.client.ThriftHttpClient" autowire="byName"/>
+	<bean class="com.share.soa.thrift.client.ThriftHttpClientFactory">
 		<property name="className" value="com.share.soa.thrift.protocol.ShareObjectService" />
 	</bean> 
 	

@@ -1,6 +1,7 @@
 package com.share.soa.thrift.client;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -18,16 +19,17 @@ import com.share.core.client.HttpClient;
 
 public class ThriftHttpClient implements InitializingBean {
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	private Map<String, ThreadLocal> clientMap = Maps.newHashMap();
+	private Map<String, ThreadLocal<Object>> clientMap = Maps.newHashMap();
 	private ReadWriteLock lock = new ReentrantReadWriteLock();
 	private Properties properties = new Properties();
 	@Autowired
 	private HttpClient httpClient;
 
+	@SuppressWarnings("unchecked")
 	public <T> T get(String className) {
 		lock.readLock().lock();
 		try {
-			ThreadLocal local = clientMap.get(className);
+			ThreadLocal<Object> local = clientMap.get(className);
 			if (local != null) {
 				Object obj = local.get();
 				if (obj != null) {
@@ -44,9 +46,9 @@ public class ThriftHttpClient implements InitializingBean {
 		}
 		lock.writeLock().lock();
 		try {
-			ThreadLocal local = clientMap.get(className);
+			ThreadLocal<Object> local = clientMap.get(className);
 			if (local == null) {
-				local = new ThreadLocal();
+				local = new ThreadLocal<Object>();
 				clientMap.put(className, local);
 			}
 			Object obj = local.get();
@@ -70,7 +72,9 @@ public class ThriftHttpClient implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		try {
 			properties.load(getClass().getClassLoader().getResourceAsStream("thrift.conf"));
-			logger.info("load thrift.conf: {}", properties);
+			for (Entry<Object, Object> e : properties.entrySet()) {
+				logger.info("{} => {}", e.getKey(), e.getValue());
+			}
 		} catch (Exception e) {
 			throw new IllegalStateException("load thrift.conf error", e);
 		}
