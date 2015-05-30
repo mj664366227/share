@@ -1,4 +1,4 @@
-package com.share.soa.thrift;
+package com.share.soa.thrift.client;
 
 import java.util.Map;
 import java.util.Properties;

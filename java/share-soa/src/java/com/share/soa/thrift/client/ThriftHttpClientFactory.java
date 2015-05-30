@@ -1,4 +1,4 @@
-package com.share.soa.thrift;
+package com.share.soa.thrift.client;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -8,20 +8,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ThriftHttpClientFactory implements FactoryBean<Object>, InitializingBean {
 	private static final Logger logger = LoggerFactory.getLogger(ThriftHttpClientFactory.class);
 	private Class<?> ifaceClass;
 	private Class<?> clientClass;
 	private String className;
+	@Autowired
 	private ThriftHttpClient thriftClient;
+
+	public String getClassName() {
+		return className;
+	}
 
 	public void setClassName(String className) {
 		this.className = className;
-	}
-
-	public void setThriftClient(ThriftHttpClient thriftClient) {
-		this.thriftClient = thriftClient;
 	}
 
 	@Override
@@ -45,7 +47,7 @@ public class ThriftHttpClientFactory implements FactoryBean<Object>, Initializin
 		clientClass = Class.forName(className + "$Client");
 	}
 
-	class ThriftProxy implements InvocationHandler {
+	private final class ThriftProxy implements InvocationHandler {
 		private ThriftHttpClient thriftClient;
 		private String className;
 
