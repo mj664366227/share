@@ -28,6 +28,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.share.core.annotation.processor.PojoProcessor;
 import com.share.core.util.SortUtil.Order;
+import com.share.core.util.StringUtil;
 
 /**
  * jdbc抽象类
@@ -135,7 +136,7 @@ public abstract class AbstractJDBC {
 	 */
 	public final byte queryByte(String sql, Object... args) {
 		try {
-			return jdbc.queryForObject(sql, args, Byte.class);
+			return StringUtil.getByte(jdbc.queryForObject(sql, args, Byte.class));
 		} catch (EmptyResultDataAccessException e) {
 			logger.error("", e);
 			return 0;
@@ -165,7 +166,7 @@ public abstract class AbstractJDBC {
 	 */
 	public final int queryInt(String sql, Object... args) {
 		try {
-			return jdbc.queryForObject(sql, args, Integer.class);
+			return StringUtil.getInt(jdbc.queryForObject(sql, args, Integer.class));
 		} catch (EmptyResultDataAccessException e) {
 			logger.error("", e);
 			return 0;
@@ -180,7 +181,7 @@ public abstract class AbstractJDBC {
 	 */
 	public final long queryLong(String sql, Object... args) {
 		try {
-			return jdbc.queryForObject(sql, args, Long.class);
+			return StringUtil.getLong(jdbc.queryForObject(sql, args, Long.class));
 		} catch (EmptyResultDataAccessException e) {
 			logger.error("", e);
 			return 0L;
@@ -195,7 +196,7 @@ public abstract class AbstractJDBC {
 	 */
 	public final float queryFloat(String sql, Object... args) {
 		try {
-			return jdbc.queryForObject(sql, args, Float.class);
+			return StringUtil.getFloat(jdbc.queryForObject(sql, args, Float.class));
 		} catch (EmptyResultDataAccessException e) {
 			logger.error("", e);
 			return 0L;
@@ -210,7 +211,7 @@ public abstract class AbstractJDBC {
 	 */
 	public final double queryDouble(String sql, Object... args) {
 		try {
-			return jdbc.queryForObject(sql, args, Double.class);
+			return StringUtil.getDouble(jdbc.queryForObject(sql, args, Double.class));
 		} catch (EmptyResultDataAccessException e) {
 			logger.error("", e);
 			return 0L;
@@ -225,7 +226,7 @@ public abstract class AbstractJDBC {
 	 */
 	public final String queryString(String sql, Object... args) {
 		try {
-			return jdbc.queryForObject(sql, args, String.class);
+			return StringUtil.getString(jdbc.queryForObject(sql, args, String.class));
 		} catch (EmptyResultDataAccessException e) {
 			logger.error("", e);
 			return null;

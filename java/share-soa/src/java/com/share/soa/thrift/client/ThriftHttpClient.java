@@ -71,7 +71,7 @@ public final class ThriftHttpClient implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		try {
-			properties.load(getClass().getClassLoader().getResourceAsStream("thrift.properties"));
+			properties.load(getClass().getClassLoader().getResourceAsStream("thrift.conf"));
 			for (Entry<Object, Object> e : properties.entrySet()) {
 				logger.info("service '{}' soa address is {}", e.getKey(), e.getValue());
 			}
