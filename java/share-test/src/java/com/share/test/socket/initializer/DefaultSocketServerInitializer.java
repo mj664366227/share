@@ -33,6 +33,7 @@ public final class DefaultSocketServerInitializer extends AbstractSocketServerIn
 	 */
 	public DefaultSocketServerInitializer(int threadsNum) {
 		threadPool = new DefaultThreadPool();
+		threadPool.changeName(getClass().getName());
 		threadPool.setPoolSize(threadsNum);
 		threadPool.init();
 	}

@@ -41,6 +41,17 @@ public abstract class ThreadPool {
 	}
 
 	/**
+	 * 改变线程池的名字
+	 * @param name
+	 */
+	public void changeName(String name) {
+		if (name == null || name.isEmpty()) {
+			return;
+		}
+		this.name = name;
+	}
+
+	/**
 	 * 初始化
 	 */
 	public void init() {
