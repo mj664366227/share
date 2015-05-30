@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.collect.Maps;
 import com.share.core.client.HttpClient;
 
-public class ThriftHttpClient implements InitializingBean {
-	private Logger logger = LoggerFactory.getLogger(getClass());
+public final class ThriftHttpClient implements InitializingBean {
+	private static final Logger logger = LoggerFactory.getLogger(ThriftHttpClient.class);
 	private Map<String, ThreadLocal<Object>> clientMap = Maps.newHashMap();
 	private ReadWriteLock lock = new ReentrantReadWriteLock();
 	private Properties properties = new Properties();
@@ -59,7 +59,7 @@ public class ThriftHttpClient implements InitializingBean {
 					obj = Class.forName(className + "$Client").getDeclaredConstructor(TProtocol.class).newInstance(protocol);
 					local.set(obj);
 				} catch (Exception e) {
-					throw new RuntimeException(e);
+					logger.error("", e);
 				}
 			}
 			return (T) obj;
@@ -71,12 +71,13 @@ public class ThriftHttpClient implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		try {
-			properties.load(getClass().getClassLoader().getResourceAsStream("thrift.conf"));
+			properties.load(getClass().getClassLoader().getResourceAsStream("thrift.properties"));
 			for (Entry<Object, Object> e : properties.entrySet()) {
-				logger.info("{} => {}", e.getKey(), e.getValue());
+				logger.info("service '{}' soa address is {}", e.getKey(), e.getValue());
 			}
 		} catch (Exception e) {
-			throw new IllegalStateException("load thrift.conf error", e);
+			logger.error("", e);
+			System.exit(0);
 		}
 	}
 }

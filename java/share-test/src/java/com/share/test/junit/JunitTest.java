@@ -18,6 +18,7 @@ import com.share.core.redis.Redis;
 import com.share.core.ssdb.SSDB;
 import com.share.core.threadPool.DefaultThreadPool;
 import com.share.soa.thrift.protocol.ShareObjectService;
+import com.share.soa.thrift.protocol.Userf;
 import com.share.test.db.AdminDbService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -49,8 +50,12 @@ public class JunitTest {
 	private AspectHaHaHa aspectHaHaHa;
 	@Autowired
 	private ShareObjectService.Iface shareObjectService; 
+	@Autowired
+	private Userf.Iface user;
+	
 	@Test
 	public void junitTest() throws Exception {
 		System.err.println(shareObjectService.test(111));
+		System.err.println(user.getUser(11111));
 	}
 }
