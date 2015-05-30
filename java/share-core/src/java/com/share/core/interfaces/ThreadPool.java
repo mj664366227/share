@@ -1,11 +1,9 @@
 package com.share.core.interfaces;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,15 +38,6 @@ public abstract class ThreadPool {
 	 */
 	public void setPoolSize(int poolSize) {
 		this.poolSize = poolSize;
-	}
-
-	/**
-	 * 设置线程池名字
-	 * @author ruan
-	 * @param name
-	 */
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	/**
