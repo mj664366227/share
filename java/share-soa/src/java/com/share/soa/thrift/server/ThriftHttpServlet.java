@@ -47,7 +47,7 @@ public class ThriftHttpServlet extends HttpServlet {
 		return protocolClass;
 	}
 
-	public void settProtocolClass(Class<? extends TProtocol> protocolClass) {
+	public void setProtocolClass(Class<? extends TProtocol> protocolClass) {
 		this.protocolClass = protocolClass;
 	}
 

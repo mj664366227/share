@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -20,7 +22,6 @@ import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -46,12 +47,13 @@ public final class HttpClient {
 	 */
 	private final static Charset charset = SystemUtil.getSystemCharset();
 	/**
-	 * 默认超时时间(5秒)
+	 * 默认超时时间(3秒)
 	 */
-	private int connectTimeout = 5000;
+	private int connectTimeout = 3000;
 	/**
 	 * http连接池
-	 */		private CloseableHttpClient client;
+	 */
+	private CloseableHttpClient client;
 	/**
 	 * 连接池管理器
 	 */
@@ -68,37 +70,50 @@ public final class HttpClient {
 	 * @author ruan
 	 */
 	public void init() {
-		// 支持http和https
-		RegistryBuilder<ConnectionSocketFactory> registryBuilder = RegistryBuilder.<ConnectionSocketFactory> create();
-		registryBuilder.register("http", PlainConnectionSocketFactory.INSTANCE);
-		registryBuilder.register("https", new SSLConnectionSocketFactory(SSLContexts.createSystemDefault()));
-		Registry<ConnectionSocketFactory> socketFactoryRegistry = registryBuilder.build();
+		try {
+			// 支持http和https
+			RegistryBuilder<ConnectionSocketFactory> registryBuilder = RegistryBuilder.<ConnectionSocketFactory> create();
+			registryBuilder.register("http", PlainConnectionSocketFactory.getSocketFactory());
+			registryBuilder.register("https", new SSLConnectionSocketFactory(SSLContext.getDefault()));
+			Registry<ConnectionSocketFactory> socketFactoryRegistry = registryBuilder.build();
 
-		// 初始化连接池
-		cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-		cm.setMaxTotal(2000);
-		cm.setDefaultMaxPerRoute(100);
+			// 初始化连接池
+			cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+			cm.setMaxTotal(2000);
+			cm.setDefaultMaxPerRoute(100);
+			cm.setValidateAfterInactivity(connectTimeout);
 
-		// 设置字符集
-		ConnectionConfig.Builder connectionConfigBuilder = ConnectionConfig.custom();
-		connectionConfigBuilder.setCharset(charset);
-		cm.setDefaultConnectionConfig(connectionConfigBuilder.build());
+			// 设置字符集
+			ConnectionConfig.Builder connectionConfigBuilder = ConnectionConfig.custom();
+			connectionConfigBuilder.setCharset(charset);
+			cm.setDefaultConnectionConfig(connectionConfigBuilder.build());
 
-		// 设置socket连接选项
-		SocketConfig.Builder socketConfigBuilder = SocketConfig.custom();
-		socketConfigBuilder.setTcpNoDelay(true);
-		socketConfigBuilder.setSoKeepAlive(false);
-		socketConfigBuilder.setSoTimeout(connectTimeout);
-		cm.setDefaultSocketConfig(socketConfigBuilder.build());
+			// 设置socket连接选项
+			SocketConfig.Builder socketConfigBuilder = SocketConfig.custom();
+			socketConfigBuilder.setTcpNoDelay(true);
+			socketConfigBuilder.setSoKeepAlive(false);
+			socketConfigBuilder.setSoTimeout(connectTimeout);
+			cm.setDefaultSocketConfig(socketConfigBuilder.build());
 
-		// 请求超时设置
-		RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
-		requestConfigBuilder.setConnectTimeout(connectTimeout);
-		requestConfigBuilder.setConnectionRequestTimeout(connectTimeout);
-		requestConfigBuilder.setSocketTimeout(connectTimeout);
+			// 请求超时设置
+			RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
+			requestConfigBuilder.setConnectTimeout(connectTimeout);
+			requestConfigBuilder.setConnectionRequestTimeout(connectTimeout);
+			requestConfigBuilder.setSocketTimeout(connectTimeout);
 
-		client = HttpClients.custom().setConnectionManager(cm).build();
-		logger.info("http client inited");
+			client = HttpClients.custom().setConnectionManager(cm).build();
+			logger.info("http client inited");
+		} catch (Exception e) {
+			logger.error("", e);
+			System.exit(0);
+		}
+	}
+
+	/**
+	 * 获取http连接池
+		 */
+	public CloseableHttpClient getClient() {
+		return client;
 	}
 
 	/**
@@ -132,7 +147,7 @@ public final class HttpClient {
 		HttpGet get = new HttpGet(url);
 		try {
 			HttpResponse httpResponse = client.execute(get);
-			return EntityUtils.toString(httpResponse.getEntity(), charset);
+			return EntityUtils.toString(httpResponse.getEntity(), charset).trim();
 		} catch (IOException e) {
 			logger.error("", e);
 		} finally {
@@ -161,10 +176,8 @@ public final class HttpClient {
 
 	/**
 	 * 发送get请求
-	 * @author ruan
 	 * @param url
 	 * @param data
-	 * @return
 	 */
 	public String get(String url, Map<String, Object> data) {
 		StringBuilder sb = new StringBuilder(url);

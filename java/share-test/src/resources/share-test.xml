@@ -128,7 +128,7 @@
 	<!-- http客户端 -->
 	<bean class="com.share.core.client.HttpClient" init-method="init" destroy-method="close">
 		<!-- 超时时间，单位毫秒 -->
-		<property name="connectTimeout" value="5000" />
+		<property name="connectTimeout" value="3000" />
 	</bean>
 	
 	<!-- nsq -->
@@ -155,7 +155,14 @@
 	</bean>
 
 
-	<!-- thrift http client -->
+	<bean class="com.share.soa.thrift.client.ThriftHttpClient" init-method="init" autowire="byName">
+		<property name="url" value="http://127.0.0.1:8080/soa/test"></property>
+		<property name="serviceClass" value="com.share.soa.thrift.protocol.ShareObjectService"></property>
+		<property name="protocolClass" value="org.apache.thrift.protocol.TCompactProtocol"></property>
+	</bean>
+	
+
+	<!-- thrift http client
 	<bean id="thrfitHttpService" class="com.share.soa.thrift.ThriftHttpService" autowire="byName" />
 	<bean id="thriftClient" class="com.share.soa.thrift.ThriftClient">
 		<property name="httpService" ref="thrfitHttpService"></property>
@@ -163,7 +170,7 @@
 
 	<bean id="shareObject" class="com.share.soa.thrift.ThriftHttpClientFactory" autowire="byName">
 		<property name="className" value="com.share.soa.thrift.protocol.ShareObjectService" />
-	</bean>
+	</bean> -->
 	
 	
 	

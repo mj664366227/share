@@ -14,13 +14,13 @@ public class ThriftHttpClientFactory implements FactoryBean<Object>, Initializin
 	private Class<?> ifaceClass;
 	private Class<?> clientClass;
 	private String className;
-	private ThriftClient thriftClient;
+	private ThriftHttpClient thriftClient;
 
 	public void setClassName(String className) {
 		this.className = className;
 	}
 
-	public void setThriftClient(ThriftClient thriftClient) {
+	public void setThriftClient(ThriftHttpClient thriftClient) {
 		this.thriftClient = thriftClient;
 	}
 
@@ -46,10 +46,10 @@ public class ThriftHttpClientFactory implements FactoryBean<Object>, Initializin
 	}
 
 	class ThriftProxy implements InvocationHandler {
-		private ThriftClient thriftClient;
+		private ThriftHttpClient thriftClient;
 		private String className;
 
-		public ThriftProxy(ThriftClient thriftClient, String className) {
+		public ThriftProxy(ThriftHttpClient thriftClient, String className) {
 			this.thriftClient = thriftClient;
 			this.className = className;
 		}
