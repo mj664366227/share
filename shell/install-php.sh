@@ -106,7 +106,7 @@ if [ ! -d $php_install_path/libxml2 ]; then
 fi
 
 # 安装OpenSSL
-openssl='openssl-1.0.2a'
+openssl='openssl-1.0.2c'
 if [ ! -d $php_install_path/openssl ]; then
 	echo 'installing '$openssl' ...'
 	if [ ! -f $base_path/$openssl.tar.gz ]; then
