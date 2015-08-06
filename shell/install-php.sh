@@ -154,12 +154,12 @@ if [ ! -d $php_install_path/curl ]; then
 fi
 
 # 安装libmcrypt
-libmcrypt='2.5.8'
+libmcrypt='2.5.7'
 if [ ! -d $php_install_path/libmcrypt ]; then
 	echo 'installing libmcrypt-'$libmcrypt' ...'
 	if [ ! -f $base_path/libmcrypt-$libmcrypt.tar.gz ]; then
 		echo 'libmcrypt-'$libmcrypt'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/libmcrypt-$libmcrypt.tar.gz http://www.51osos.com/uploads/soft/libmcrypt-$libmcrypt.tar.gz || exit
+		wget -O $base_path/libmcrypt-$libmcrypt.tar.gz ftp://mcrypt.hellug.gr/pub/crypto/mcrypt/libmcrypt/libmcrypt-$libmcrypt.tar.gz || exit
 		echo 'download libmcrypt-'$libmcrypt' finished...'
 	fi
 	tar zxvf $base_path/libmcrypt-$libmcrypt.tar.gz -C $install_path || exit
