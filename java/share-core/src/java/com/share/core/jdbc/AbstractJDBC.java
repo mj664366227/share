@@ -151,7 +151,7 @@ public abstract class AbstractJDBC {
 	 */
 	public final short queryShort(String sql, Object... args) {
 		try {
-			return jdbc.queryForObject(sql, args, Short.class);
+			return StringUtil.getShort(jdbc.queryForObject(sql, args, Short.class));
 		} catch (EmptyResultDataAccessException e) {
 			logger.error("", e);
 			return 0;
@@ -292,14 +292,14 @@ public abstract class AbstractJDBC {
 	 * @param sql sql语句
 	 * @return 每一条sql语句对应影响的行数
 	 */
-	public final int[] batchUpdate(String sql, List<Object[]> batchArgs) {
-		try {
-			return jdbc.batchUpdate(sql, batchArgs);
-		} catch (DataAccessException e) {
-			logger.error("batchUpdate sql:{}, error:{}", sql, e);
-			return null;
-		}
-	}
+//	public final int[] batchUpdate(String sql, List<Object[]> batchArgs) {
+//		try {
+//			return jdbc.batchUpdate(sql, batchArgs);
+//		} catch (DataAccessException e) {
+//			logger.error("batchUpdate sql:{}, error:{}", sql, e);
+//			return null;
+//		}
+//	}
 
 	/**
 	 * mysql查询类
