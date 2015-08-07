@@ -16,6 +16,7 @@ define('OK', '确定');
 define('TO', '至');
 define('SERVER', '服务器：');
 define('TIME_RANGE', '时间范围：');
+define('OPERATION', '操作');
 
 //导航栏
 define('NAV_OVERVIEW', '概览');
@@ -57,6 +58,8 @@ define('LOG_FILE_CONTENT', '日志内容');
 define('PASSWORD_INCORRECT', '密码错误');
 define('USER_NOT_EXISTS', '管理员不存在');
 define('ADD_SERVER', '添加服务器');
-define('EXPORT_SQL', '导出sql');
+define('USER_MANAGE', '用户管理');
+define('USER_LIST', '用户列表');
+define('USER_NAME', '用户名称');
 define('PLEASE_INPUT_ALL', '请输入完整的信息');
 ?>

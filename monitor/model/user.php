@@ -25,5 +25,12 @@ class muser extends model{
 		}
 		return $rs[0];
 	}
+	
+	/**
+	 * 用户列表
+	 */
+	public static function lists(){
+		return self::$db->select('user')->order_by(array('id' => DESC))->query();
+	}
 }
 ?>

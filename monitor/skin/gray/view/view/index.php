@@ -5,9 +5,9 @@
   <div class="card">
     <div class="title"> <span><?php echo SYSTEM_SUMMARY?></span></div>
     <div class="content">
-    <ul>
-    <li><?php echo SYSTEM_NUMBETS_OF_MONITORING.count($server_list)?></li>
-    </ul>
+      <ul>
+        <li><?php echo SYSTEM_NUMBETS_OF_MONITORING.count($server_list)?></li>
+      </ul>
     </div>
   </div>
 </div>
@@ -25,7 +25,7 @@
           <th width="100" align="center"><?php echo SERVER_STATUS?></th>
           <th width="100" align="center"><?php echo SERVER_IP?></th>
           <th width="120" align="center"><?php echo SERVER_TYPE?></th>
-          <th>&nbsp;</th>
+          <th><?php echo OPERATION?></th>
         </tr>
         <?php foreach($server_list as $s):?>
         <tr height="40" align="left" style="border-botton:#dbe5ea 1px solid">

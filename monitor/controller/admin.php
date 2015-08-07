@@ -11,7 +11,7 @@ class admincontroller extends controller {
 		$menu = array (
 			'index' => SERVER_LIST,
 			'add' => ADD_SERVER,
-			'export' => EXPORT_SQL
+			'userlist' => USER_LIST
 		);
 		view::assign('menu', $menu);
 	}
@@ -53,8 +53,7 @@ class admincontroller extends controller {
 	 * 主页
 	 */
 	public function index(){
-		$server_list = mserver::ls();
-		view::assign('server_list', $server_list);
+		view::assign('server_list', mserver::ls());
 	}
 	
 	/**
@@ -79,10 +78,10 @@ class admincontroller extends controller {
 	}
 	
 	/**
-	 * 导出sql
+	 * 用户列表
 	 */
-	public function export(){
-		msystem::export_sql();	
+	public function userlist(){
+		view::assign('userlist', muser::lists());
 	}
 }
 ?>
