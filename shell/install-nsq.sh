@@ -10,7 +10,7 @@ echo 'preparing working path...'
 install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
-nsq_install_path='/usr/local'
+nsq_install_path='/usr/local' 
 
 # 安装nsq 
 nsq_version='nsq-0.3.5.linux-amd64.go1.4.2'
