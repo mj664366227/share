@@ -23,16 +23,52 @@ class mserver extends model{
 	 */
 	public static function add($server, $ip, $port, $os, $security_name, $pass_phrase, $auth_protocol, $priv_protocol){
 		$data['name'] = $server;
-		$data['ip'] = ip::ip_to_int($ip);
+		$data['ip'] = ip::ip_to_long($ip);
 		$data['port'] = $port;
 		$data['type'] = $os;
-		$data['security_name'] = secret::dede($security_name, KEY.$ip);
-		$data['pass_phrase'] = secret::dede($pass_phrase, $security_name.KEY);
+		$data['security_name'] = $security_name;
+		$data['pass_phrase'] = $pass_phrase;
 		$data['auth_protocol'] = $auth_protocol;
 		$data['priv_protocol'] = $priv_protocol;
+		
+		// 加密
+		$data['security_name'] = self::encode_security_name($data);
+		$data['pass_phrase'] = self::encode_pass_phrase($data);
 		self::$db->insert('server', $data);
 	}
 
+	/**
+	 * 加密snmp密码
+	 * @param $snmp_data snmp数据
+	 */
+	public static function encode_pass_phrase($snmp_data){
+		return secret::dede($snmp_data['pass_phrase'], KEY.$snmp_data['ip'].KEY);
+	}
+	
+	/**
+	 * 解密snmp密码
+	 * @param $snmp_data snmp数据
+	 */
+	public static function decode_pass_phrase($snmp_data){
+		return secret::dede($snmp_data['pass_phrase'], KEY.$snmp_data['ip'].KEY, DECODE);
+	}
+	
+	/**
+	 * 加密snmp用户名
+	 * @param $snmp_data snmp数据
+	 */
+	public static function encode_security_name($snmp_data){
+		return secret::dede($snmp_data['security_name'], $snmp_data['ip'].KEY.$snmp_data['ip']);
+	}
+	
+	/**
+	 * 解密snmp用户名
+	 * @param $snmp_data snmp数据
+	 */
+	public static function decode_security_name($snmp_data){
+		return secret::dede($snmp_data['security_name'], $snmp_data['ip'].KEY.$snmp_data['ip'], DECODE);
+	}
+	
 	/**
 	 * 获取显示图表所需的数据
 	 * @param $serverid 服务器id

@@ -7,7 +7,7 @@
 define('DEBUG', true);
 
 //加密密匙
-define('KEY', 'monitor!@#$|+_"?>(*^yaowan');
+define('KEY', 'monitor|⊥!@ろ#$|+_"?(^+');
 
 //设置时区
 date_default_timezone_set('Asia/Shanghai');
