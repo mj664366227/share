@@ -20,7 +20,7 @@ if [ ! $gitlab_install_path ]; then
 	exit
 fi
 
-yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc lrzsz
+yum -y install libtool gcc gcc-c++ make libc6-dev python-devel perl bc
 
 #安装EPEL扩展源
 rpm -ivh http://fr2.rpmfind.net/linux/epel/6/x86_64/epel-release-6-8.noarch.rpm
@@ -41,3 +41,7 @@ if [ ! -d $gitlab_install_path/ruby ]; then
 	yes|cp $gitlab_install_path/ruby/bin/* /usr/bin/
 	ruby -v 
 fi
+
+#安装gitlab-shell
+cd $install_path
+git clone https://github.com/gitlabhq/gitlab-shell.git
