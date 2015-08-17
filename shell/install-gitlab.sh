@@ -17,9 +17,12 @@ yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-uti
 #安装EPEL扩展源
 rpm -ivh http://fr2.rpmfind.net/linux/epel/6/x86_64/epel-release-6-8.noarch.rpm
 
-#下载gitlab-installer.sh安装脚本
-git clone https://github.com/mattias-ohlsson/gitlab-installer.git
-
-#执行gitlab安装脚本
-cd $install_path/gitlab-installer
-sh gitlab-install-el6.sh || exit
+#安装ruby
+ruby='2.2.2'
+echo 'installing ruby ...'
+if [ ! -f $base_path/ruby-$ruby.tar.gz ]; then
+	echo 'ruby-'$ruby'.tar.gz is not exists, system will going to download it...'
+	wget -O $base_path/ruby-$ruby.tar.gz https://cache.ruby-lang.org/pub/ruby/2.2/ruby-$ruby.tar.gz || exit
+	echo 'download ruby-'$ruby' finished...'
+fi
+tar zxvf $base_path/ruby-$ruby.tar.gz -C $install_path || exit
