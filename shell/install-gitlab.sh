@@ -39,4 +39,5 @@ if [ ! -d $gitlab_install_path/ruby ]; then
 	cd $install_path/ruby-$ruby
 	./configure -prefix=$gitlab_install_path/ruby && make && make install || exit
 	yes|cp $gitlab_install_path/ruby/bin/* /usr/bin/
+	ruby -v 
 fi
