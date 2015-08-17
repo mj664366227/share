@@ -23,7 +23,7 @@ fi
 yum -y install libtool gcc gcc-c++ make libc6-dev python-devel perl bc
 
 #安装EPEL扩展源
-rpm -ivh http://fr2.rpmfind.net/linux/epel/6/x86_64/epel-release-6-8.noarch.rpm
+rpm -ivh http://fr2.rpmfind.net/linux/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
 
 #安装ruby
 if [ ! -d $gitlab_install_path/ruby ]; then
@@ -42,6 +42,16 @@ if [ ! -d $gitlab_install_path/ruby ]; then
 	ruby -v 
 fi
 
+#安装bundler 
+gem sources --remove https://rubygems.org/
+gem sources -a https://ruby.taobao.org/
+gem sources -l
+gem install bundler --no-ri --no-rdoc
+
 #安装gitlab-shell
-cd $install_path
+cd $gitlab_install_path
 git clone https://github.com/gitlabhq/gitlab-shell.git
+cd $gitlab_install_path/gitlab-shell
+
+echo '
+' > config.yml
