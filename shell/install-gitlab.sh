@@ -49,9 +49,11 @@ gem sources -l
 gem install bundler --no-ri --no-rdoc
 
 #安装gitlab-shell
-cd $gitlab_install_path
-git clone https://github.com/gitlabhq/gitlab-shell.git
-cd $gitlab_install_path/gitlab-shell
+if [ ! -d $gitlab_install_path/gitlab-shell ]; then
+	cd $gitlab_install_path
+	git clone https://github.com/gitlabhq/gitlab-shell.git
+	cd $gitlab_install_path/gitlab-shell
 
-echo '
-' > config.yml
+	echo '
+	' > config.yml
+fi
