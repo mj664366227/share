@@ -23,7 +23,7 @@ rm -rf $install_path
 mkdir -p $install_path
 cd $install_path
 
-yum -y install curl curl-devel  zlib-devel  openssl-devel  perl  cpio  expat-devel  gettext-devel
+yum -y install curl curl-devel zlib-devel openssl-devel perl cpio expat-devel gettext-devel gcc libc6-dev gcc-c++ pcre-devel libgd2-xpm libgd2-xpm-dev geoip-database libgeoip-dev make libxslt-dev rsync lrzsz
 
 if [ ! -f $base_path/git.zip ]; then
 	echo 'git.zip is not exists, system will going to download it...'
@@ -35,5 +35,5 @@ unzip git.zip || exit
 cd $install_path/git-src
 ./configure --prefix=$git_install_path/git && make && make install || exit 
 yes|cp -rf $git_install_path/git/bin/* /usr/bin/
-git -version
+git --version
 
