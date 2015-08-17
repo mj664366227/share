@@ -5,9 +5,6 @@
 base_path=$(pwd)
 ntpdate time.nist.gov
 
-#定义本程序的当前目录
-base_path=$(pwd)
-
 #处理外部参数
 git_install_path=$1
 if [ ! $git_install_path ]; then
