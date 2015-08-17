@@ -49,11 +49,29 @@ gem sources -l
 gem install bundler --no-ri --no-rdoc
 
 #安装gitlab-shell
-if [ ! -d $gitlab_install_path/gitlab-shell ]; then
+if [ ! -d $gitlab_install_path/git/gitlab-shell ]; then
 	cd $gitlab_install_path
 	git clone https://github.com/gitlabhq/gitlab-shell.git
-	cd $gitlab_install_path/gitlab-shell
+	cd $gitlab_install_path/git/gitlab-shell
 
+	#添加gitlab用户
+	user=$(id -nu gitlab)
+	if [ ! $user ]; then
+		user='gitlab'
+		group='gitlab'
+		/usr/sbin/groupadd -f $group
+		/usr/sbin/useradd -g $group $user
+	fi
+
+	#获取当前ip
+	ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
+	
 	echo '
+	user: gitlab
+	gitlab_url: "http://'$ip':8080/"
+	self_signed_cert: false
+	repos_path: "'$gitlab_install_path'/git/repositories"
 	' > config.yml
+	
+	#  http://blog.csdn.net/jiedushi/article/details/8840666
 fi
