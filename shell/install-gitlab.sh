@@ -5,12 +5,12 @@
 base_path=$(pwd)
 ntpdate time.nist.gov
 
-#gitlab安装方法    https://about.gitlab.com/downloads/    centos 6
-yum -y install openssh-server postfix cronie
-service postfix start
-chkconfig postfix on
-lokkit -s http -s ssh
+#安装EPEL扩展源
+rpm -ivh http://fr2.rpmfind.net/linux/epel/6/x86_64/epel-release-6-8.noarch.rpm
 
-curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | bash
-yum -y install gitlab-ce
-gitlab-ctl reconfigure
+#下载gitlab-installer.sh安装脚本
+git clone https://github.com/mattias-ohlsson/gitlab-installer.git
+
+#执行gitlab安装脚本
+wget https://github.com/mattias-ohlsson/gitlab-installer/blob/master/gitlab-install-el6.sh || exit
+sh ./gitlab-install-el6.sh || exit
