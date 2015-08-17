@@ -1,6 +1,6 @@
 #linux gradle
 #运行例子：sh install-gradle.sh /usr/local
-
+ 
 #定义本程序的当前目录
 base_path=$(pwd)
 ntpdate time.nist.gov

@@ -1,7 +1,7 @@
 #linux nginx自动安装程序 
 #运行例子：sh install-nginx.sh 1.7.12 /usr/local
 ntpdate time.nist.gov
-
+ 
 #乌班图系统比较特别，需要bash才可以使用source命令和read命令
 linux=$(uname -v | cut -b 5-10)
 if [ $linux = "Ubuntu" ]; then

@@ -1,6 +1,6 @@
 #linux php自动安装程序
 #运行例子：sh install-php.sh 5.6.7 /usr/local
-
+ 
 #定义本程序的当前目录
 base_path=$(pwd)
 ntpdate time.nist.gov
