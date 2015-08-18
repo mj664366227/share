@@ -49,6 +49,7 @@ gem sources -l
 gem install bundler --no-ri --no-rdoc
 
 #安装gitlab-shell
+rm -rf $gitlab_install_path/git/gitlab-shell
 if [ ! -d $gitlab_install_path/git/gitlab-shell ]; then
 	cd $gitlab_install_path
 	git clone https://github.com/gitlabhq/gitlab-shell.git
@@ -74,4 +75,5 @@ if [ ! -d $gitlab_install_path/git/gitlab-shell ]; then
 	' > config.yml
 	
 	#  http://blog.csdn.net/jiedushi/article/details/8840666
+	#  另外一个gitlab  https://github.com/takezoe/gitbucket
 fi
