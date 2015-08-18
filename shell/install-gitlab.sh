@@ -50,7 +50,7 @@ gem install bundler --no-ri --no-rdoc
 
 #安装gitlab-shell
 if [ ! -d $gitlab_install_path/git/gitlab-shell ]; then
-	cd $gitlab_install_path
+	cd $gitlab_install_path/git
 	git clone https://github.com/gitlabhq/gitlab-shell.git
 	cd $gitlab_install_path/git/gitlab-shell
 
