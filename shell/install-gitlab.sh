@@ -50,7 +50,7 @@ gem install bundler --no-ri --no-rdoc
 
 #安装gitlab-shell
 rm -rf $gitlab_install_path/git/gitlab-shell
-userdel gitlab
+userdel -r gitlab
 rm -rf /home/gitlab
 if [ ! -d $gitlab_install_path/git/gitlab-shell ]; then
 	cd $gitlab_install_path
