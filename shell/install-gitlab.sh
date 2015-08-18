@@ -61,15 +61,15 @@ if [ ! -d $gitlab_install_path/git/gitlab-shell ]; then
 		group='gitlab'
 		/usr/sbin/groupadd -f $group
 		/usr/sbin/useradd -g $group $user
-		
-		su $user
-		gitlab_ssh='/home/'$user'/.ssh'
-		mkdir -p $gitlab_ssh
-		chmod -R 700 $gitlab_ssh
-		ssh-keygen -q -N '' -t rsa -f $gitlab_ssh/id_rsa
-		cat $gitlab_ssh/id_rsa.pub > $gitlab_ssh/authorized_keys
-		chmod -R 600 $gitlab_ssh/authorized_keys
 	fi
+	
+	su $user
+	gitlab_ssh='/home/'$user'/.ssh'
+	mkdir -p $gitlab_ssh
+	chmod -R 700 $gitlab_ssh
+	ssh-keygen -q -N '' -t rsa -f $gitlab_ssh/id_rsa
+	cat $gitlab_ssh/id_rsa.pub > $gitlab_ssh/authorized_keys
+	chmod -R 600 $gitlab_ssh/authorized_keys
 
 	#获取当前ip
 	ip=$(ifconfig eth0 |grep "inet addr"| cut -f 2 -d ":"|cut -f 1 -d " ")
