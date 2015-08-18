@@ -62,6 +62,7 @@ if [ ! -d $gitlab_install_path/git/gitlab-shell ]; then
 		/usr/sbin/groupadd -f $group
 		/usr/sbin/useradd -g $group $user
 		
+		su $user
 		gitlab_ssh='/home/'$user'/.ssh'
 		mkdir -p $gitlab_ssh
 		chmod -R 700 $gitlab_ssh
