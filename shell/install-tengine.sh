@@ -70,13 +70,16 @@ if [ ! -d $install_path/$libatomic ]; then
 fi
 
 #安装jemalloc
-cd $install_path
-rm -rf $install_path/jemalloc
-git clone https://github.com/jemalloc/jemalloc.git
-cd $install_path/jemalloc
-autoconf
-./configure --prefix=$tengine_install_path/jemalloc make && make install || exit
-
+echo 'installing jemalloc ...'
+if [ ! -d $tengine_install_path/jemalloc ]; then
+	if [ ! -d $base_path/jemalloc ]; then
+		git clone https://github.com/jemalloc/jemalloc.git
+	fi
+	yes | cp -rf jemalloc $install_path/jemalloc
+	cd $install_path/jemalloc
+	autoconf
+	./configure --prefix=$tengine_install_path/jemalloc make && make install || exit
+fi
 
 #安装tengine
 tengine='tengine-'$tengine_version
