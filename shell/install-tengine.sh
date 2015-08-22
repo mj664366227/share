@@ -1,29 +1,17 @@
 #linux nginx自动安装程序 
-#运行例子：sh install-nginx.sh 1.7.12 /usr/local
+#运行例子：sh install-tengine.sh 2.1.1 /usr/local
 ntpdate time.nist.gov
  
-#乌班图系统比较特别，需要bash才可以使用source命令和read命令
-linux=$(uname -v | cut -b 5-10)
-if [ $linux = "Ubuntu" ]; then
-	bash_=$(ls -l `which sh`|cut -b 52-55)
-	if [ $bash_ != "bash" ]; then
-	second=5
-	echo '你的shell配置不正确，系统会帮你做出修改，请你在下面界面选择 no ...'
-	echo $second'秒后继续...'
-	sleep $second
-	dpkg-reconfigure dash
-	fi
-fi
 
 #定义本程序的当前目录
 base_path=$(pwd)
 
 #处理外部参数
-nginx_version=$1
-nginx_install_path=$2
-if [ ! $nginx_version ] || [ ! $nginx_install_path ]; then
-	echo 'error command!!! you must input nginx version and install path...'
-	echo 'for example: sh install-nginx.sh 1.7.12 /usr/local'
+tengine_version=$1
+tengine_install_path=$2
+if [ ! $tengine_version ] || [ ! $tengine_install_path ]; then
+	echo 'error command!!! you must input tengine version and install path...'
+	echo 'for example: sh install-tengine.sh 2.1.1 /usr/local'
 	exit
 fi
 
@@ -81,29 +69,19 @@ if [ ! -d $install_path/$libatomic ]; then
 	tar zxvf $base_path/$libatomic.tar.gz -C $install_path || exit
 fi
 
-#安装nginx
-nginx='nginx-'$nginx_version
-echo 'installing '$nginx' ...'
-if [ ! -d $nginx_install_path/nginx ]; then
-	if [ ! -f $base_path/$nginx.tar.gz ]; then
-		echo $nginx'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$nginx.tar.gz http://nginx.org/download/$nginx.tar.gz || exit
-		echo 'download '$nginx' finished...'
+#安装tengine
+tengine='tengine-'$tengine_version
+echo 'installing '$tengine' ...'
+if [ ! -d $tengine_install_path/tengine ]; then
+	if [ ! -f $base_path/$tengine.tar.gz ]; then
+		echo $tengine'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/$tengine.tar.gz http://tengine.taobao.org/download/$tengine.tar.gz || exit
+		echo 'download '$tengine' finished...'
 	fi
-	tar zxvf $base_path/$nginx.tar.gz -C $install_path || exit
+	tar zxvf $base_path/$tengine.tar.gz -C $install_path || exit
+	./configure --prefix=$tengine_install_path/tengine --with-http_concat_module --with-http_stub_status_module  --with-http_ssl_module --with-select_module --with-poll_module --with-file-aio --with-ipv6 --with-http_gzip_static_module --with-http_sub_module --with-http_ssl_module --with-pcre=$install_path/$pcre --with-zlib=$install_path/$zlib --with-openssl=$install_path/$openssl --with-md5=/usr/lib --with-sha1=/usr/lib --with-md5-asm --with-sha1-asm --with-mail --with-mail_ssl_module --with-http_spdy_module --with-http_realip_module --with-http_addition_module --with-http_dyups_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --ngx_http_concat_module --with-http_reqstat_module --with-http_mp4_module --with-http_gunzip_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_stub_status_module --with-jemalloc --with-google_perftools_module --with-ld-opt --with-cpu-opt --with-cc-opt --with-libatomic=$install_path/$libatomic && make && make install || exit
 fi
-cd $install_path/$nginx
-./configure --prefix=$nginx_install_path/nginx --with-http_stub_status_module  --with-http_ssl_module --with-select_module --with-poll_module --with-file-aio --with-ipv6 --with-http_gzip_static_module --with-http_sub_module --with-http_ssl_module --with-pcre=$install_path/$pcre --with-zlib=$install_path/$zlib --with-openssl=$install_path/$openssl --with-md5=/usr/lib --with-sha1=/usr/lib --with-md5-asm --with-http_dyups_module --with-sha1-asm --with-mail --with-mail_ssl_module --with-http_spdy_module --with-http_realip_module --with-http_addition_module --with-cpu-opt --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_stub_status_module --with-cc-opt --with-ld-opt --with-google_perftools_module --with-libatomic=$install_path/$libatomic && make && make install || exit
 
-#添加nginx用户组
-user='www'
-group='www'
-user_exists=$(id -nu $user)
-if [ ! $user_exists ]; then
-	echo 'add www user...'
-	/usr/sbin/groupadd -f $group
-	/usr/sbin/useradd -g $group $user
-fi
 
 #写入nginx配置文件
 echo 'create nginx.conf...'
@@ -123,7 +101,7 @@ http {
 	charset utf-8;
 	default_type application/octet-stream;
 	access_log off;
-	error_log "$nginx_install_path"/nginx/logs/error.log crit;
+	error_log "$tengine_install_path"/tengine/logs/error.log crit;
 	sendfile on;
 	tcp_nopush on;
 	tcp_nodelay on;
@@ -151,18 +129,18 @@ http {
 
 	server_tokens off;    
 	   
-	include "$nginx_install_path"/nginx/conf/web/*.conf;
+	include "$tengine_install_path"/tengine/conf/web/*.conf;
 }
-" > $nginx_install_path/nginx/conf/nginx.conf || exit
-rm -rf $nginx_install_path/nginx/conf/web/
-mkdir $nginx_install_path/nginx/conf/web/
+" > $tengine_install_path/tengine/conf/nginx.conf || exit
+rm -rf $tengine_install_path/tengine/conf/web/
+mkdir $tengine_install_path/tengine/conf/web/
 echo 'create nginx.conf finished...'
 
 #创建网站文件存放目录
 echo 'create www_root...'
 web_root='www'
-mv $nginx_install_path/nginx/html $nginx_install_path/nginx/$web_root
-echo "<?php phpinfo(); ?>" > $nginx_install_path/nginx/$web_root/phpinfo.php || exit
+mv $tengine_install_path/tengine/html $tengine_install_path/tengine/$web_root
+echo "<?php phpinfo(); ?>" > $tengine_install_path/tengine/$web_root/phpinfo.php || exit
 
 #创建一个80端口的配置文件(作为demo)
 echo 'create a demo conf , 80.conf...'
@@ -206,7 +184,7 @@ server {
 	#	 include fastcgi.conf;
 	#}
 }
-' > $nginx_install_path/nginx/conf/web/80.conf
+' > $tengine_install_path/tengine/conf/web/80.conf
 
 #创建一个https的配置文件
 echo 'create 443.conf...'
@@ -223,7 +201,7 @@ echo '
 	#ssl on;
 	#ssl_certificate security.crt;
 	#ssl_certificate_key security.key;
-#}' > $nginx_install_path/nginx/conf/web/443.conf
+#}' > $tengine_install_path/tengine/conf/web/443.conf
 
 #安装代理服务器
 echo '
@@ -241,17 +219,8 @@ echo '
 				#deny all;
 		#}
 #}
-' > $nginx_install_path/nginx/conf/web/8000.conf
+' > $tengine_install_path/tengine/conf/web/8000.conf
 
-#ip=$(ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
-#if [ ! $ip ]; then
-#	#这样做是为了兼容中文linux系统
-#	ip=$(ifconfig  | grep 'inet 地址:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
-#fi
-#if [ $ip ]; then
-#	echo '#代理服务器' >> /etc/profile
-#	echo 'export http_proxy=http://'$ip':8000' >> /etc/profile
-#fi
 
 #修改环境变量
 echo 'modify /etc/profile...'
@@ -259,7 +228,7 @@ echo "ulimit -SHn "$ulimit >> /etc/profile
 $(source /etc/profile)
 
 #启动nginx
-yes|cp -rf $nginx_install_path/nginx/sbin/nginx /usr/bin/
+yes|cp -rf $tengine_install_path/tengine/sbin/nginx /usr/bin/
 nginx
 
 #开机自启动
