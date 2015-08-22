@@ -81,10 +81,6 @@ if [ ! -d $tengine_install_path/jemalloc ]; then
 		git pull
 	fi
 	yes | cp -rf jemalloc $install_path/jemalloc
-	touch $install_path/jemalloc/doc/jemalloc.html
-	cd $install_path/jemalloc
-	autoconf
-	./configure --prefix=$tengine_install_path/jemalloc && make && make install || exit
 fi
 
 #安装tengine
