@@ -70,12 +70,12 @@ if [ ! -d $install_path/$libatomic ]; then
 fi
 
 #安装libunwind
-libunwind='libunwind-1.1'
+libunwind='libunwind-1.0'
 if [ ! -d $install_path/$libunwind ]; then
 	echo 'installing '$libunwind' ...'
 	if [ ! -f $base_path/$libunwind.tar.gz ]; then
 		echo $libunwind'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libunwind.tar.gz http://ftp.yzu.edu.tw/nongnu/libunwind/$libunwind.tar.gz || exit
+		wget -O $base_path/$libunwind.tar.gz http://down1.chinaunix.net/distfiles/$libunwind.tar.gz || exit
 		echo 'download '$libunwind' finished...'
 	fi
 	tar zxvf $base_path/$libunwind.tar.gz -C $install_path || exit
