@@ -243,16 +243,6 @@ echo '
 #}
 ' > $nginx_install_path/nginx/conf/web/8000.conf
 
-#ip=$(ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
-#if [ ! $ip ]; then
-#	#这样做是为了兼容中文linux系统
-#	ip=$(ifconfig  | grep 'inet 地址:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
-#fi
-#if [ $ip ]; then
-#	echo '#代理服务器' >> /etc/profile
-#	echo 'export http_proxy=http://'$ip':8000' >> /etc/profile
-#fi
-
 #修改环境变量
 echo 'modify /etc/profile...'
 echo "ulimit -SHn "$ulimit >> /etc/profile
@@ -267,4 +257,16 @@ echo '' >> /etc/rc.d/rc.local
 echo 'nginx' >> /etc/rc.d/rc.local
 $(source /etc/rc.d/rc.local)
 
-#http://www.21andy.com/blog/20100224/1714.html  配置https
+##################### 自己给自己颁发证书的方法 ######################################
+# 生成一个RSA密钥 
+# $ openssl genrsa -des3 -out 33iq.key 1024
+ 
+# 拷贝一个不需要输入密码的密钥文件
+# $ openssl rsa -in 33iq.key -out 33iq_nopass.key
+ 
+# 生成一个证书请求
+# $ openssl req -new -key 33iq.key -out 33iq.csr
+ 
+# 自己签发证书
+# $ openssl x509 -req -days 365 -in 33iq.csr -signkey 33iq.key -out 33iq.crt
+#第3个命令是生成证书请求，会提示输入省份、城市、域名信息等，重要的是，email一定要是你的域名后缀的。这样就有一个 csr 文件了，提交给 ssl 提供商的时候就是这个 csr 文件。当然我这里并没有向证书提供商申请，而是在第4步自己签发了证书。

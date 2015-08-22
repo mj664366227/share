@@ -267,5 +267,3 @@ nginx
 echo '' >> /etc/rc.d/rc.local
 echo 'nginx' >> /etc/rc.d/rc.local
 $(source /etc/rc.d/rc.local)
-
-#http://www.21andy.com/blog/20100224/1714.html  配置https
