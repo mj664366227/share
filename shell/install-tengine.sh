@@ -72,7 +72,7 @@ fi
 #安装jemalloc
 cd $install_path
 rm -rf jemalloc
-https://github.com/jemalloc/jemalloc.git
+git clone https://github.com/jemalloc/jemalloc.git
 
 
 #安装tengine
