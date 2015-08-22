@@ -79,6 +79,8 @@ if [ ! -d $base_path/jemalloc ]; then
 	git pull
 fi
 yes | cp -rf jemalloc $install_path/jemalloc
+cd $install_path/jemalloc 
+autoconf
 
 #安装tengine
 tengine='tengine-'$tengine_version
