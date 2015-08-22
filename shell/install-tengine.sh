@@ -71,6 +71,7 @@ fi
 
 #安装jemalloc
 echo 'installing jemalloc ...'
+rm -rf $tengine_install_path/jemalloc
 if [ ! -d $tengine_install_path/jemalloc ]; then
 	if [ ! -d $base_path/jemalloc ]; then
 		git clone https://github.com/jemalloc/jemalloc.git
