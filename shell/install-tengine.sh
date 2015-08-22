@@ -71,17 +71,14 @@ fi
 
 #安装jemalloc
 echo 'installing jemalloc ...'
-rm -rf $tengine_install_path/jemalloc
-if [ ! -d $tengine_install_path/jemalloc ]; then
-	if [ ! -d $base_path/jemalloc ]; then
-		git clone https://github.com/jemalloc/jemalloc.git
-		git checkout master
-		git pull
-		git checkout master
-		git pull
-	fi
-	yes | cp -rf jemalloc $install_path/jemalloc
+if [ ! -d $base_path/jemalloc ]; then
+	git clone https://github.com/jemalloc/jemalloc.git
+	git checkout master
+	git pull
+	git checkout master
+	git pull
 fi
+yes | cp -rf jemalloc $install_path/jemalloc
 
 #安装tengine
 tengine='tengine-'$tengine_version
