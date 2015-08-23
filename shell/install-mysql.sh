@@ -49,7 +49,7 @@ if [ ! -d $mysql_install_path/jemalloc ]; then
 	fi
 	tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
 	cd $install_path/$jemalloc
-	./configure --with-jemalloc-prefix=$mysql_install_path/jemalloc && make && make install || exit
+	./configure && make && make install || exit
 fi
 
 #安装ncurses
