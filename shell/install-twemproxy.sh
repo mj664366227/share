@@ -31,7 +31,7 @@ yes | cp -rf twemproxy $install_path/twemproxy
 #安装twemproxy
 cd $install_path/twemproxy
 rm -rf $twemproxy_install_path/twemproxy
-autoreconf -fvi && ./configure --prefix=$twemproxy_install_path/twemproxy && make && make install || exit
+autoreconf -fvi && CFLAGS="-O3 -fno-strict-aliasing" ./configure --prefix=$twemproxy_install_path/twemproxy && make && make install || exit
 yes|cp -rf $twemproxy_install_path/twemproxy/sbin/* /usr/bin/
 nutcracker -V
 
