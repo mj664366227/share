@@ -50,5 +50,7 @@ fi
 #开机启动redis
 yes|cp -rf $redis_install_path'/redis/src/redis-server' /usr/bin/
 yes|cp -rf $redis_install_path'/redis/src/redis-cli' /usr/bin/
+yes|cp -rf $redis_install_path'/redis/src/redis-server' /usr/sbin/
+yes|cp -rf $redis_install_path'/redis/src/redis-cli' /usr/sbin/
 echo 'redis-server '$redis_install_path'/redis/redis.conf' >> /etc/rc.local
 source /etc/rc.local
