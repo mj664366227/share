@@ -33,7 +33,6 @@ cd $install_path/twemproxy
 rm -rf $twemproxy_install_path/twemproxy
 autoreconf -fvi && ./configure --prefix=$twemproxy_install_path/twemproxy && make && make install || exit
 yes|cp -rf $twemproxy_install_path/twemproxy/sbin/* /usr/bin/
-yes|cp -rf $twemproxy_install_path/twemproxy/bin/* /usr/bin/
 nutcracker -V
 
 #生成配置文件
