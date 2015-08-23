@@ -40,22 +40,22 @@ echo 'create nutcracker.yml ...'
 mkdir -p $twemproxy_install_path/twemproxy/conf
 echo 'example:
    listen: 0.0.0.0:33333
-   hash: fnv1_64 
-   hash_tag: {} 
-   distribution: ketama 
-   auto_eject_hosts: true 
-   preconnect: true 
-   server_connections: 50 
-   timeout: 2000 
-   backlog: 512 
-   redis: true 
-   server_retry_timeout: 2000 
-   server_failure_limit: 1 
+   hash: fnv1_64
+   hash_tag: "{}"
+   distribution: ketama
+   auto_eject_hosts: true
+   preconnect: true
+   server_connections: 50
+   timeout: 2000
+   backlog: 512
+   redis: true
+   server_retry_timeout: 2000
+   server_failure_limit: 1
    servers:
       - 127.0.0.1:6379:1
 ' > $twemproxy_install_path/twemproxy/conf/nutcracker.yml || exit
 
 #开机自启动
 echo '' >> /etc/rc.local
-echo 'nutcracker -d -v 11 -c '$twemproxy_install_path'/twemproxy/conf/nutcracker.yml -p '$twemproxy_install_path'/nutcracker.pid -o '$twemproxy_install_path'/nutcracker.log' >> /etc/rc.local
+echo 'nutcracker -d -v 11 -c '$twemproxy_install_path'/twemproxy/conf/nutcracker.yml -p '$twemproxy_install_path'/twemproxy/nutcracker.pid -o '$twemproxy_install_path'/twemproxy/nutcracker.log' >> /etc/rc.local
 $(source /etc/rc.local)
