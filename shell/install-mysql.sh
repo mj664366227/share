@@ -40,7 +40,7 @@ fi
 
 #安装jemalloc
 jemalloc='jemalloc-4.0.0'
-if [ ! -d $install_path/$jemalloc ]; then
+if [ ! -d $mysql_install_path/jemalloc ]; then
 	echo 'installing '$jemalloc' ...'
 	if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
 		echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
@@ -49,7 +49,7 @@ if [ ! -d $install_path/$jemalloc ]; then
 	fi
 	tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
 	cd $install_path/$jemalloc
-	./configure --with-jemalloc-prefix=$mysql_install_path/jemalloc --enable-xmalloc && make && make install || exit
+	./configure --with-jemalloc-prefix=$mysql_install_path/jemalloc && make && make install || exit
 fi
 
 #安装ncurses
