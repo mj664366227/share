@@ -29,5 +29,7 @@ fi
 yes | cp -rf twemproxy $install_path/twemproxy
 
 #安装twemproxy
-cd $twemproxy_install_path/twemproxy/
-autoreconf -fvi && ./configure --enable-debug=log && make && make install   
+cd $install_path/twemproxy
+rm -rf $twemproxy_install_path/twemproxy
+autoreconf -fvi && ./configure --prefix=$twemproxy_install_path/twemproxy && make && make install || exit
+src/nutcracker -h
