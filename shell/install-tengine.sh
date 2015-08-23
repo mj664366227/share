@@ -71,16 +71,14 @@ fi
 
 #安装jemalloc
 jemalloc='jemalloc-4.0.0'
-if [ ! -d $install_path/$jemalloc ]; then
-	echo 'installing '$jemalloc' ...'
-	if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
-		echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
-		wget -O $base_path/$jemalloc.tar.bz2 http://www.canonware.com/download/jemalloc/$jemalloc.tar.bz2 || exit
-		echo 'download '$jemalloc' finished...'
-	fi
-	tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
-	mv $install_path/$jemalloc $install_path/jemalloc 
-fi 
+echo 'installing '$jemalloc' ...'
+if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
+	echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
+	wget -O $base_path/$jemalloc.tar.bz2 http://www.canonware.com/download/jemalloc/$jemalloc.tar.bz2 || exit
+	echo 'download '$jemalloc' finished...'
+fi
+tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
+mv $install_path/$jemalloc $install_path/jemalloc 
 
 #安装tengine
 tengine='tengine-'$tengine_version

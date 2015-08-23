@@ -20,6 +20,20 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
+#安装jemalloc
+jemalloc='jemalloc-4.0.0'
+if [ ! -d $install_path/$jemalloc ]; then
+	echo 'installing '$jemalloc' ...'
+	if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
+		echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
+		wget -O $base_path/$jemalloc.tar.bz2 http://www.canonware.com/download/jemalloc/$jemalloc.tar.bz2 || exit
+		echo 'download '$jemalloc' finished...'
+	fi
+	tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
+	mv $install_path/$jemalloc $install_path/jemalloc 
+fi 
+
+#安装redis
 if [ ! -d $redis_install_path/redis ]; then
 	if [ ! -f $base_path/redis-$redis_version.tar.gz ]; then
 		echo 'redis-'$redis_version'.tar.gz is not exists, system will going to download it...'
@@ -28,6 +42,9 @@ if [ ! -d $redis_install_path/redis ]; then
 	fi
 	tar zxvf $base_path/redis-$redis_version.tar.gz -C $redis_install_path || exit
 	mv $redis_install_path/redis-$redis_version $redis_install_path/redis
+	cd $redis_install_path/redis/deps
+	rm -rf jemalloc
+	cp -rf $install_path/jemalloc ./
 	cd $redis_install_path/redis
 	make
 	echo "daemonize yes 	
