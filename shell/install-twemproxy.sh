@@ -56,6 +56,6 @@ echo 'example:
 ' > $twemproxy_install_path/twemproxy/conf/nutcracker.yml || exit
 
 #开机自启动
-echo '' >> /etc/rc.d/rc.local
-echo 'nutcracker -d -c -v 11 '$twemproxy_install_path'/twemproxy/conf/nutcracker.yml -p '$twemproxy_install_path'/nutcracker.pid -o '$twemproxy_install_path'/nutcracker.log' >> /etc/rc.d/rc.local
-$(source /etc/rc.d/rc.local)
+echo '' >> /etc/rc.local
+echo 'nutcracker -d -c -v 11 '$twemproxy_install_path'/twemproxy/conf/nutcracker.yml -p '$twemproxy_install_path'/nutcracker.pid -o '$twemproxy_install_path'/nutcracker.log' >> /etc/rc.local
+$(source /etc/rc.local)
