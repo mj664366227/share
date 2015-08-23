@@ -33,6 +33,7 @@ cd $install_path/twemproxy
 rm -rf $twemproxy_install_path/twemproxy
 autoreconf -fvi && ./configure --prefix=$twemproxy_install_path/twemproxy && make && make install || exit
 yes|cp -rf $twemproxy_install_path/twemproxy/sbin/* /usr/bin/
+yes|cp -rf $twemproxy_install_path/twemproxy/bin/* /usr/bin/
 nutcracker -V
 
 #生成配置文件
@@ -41,7 +42,7 @@ mkdir -p $twemproxy_install_path/twemproxy/conf
 echo 'example:
    listen: 0.0.0.0:33333
    hash: fnv1_64 
-   hash_tag:{} 
+   hash_tag: {} 
    distribution: ketama 
    auto_eject_hosts: true 
    preconnect: true 
