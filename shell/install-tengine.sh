@@ -80,7 +80,7 @@ if [ ! -d $install_path/$jemalloc ]; then
 	fi
 	tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
 	mv $install_path/$jemalloc $install_path/jemalloc 
-fi
+fi 
 
 #安装tengine
 tengine='tengine-'$tengine_version
