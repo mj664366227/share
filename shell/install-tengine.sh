@@ -70,17 +70,17 @@ if [ ! -d $install_path/$libatomic ]; then
 fi
 
 #安装jemalloc
-echo 'installing jemalloc ...'
-if [ ! -d $base_path/jemalloc ]; then
-	git clone https://github.com/jemalloc/jemalloc.git
-	git checkout master
-	git pull
-	git checkout master
-	git pull
+jemalloc='jemalloc-4.0.0'
+if [ ! -d $install_path/$jemalloc ]; then
+	echo 'installing '$jemalloc' ...'
+	if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
+		echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
+		wget -O $base_path/$jemalloc.tar.bz2 http://www.canonware.com/download/jemalloc/$jemalloc.tar.bz2 || exit
+		echo 'download '$jemalloc' finished...'
+	fi
+	tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
+	mv $install_path/$jemalloc $install_path/jemalloc 
 fi
-yes | cp -rf jemalloc $install_path/jemalloc
-cd $install_path/jemalloc 
-autoconf
 
 #安装tengine
 tengine='tengine-'$tengine_version
