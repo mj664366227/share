@@ -50,6 +50,8 @@ if [ ! -d $mysql_install_path/jemalloc ]; then
 	tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
 	cd $install_path/$jemalloc
 	./configure && make && make install || exit
+	echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
+	ldconfig
 fi
 
 #安装ncurses
