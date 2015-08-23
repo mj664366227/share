@@ -39,7 +39,7 @@ nutcracker -V
 echo 'create nutcracker.yml ...'
 mkdir -p $twemproxy_install_path/twemproxy/conf
 echo 'example:
-listen: 127.0.0.1:33333
+listen: 0.0.0.0:33333
 hash: fnv1_64 
 hash_tag:{} 
 distribution: ketama 
@@ -57,5 +57,5 @@ servers:
 
 #开机自启动
 echo '' >> /etc/rc.d/rc.local
-echo 'nutcracker' >> /etc/rc.d/rc.local
+echo 'nutcracker -d -c -v 11 '$twemproxy_install_path'/twemproxy/conf/nutcracker.yml -p '$twemproxy_install_path'/nutcracker.pid -o '$twemproxy_install_path'/nutcracker.log' >> /etc/rc.d/rc.local
 $(source /etc/rc.d/rc.local)
