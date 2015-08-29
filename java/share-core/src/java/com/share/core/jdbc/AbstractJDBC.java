@@ -6,12 +6,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -27,7 +24,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.share.core.annotation.processor.PojoProcessor;
-import com.share.core.util.SortUtil.Order;
 import com.share.core.util.StringUtil;
 
 /**
@@ -63,7 +59,7 @@ public abstract class AbstractJDBC {
 	 */
 	public final <T> List<T> queryList(String sql, Class<T> clazz, Object... args) {
 		List<T> list = new ArrayList<T>();
-		Map<String, Method> methodMap = pojoProcessor.getMethodMapByClass(clazz);
+		Map<String, Method> methodMap = pojoProcessor.getSetMethodMapByClass(clazz);
 		if (methodMap == null) {
 			logger.error("class {} methodMap is null", clazz.getName());
 			return list;
@@ -73,7 +69,8 @@ public abstract class AbstractJDBC {
 			while (rs.next()) {
 				T t = clazz.newInstance();
 				for (Entry<String, Method> e : methodMap.entrySet()) {
-					e.getValue().invoke(t, rs.getObject(e.getKey()));
+					String column = fieldNameToColumnName(e.getKey());//程序字段->数据库字段(adminPhoneId->admin_phone_id)
+					e.getValue().invoke(t, rs.getObject(column));
 				}
 				list.add(t);
 			}
@@ -92,7 +89,7 @@ public abstract class AbstractJDBC {
 	 * @param args
 	 */
 	public final <T> T queryT(String sql, Class<T> clazz, Object... args) {
-		Map<String, Method> methodMap = pojoProcessor.getMethodMapByClass(clazz);
+		Map<String, Method> methodMap = pojoProcessor.getSetMethodMapByClass(clazz);
 		if (methodMap == null) {
 			logger.error("class {} methodMap is null", clazz.getName());
 			return null;
@@ -102,7 +99,8 @@ public abstract class AbstractJDBC {
 			while (rs.next()) {
 				T t = clazz.newInstance();
 				for (Entry<String, Method> e : methodMap.entrySet()) {
-					e.getValue().invoke(t, rs.getObject(e.getKey()));
+					String column = fieldNameToColumnName(e.getKey());//程序字段->数据库字段(adminPhoneId->admin_phone_id)
+					e.getValue().invoke(t, rs.getObject(column));
 				}
 				return t;
 			}
@@ -249,11 +247,68 @@ public abstract class AbstractJDBC {
 	}
 
 	/**
+	 * 更新一条数据
+	 * @param t pojo对象(pojo对象的名和表名是对应的)
+	 * @param data 要修改的数据
+	 */
+	public final <T> boolean update(T t, Map<String, Object> data) {
+		if (data == null || data.isEmpty()) {
+			logger.error("update date map is empty");
+			return false;
+		}
+
+		// 生成sql update头
+		Class<?> clazz = t.getClass();
+		StringBuilder sql = new StringBuilder();
+		sql.append("update `");
+
+		//类名转化成数据表名
+		String className = clazz.getSimpleName().substring(1);
+		StringBuilder tableName = new StringBuilder();
+		int l = className.length();
+		for (int i = 0; i < l; i++) {
+			char c = className.charAt(i);
+			if (i > 0 && Character.isUpperCase(c)) {
+				tableName.append("_");
+				tableName.append(c);
+			} else {
+				tableName.append(c);
+			}
+		}
+		sql.append(tableName.toString().toLowerCase());
+
+		sql.append("` set ");
+
+		// 组成参数列表
+		Object[] args = new Object[data.size() + 1];
+		int count = 0;
+		for (Entry<String, Object> e : data.entrySet()) {
+			sql.append("`");
+			sql.append(e.getKey());
+			sql.append("`=?,");
+			args[count] = e.getValue();
+			count += 1;
+		}
+		int len = sql.length();
+		sql.delete(len - 1, len);
+		sql.append(" where id=?");
+
+		// 最后取出id的值
+		Map<String, Method> methodMap = pojoProcessor.getGetMethodMapByClass(clazz);
+		try {
+			args[args.length - 1] = methodMap.get("id").invoke(t);
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		return update(sql.toString(), args);
+	}
+
+	/**
 	 * 插入数据,返回自增id
 	 * @param sql  
 	 * @param key 主键字段名
-	 * @param args	参数列表
-	 * @return -1-异常 
+	 * @param args参数列表
+	 * @return -1 异常 
 	 */
 	public final long insert(final String sql, final String key, final Object... args) {
 		long result = -1L;
@@ -261,7 +316,7 @@ public abstract class AbstractJDBC {
 		PreparedStatementCreator psc = new PreparedStatementCreator() {
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
 				PreparedStatement ps = connection.prepareStatement(sql, new String[] { key });
-				if (args != null) {
+				if (args != null && args.length > 0) {
 					for (int i = 0; i < args.length; i++) {
 						ps.setObject(i + 1, args[i]);
 					}
@@ -271,6 +326,88 @@ public abstract class AbstractJDBC {
 		};
 		result = jdbc.update(psc, keyHolder);
 		return result > 0 ? keyHolder.getKey().intValue() : -1;
+	}
+
+	/**
+	 * 保存整个pojo对象
+	 * @param t pojo对象
+	 * @return -1 异常 
+	 */
+	public final <T> T save(T t) {
+		// 生成sql insert头
+		Class<?> clazz = t.getClass();
+		StringBuilder sql = new StringBuilder();
+		sql.append("insert into ");
+
+		//类名转化成数据表名
+		String className = clazz.getSimpleName().substring(1);
+		StringBuilder tableName = new StringBuilder();
+		int l = className.length();
+		for (int i = 0; i < l; i++) {
+			char c = className.charAt(i);
+			if (i > 0 && Character.isUpperCase(c)) {
+				tableName.append("_");
+				tableName.append(c);
+			} else {
+				tableName.append(c);
+			}
+		}
+		sql.append(tableName.toString().toLowerCase());
+
+		sql.append(" (");
+
+		try {
+			// 统计有多少个字段
+			int count = 0;
+
+			// 列出字段
+			Map<String, Method> methodMap = pojoProcessor.getGetMethodMapByClass(clazz);
+			for (Entry<String, Method> e : methodMap.entrySet()) {
+				String column = fieldNameToColumnName(e.getKey());//程序字段->数据库字段(adminPhoneId->admin_phone_id)
+				if ("id".equals(column)) {
+					continue;
+				}
+				sql.append("`");
+				sql.append(column);
+				sql.append("`,");
+
+				count += 1;
+			}
+			int len = sql.length();
+			sql.delete(len - 1, len);
+			sql.append(") values (");
+
+			// 统计出来的字段数是为了生成n个?，这样可以使用preperstament的防注入
+			for (int i = 0; i < count; i++) {
+				sql.append("?,");
+			}
+			len = sql.length();
+			sql.delete(len - 1, len);
+			sql.append(")");
+
+			// 传入参数
+			Object[] args = new Object[count];
+			count = 0;
+			for (Entry<String, Method> e : methodMap.entrySet()) {
+				if ("id".equals(e.getKey())) {
+					continue;
+				}
+				args[count] = e.getValue().invoke(t);
+
+				count += 1;
+			}
+			long id = insert(sql.toString(), "id", args);
+			if (id <= 0) {
+				// 如果返回的id是非正数，证明插入错误，返回null对象
+				return null;
+			}
+			methodMap = pojoProcessor.getSetMethodMapByClass(clazz);
+			methodMap.get("id").invoke(t, id);
+			return t;
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		return null;
 	}
 
 	/**
@@ -288,625 +425,22 @@ public abstract class AbstractJDBC {
 	}
 
 	/**
-	 * 批量执行sql语句
-	 * @param sql sql语句
-	 * @return 每一条sql语句对应影响的行数
+	 * 程序字段->数据库字段(adminPhoneId->admin_phone_id)
+	 * @param fieldName 程序字段 
+	 * @return columnName 数据库字段
 	 */
-//	public final int[] batchUpdate(String sql, List<Object[]> batchArgs) {
-//		try {
-//			return jdbc.batchUpdate(sql, batchArgs);
-//		} catch (DataAccessException e) {
-//			logger.error("batchUpdate sql:{}, error:{}", sql, e);
-//			return null;
-//		}
-//	}
-
-	/**
-	 * mysql查询类
-	 * @author ruan
-	 *
-	 */
-	public class Query {
-		/**
-		 * SQL语句
-		 */
-		private StringBuilder sql = new StringBuilder();
-
-		/**
-		 * select
-		 * @author ruan
-		 * @param table 表名
-		 * @param column 要选择的字段(不填相当于select * from xx)
-		 * @return
-		 */
-		public final Query select(String table, String... column) {
-			if (column.length > 0) {
-				sql.append("select ");
-				for (String tmp : column) {
-					sql.append(tmp);
-					sql.append(",");
-				}
-				int sqlLen = sql.length();
-				sql.delete(sqlLen - 1, sqlLen);
+	private String fieldNameToColumnName(String fieldName) {
+		StringBuilder columnName = new StringBuilder();
+		int l = fieldName.length();
+		for (int i = 0; i < l; i++) {
+			char c = fieldName.charAt(i);
+			if (i > 0 && Character.isUpperCase(c)) {
+				columnName.append("_");
+				columnName.append(c);
 			} else {
-				sql.append("select * ");
+				columnName.append(c);
 			}
-			sql.append(" from ");
-			sql.append(table);
-			return this;
 		}
-
-		/**
-		 * 去重select
-		 * @author ruan
-		 * @param table 表名
-		 * @param column 要选择的字段(不填相当于select distinct * from xx)
-		 * @return
-		 */
-		public final Query selectDistinct(String table, String... column) {
-			if (column.length > 0) {
-				sql.append("select distinct ");
-				for (String tmp : column) {
-					sql.append(tmp);
-					sql.append(",");
-				}
-				int sqlLen = sql.length();
-				sql.delete(sqlLen - 1, sqlLen);
-			} else {
-				sql.append("select distinct * ");
-			}
-			sql.append(" from ");
-			sql.append(table);
-			return this;
-		}
-
-		/**
-		 * 插入
-		 * 
-		 * @author ruan
-		 * @param table 表名
-		 * @param data 要插入的数据
-		 * @return
-		 */
-		public final Query insert(String table, HashMap<String, Object> data) {
-			sql.append("insert into ");
-			sql.append(table);
-			sql.append(" (");
-			sql.append(getKeys(data.keySet()));
-			sql.append(") values (");
-			sql.append(getValues(data.values()));
-			sql.append(")");
-			return this;
-		}
-
-		/**
-		 * 批量插入
-		 * 
-		 * @author ruan
-		 * @param table 表名
-		 * @param list 要插入的数据列表
-		 * @return
-		 */
-		public final Query insertBatch(String table, ArrayList<HashMap<String, Object>> list) {
-			sql.append("insert into ");
-			sql.append(table);
-			sql.append(" (");
-			sql.append(getKeys(list.get(0).keySet()));
-			sql.append(") values ");
-			for (HashMap<String, Object> _data : list) {
-				sql.append("(");
-				sql.append(getValues(_data.values()));
-				sql.append("),");
-			}
-			int sqlLen = sql.length();
-			sql.delete(sqlLen - 1, sqlLen);
-			return this;
-		}
-
-		/**
-		 * 替换
-		 * 
-		 * @author ruan
-		 * @param table 表名
-		 * @param data 要替换的数据
-		 * @return
-		 */
-		public final Query replace(String table, HashMap<String, Object> data) {
-			sql.append("replace into ");
-			sql.append(table);
-			sql.append(" (");
-			sql.append(getKeys(data.keySet()));
-			sql.append(") values (");
-			sql.append(getValues(data.values()));
-			sql.append(")");
-			return this;
-		}
-
-		/**
-		 * 批量替换
-		 * 
-		 * @author ruan
-		 * @param table 表名
-		 * @param list 要替换的数据列表
-		 * @return
-		 */
-		public final Query replaceBatch(String table, ArrayList<HashMap<String, Object>> list) {
-			sql.append("replace into ");
-			sql.append(table);
-			sql.append(" (");
-			sql.append(getKeys(list.get(0).keySet()));
-			sql.append(") values ");
-			for (HashMap<String, Object> _data : list) {
-				sql.append("(");
-				sql.append(getValues(_data.values()));
-				sql.append("),");
-			}
-			int sqlLen = sql.length();
-			sql.delete(sqlLen - 1, sqlLen);
-			return this;
-		}
-
-		/**
-		 * 删除
-		 * 
-		 * @author ruan
-		 * @param table 表名
-		 * @return
-		 */
-		public final Query delete(String table) {
-			sql.append("delete from ");
-			sql.append(table);
-			return this;
-		}
-
-		/**
-		 * 更新数据
-		 * 
-		 * @author ruan 
-		 * @param table 表名
-		 * @param data 要更新的数据
-		 * @return
-		 */
-		public final Query update(String table, HashMap<String, Object> data) {
-			sql.append("update ");
-			sql.append(table);
-			sql.append(" set ");
-			for (Entry<String, Object> e : data.entrySet()) {
-				sql.append(e.getKey());
-				sql.append("='");
-				sql.append(e.getValue());
-				sql.append("',");
-			}
-			int sqlLen = sql.length();
-			sql.delete(sqlLen - 1, sqlLen);
-			return this;
-		}
-
-		/**
-		 * 获取所有的key
-		 * 
-		 * @author ruan
-		 * @param keySet
-		 * @return
-		 */
-		private final String getKeys(Set<String> keySet) {
-			StringBuilder keys = new StringBuilder();
-			for (String key : keySet) {
-				keys.append(key);
-				keys.append(",");
-			}
-			keys.trimToSize();
-			return keys.substring(0, keys.length() - 1);
-
-		}
-
-		/**
-		 * 获取所有的values
-		 * 
-		 * @author ruan
-		 * @param values
-		 * @return
-		 */
-		private final String getValues(Collection<Object> value) {
-			StringBuilder values = new StringBuilder();
-			values.append("'");
-			for (Object key : value) {
-				values.append(key + "','");
-			}
-			values.trimToSize();
-			return values.substring(0, values.length() - 2);
-		}
-
-		/**
-		 * where
-		 * 
-		 * @author ruan
-		 * @param key 键
-		 * @return this
-		 */
-		public final Query where(Object key) {
-			sql.append(" where ");
-			sql.append(key);
-			sql.append(" ");
-			return this;
-		}
-
-		/**
-		 * and where
-		 * 
-		 * @author ruan
-		 * @param key 键
-		 * @return this
-		 */
-		public final Query andWhere(Object key) {
-			sql.append(" and where ");
-			sql.append(key);
-			sql.append(" ");
-			return this;
-		}
-
-		/**
-		 * or where
-		 * 
-		 * @author ruan
-		 * @param key 键
-		 * @return this
-		 */
-		public final Query orWhere(Object key) {
-			sql.append(" or where ");
-			sql.append(key);
-			sql.append(" ");
-			return this;
-		}
-
-		/**
-		 * 等于
-		 * 
-		 * @author ruan
-		 * @param value 值
-		 * @return this
-		 */
-		public final Query is(Object value) {
-			sql.append(" = '");
-			sql.append(value);
-			sql.append("'");
-			return this;
-		}
-
-		/**
-		 * 不等于
-		 * 
-		 * @author ruan
-		 * @param value 值
-		 * @return this
-		 */
-		public final Query isNot(Object value) {
-			sql.append(" != '");
-			sql.append(value);
-			sql.append("'");
-			return this;
-		}
-
-		/**
-		 * 小于
-		 * 
-		 * @author ruan
-		 * @param value 值
-		 * @return this
-		 */
-		public final Query lt(Object value) {
-			sql.append(" < '");
-			sql.append(value);
-			sql.append("'");
-			return this;
-		}
-
-		/**
-		 * 小于等于
-		 * 
-		 * @author ruan
-		 * @param value 值
-		 * @return this
-		 */
-		public final Query lte(Object value) {
-			sql.append(" <= '");
-			sql.append(value);
-			sql.append("'");
-			return this;
-		}
-
-		/**
-		 * 大于
-		 * 
-		 * @author ruan
-		 * @param value 值
-		 * @return this
-		 */
-		public final Query gt(Object value) {
-			sql.append(" > '");
-			sql.append(value);
-			sql.append("'");
-			return this;
-		}
-
-		/**
-		 * 大于等于
-		 * 
-		 * @author ruan
-		 * @param value 值
-		 * @return this
-		 */
-		public final Query gte(Object value) {
-			sql.append(" >= '");
-			sql.append(value);
-			sql.append("'");
-			return this;
-		}
-
-		/**
-		 * and
-		 * 
-		 * @author ruan
-		 * @param key 键
-		 * @return this
-		 */
-		public final Query and(String key) {
-			sql.append(" and ");
-			sql.append(key);
-			return this;
-		}
-
-		/**
-		 * or
-		 * 
-		 * @author ruan
-		 * @param key 键
-		 * @return this
-		 */
-		public final Query or(String key) {
-			sql.append(" or ");
-			sql.append(key);
-			return this;
-		}
-
-		/**
-		 * limit
-		 * 
-		 * @author ruan
-		 * @param x
-		 * @param y
-		 * @return
-		 */
-		public final Query limit(int x, int y) {
-			sql.append(" limit ");
-			sql.append(x);
-			sql.append(" , ");
-			sql.append(y);
-			return this;
-		}
-
-		/**
-		 * limit
-		 * 
-		 * @author ruan
-		 * @param x
-		 * @return
-		 */
-		public final Query limit(int x) {
-			sql.append(" limit ");
-			sql.append(x);
-			return this;
-		}
-
-		/**
-		 * 给字段排序
-		 * 
-		 * @author vilinian
-		 * @param columns
-		 * @return
-		 */
-		public final Query orderBy(HashMap<String, Order> columns) {
-			sql.append(" order by ");
-			for (Entry<String, Order> elem : columns.entrySet()) {
-				sql.append(elem.getKey());
-				sql.append(" ");
-				sql.append(elem.getValue().toString());
-				sql.append(",");
-			}
-			int sqlLen = sql.length();
-			sql.delete(sqlLen - 1, sqlLen);
-			return this;
-		}
-
-		/**
-		 * 分组
-		 * 
-		 * @author vilinian 
-		 * @param column
-		 * @return
-		 */
-		public final Query groupBy(String... column) {
-			if (column.length <= 0) {
-				return this;
-			}
-			sql.append(" group by ");
-			for (String tmp : column) {
-				sql.append(tmp);
-				sql.append(",");
-			}
-			int sqlLen = sql.length();
-			sql.delete(sqlLen - 1, sqlLen);
-
-			return this;
-		}
-
-		/**
-		 * 在集合内
-		 * @author ruan
-		 * @param column
-		 * @return
-		 */
-		public final <T> Query in(T[] column) {
-			sql.append(" in('");
-			for (T s : column) {
-				sql.append(s);
-				sql.append("','");
-			}
-			if (column.length > 0) {
-				int sqlLen = sql.length();
-				sql.delete(sqlLen - 2, sqlLen);
-			} else {
-				sql.append("'");
-			}
-			sql.append(") ");
-			return this;
-		}
-
-		/**
-		 * 在集合内
-		 * @author ruan
-		 * @param column
-		 * @return
-		 */
-		public final <T> Query in(Collection<T> column) {
-			sql.append(" in('");
-			for (T s : column) {
-				sql.append(s);
-				sql.append("','");
-			}
-			if (column.size() > 0) {
-				int sqlLen = sql.length();
-				sql.delete(sqlLen - 2, sqlLen);
-			} else {
-				sql.append("'");
-			}
-			sql.append(") ");
-			return this;
-		}
-
-		/**
-		 * 不在集合内
-		 * @author ruan
-		 * @param column
-		 * @return
-		 */
-		public final <T> Query notIn(T[] column) {
-			sql.append(" not in('");
-			for (T s : column) {
-				sql.append(s);
-				sql.append("','");
-			}
-			if (column.length > 0) {
-				int sqlLen = sql.length();
-				sql.delete(sqlLen - 2, sqlLen);
-			} else {
-				sql.append("'");
-			}
-			sql.append(") ");
-			return this;
-		}
-
-		/**
-		 * 不在集合内
-		 * @author ruan
-		 * @param column
-		 * @return
-		 */
-		public final <T> Query notIn(Collection<T> column) {
-			sql.append(" not in('");
-			for (T s : column) {
-				sql.append(s);
-				sql.append("','");
-			}
-			if (column.size() > 0) {
-				int sqlLen = sql.length();
-				sql.delete(sqlLen - 2, sqlLen);
-			} else {
-				sql.append("'");
-			}
-			sql.append(") ");
-			return this;
-		}
-
-		/**
-		 * 左连接
-		 * @author ruan
-		 * @param tableName 要连接的表(支持n个表)
-		 * @return
-		 */
-		public final Query leftJoin(String... tableName) {
-			sql.append(" left join (");
-			for (String table : tableName) {
-				sql.append(table);
-				sql.append(",");
-			}
-			int sqlLen = sql.length();
-			sql.delete(sqlLen - 1, sqlLen);
-			sql.append(") ");
-			return this;
-		}
-
-		/**
-		 * 右连接
-		 * @author ruan
-		 * @param tableName 要连接的表(支持n个表)
-		 * @return
-		 */
-		public final Query rightJoin(String... tableName) {
-			sql.append(" right join (");
-			for (String table : tableName) {
-				sql.append(table);
-				sql.append(",");
-			}
-			int sqlLen = sql.length();
-			sql.delete(sqlLen - 1, sqlLen);
-			sql.append(") ");
-			return this;
-		}
-
-		/**
-		 * 内连接
-		 * @author ruan
-		 * @param tableName 要连接的表(支持n个表)
-		 * @return
-		 */
-		public final Query innerJoin(String... tableName) {
-			sql.append(" inner join (");
-			for (String table : tableName) {
-				sql.append(table);
-				sql.append(",");
-			}
-			int sqlLen = sql.length();
-			sql.delete(sqlLen - 1, sqlLen);
-			sql.append(") ");
-			return this;
-		}
-
-		/**
-		 * 联表后的条件
-		 * @author ruan
-		 * @param condition 条件
-		 * @return
-		 */
-		public final Query on(String condition) {
-			sql.append(" on ");
-			sql.append(condition);
-			return this;
-		}
-
-		/**
-		 * toString方法
-		 */
-		public String toString() {
-			return sql.toString();
-		}
-
-		/**
-		 * clear
-		 * @author ruan
-		 */
-		public final void clear() {
-			sql.delete(0, sql.length());
-		}
+		return columnName.toString().toLowerCase();
 	}
 }

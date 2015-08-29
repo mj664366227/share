@@ -20,9 +20,13 @@ import com.share.core.interfaces.DSuper;
  */
 public final class PojoProcessor extends AnnotationProcessor {
 	/**
-	 * pojo类对应的字段&方法map
+	 * pojo类对应的字段&set方法map
 	 */
-	private Map<Class<?>, Map<String, Method>> pojoClassMethodMap = new ConcurrentHashMap<>();
+	private Map<Class<?>, Map<String, Method>> pojoClassSetMethodMap = new ConcurrentHashMap<>();
+	/**
+	 * pojo类对应的字段&get方法map
+	 */
+	private Map<Class<?>, Map<String, Method>> pojoClassGetMethodMap = new ConcurrentHashMap<>();
 
 	/**
 	 * 私有构造函数，只能通过spring实例化
@@ -70,14 +74,30 @@ public final class PojoProcessor extends AnnotationProcessor {
 	 * @param field 字段
 	 */
 	private void addPojoClass(Class<?> pojoClass, Field field) {
-		synchronized (pojoClassMethodMap) {
+		//setter
+		synchronized (pojoClassSetMethodMap) {
 			try {
-				Map<String, Method> methodMap = pojoClassMethodMap.get(pojoClass);
+				Map<String, Method> methodMap = pojoClassSetMethodMap.get(pojoClass);
 				if (methodMap == null) {
 					methodMap = new ConcurrentHashMap<>();
-					pojoClassMethodMap.put(pojoClass, methodMap);
+					pojoClassSetMethodMap.put(pojoClass, methodMap);
 				}
 				methodMap.put(field.getName(), pojoClass.getMethod(getSetter(field), field.getType()));
+			} catch (NoSuchMethodException | SecurityException e) {
+				logger.error("", e);
+				System.exit(0);
+			}
+		}
+
+		//getter
+		synchronized (pojoClassGetMethodMap) {
+			try {
+				Map<String, Method> methodMap = pojoClassGetMethodMap.get(pojoClass);
+				if (methodMap == null) {
+					methodMap = new ConcurrentHashMap<>();
+					pojoClassGetMethodMap.put(pojoClass, methodMap);
+				}
+				methodMap.put(field.getName(), pojoClass.getMethod(getGetter(field)));
 			} catch (NoSuchMethodException | SecurityException e) {
 				logger.error("", e);
 				System.exit(0);
@@ -86,12 +106,21 @@ public final class PojoProcessor extends AnnotationProcessor {
 	}
 
 	/**
-	 * 根据pojo类获取它的方法map
+	 * 根据pojo类获取它的set方法map
 	 * @author ruan
 	 * @param pojoClass pojo类
 	 */
-	public Map<String, Method> getMethodMapByClass(Class<?> pojoClass) {
-		return pojoClassMethodMap.get(pojoClass);
+	public Map<String, Method> getSetMethodMapByClass(Class<?> pojoClass) {
+		return pojoClassSetMethodMap.get(pojoClass);
+	}
+
+	/**
+	 * 根据pojo类获取它的get方法map
+	 * @author ruan
+	 * @param pojoClass pojo类
+	 */
+	public Map<String, Method> getGetMethodMapByClass(Class<?> pojoClass) {
+		return pojoClassGetMethodMap.get(pojoClass);
 	}
 
 	/**
@@ -102,5 +131,15 @@ public final class PojoProcessor extends AnnotationProcessor {
 	private String getSetter(Field field) {
 		String fieldName = field.getName();
 		return "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+	}
+
+	/**
+	 * 根据属性名，获取getter方法名
+	 * @param field
+	 * @return
+	 */
+	private String getGetter(Field field) {
+		String fieldName = field.getName();
+		return "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 	}
 }
