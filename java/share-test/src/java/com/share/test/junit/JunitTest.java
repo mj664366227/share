@@ -55,7 +55,5 @@ public class JunitTest {
 	
 	@Test
 	public void junitTest() throws Exception {
-		System.err.println(shareObjectService.test(111));
-		System.err.println(user.getUser(11111));
 	}
 }
