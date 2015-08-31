@@ -9,10 +9,10 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import com.share.core.exception.IllegalPortException;
-import com.share.core.interfaces.AbstractServer;
-import com.share.core.util.Check;
-import com.share.core.util.FileSystem;
+import com.gu.core.exception.IllegalPortException;
+import com.gu.core.interfaces.AbstractServer;
+import com.gu.core.util.Check;
+import com.gu.core.util.FileSystem;
 
 /**
  * jetty http 服务器
@@ -52,18 +52,18 @@ public class HttpServer extends AbstractServer {
 		webappPaths.add("lib/webapp");
 		webappPaths.add("src/webapp");
 
-		server = new Server(new QueuedThreadPool(500));
+		server = new Server(new QueuedThreadPool(5));
 		String webappPath = getWebappPath();
 		WebAppContext webAppContext = new WebAppContext(webappPath + webXmlPath, "/");
 		webAppContext.setResourceBase(webappPath);
 		server.setHandler(webAppContext);
 
 		ServerConnector serverConnector = new ServerConnector(server);
-		serverConnector.setReuseAddress(true);
+		//serverConnector.setReuseAddress(true);
 		serverConnector.setPort(port);
 		server.addConnector(serverConnector);
 
-		server.setStopAtShutdown(true);
+		//server.setStopAtShutdown(true);
 		logger.info("http server bind port " + port);
 	}
 
@@ -92,7 +92,15 @@ public class HttpServer extends AbstractServer {
 			logger.error("", e);
 			System.exit(0);
 		} finally {
-			logger.info("http server started...");
+			// 这里的代码没啥意义，主要是为了打印出项目名称而已
+			String serverName;
+			if (FileSystem.isWindows()) {
+				serverName = FileSystem.getSystemDir().replace("/bin/", "");
+				serverName = serverName.substring(serverName.lastIndexOf("/") + 1);
+			} else {
+				serverName = FileSystem.getProjectName();
+			}
+			logger.info("http server {} start success...", serverName);
 		}
 	}
 }
