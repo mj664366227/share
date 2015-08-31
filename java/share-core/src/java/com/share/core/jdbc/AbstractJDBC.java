@@ -37,7 +37,7 @@ public abstract class AbstractJDBC {
 	/**
 	 * jdbc
 	 */
-	public JdbcTemplate jdbc;
+	protected JdbcTemplate jdbc;
 	/**
 	 * 数据库pojo对象解析器
 	 */
@@ -45,11 +45,25 @@ public abstract class AbstractJDBC {
 	private PojoProcessor pojoProcessor;
 
 	/**
+	 * 构造函数
+	 */
+	public AbstractJDBC() {
+		init();
+	}
+
+	/**
 	 * 注入数据源
 	 * @author ruan
 	 * @param dataSource
 	 */
-	public abstract void setDataSource(DataSource dataSource);
+	protected abstract void setDataSource(DataSource dataSource);
+
+	/**
+	 * 初始化测试连接
+	 */
+	protected void init() {
+		queryInt("select 1");
+	}
 
 	/**
 	 * @author ruan

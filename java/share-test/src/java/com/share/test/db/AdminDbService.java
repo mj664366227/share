@@ -8,10 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.share.core.jdbc.AbstractJDBC;
 
-/**
- * 主业务数据库连接服务 
- *
- */
 @Component
 public class AdminDbService extends AbstractJDBC {
 	@Resource(name = "dataSource")
