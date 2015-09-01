@@ -25,6 +25,10 @@ public class HttpServer extends AbstractServer {
 	 */
 	private Server server;
 	/**
+	 * 端口
+	 */
+	private int port;
+	/**
 	 * webapp路径
 	 */
 	private List<String> webappPaths = new ArrayList<>();
@@ -49,6 +53,7 @@ public class HttpServer extends AbstractServer {
 			throw new IllegalPortException("Illegal port: " + port);
 		}
 
+		this.port = port;
 		webappPaths.add("lib/webapp");
 		webappPaths.add("src/webapp");
 
@@ -59,12 +64,10 @@ public class HttpServer extends AbstractServer {
 		server.setHandler(webAppContext);
 
 		ServerConnector serverConnector = new ServerConnector(server);
-		//serverConnector.setReuseAddress(true);
+		serverConnector.setReuseAddress(true);
 		serverConnector.setPort(port);
 		server.addConnector(serverConnector);
-
-		//server.setStopAtShutdown(true);
-		logger.info("http server bind port " + port);
+		server.setStopAtShutdown(true);
 	}
 
 	/**
@@ -100,7 +103,7 @@ public class HttpServer extends AbstractServer {
 			} else {
 				serverName = FileSystem.getProjectName();
 			}
-			logger.info("http server {} start success...", serverName);
+			logger.info("http server {} start success, bind port {} ...", serverName, port);
 		}
 	}
 }
