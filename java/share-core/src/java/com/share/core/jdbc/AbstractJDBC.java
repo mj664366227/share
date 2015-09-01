@@ -37,7 +37,7 @@ public abstract class AbstractJDBC {
 	/**
 	 * jdbc
 	 */
-	protected JdbcTemplate jdbc;
+	public JdbcTemplate jdbc;
 	/**
 	 * 数据库pojo对象解析器
 	 */
@@ -45,25 +45,11 @@ public abstract class AbstractJDBC {
 	private PojoProcessor pojoProcessor;
 
 	/**
-	 * 构造函数
-	 */
-	public AbstractJDBC() {
-		init();
-	}
-
-	/**
 	 * 注入数据源
 	 * @author ruan
 	 * @param dataSource
 	 */
-	protected abstract void setDataSource(DataSource dataSource);
-
-	/**
-	 * 初始化测试连接
-	 */
-	protected void init() {
-		queryInt("select 1");
-	}
+	public abstract void setDataSource(DataSource dataSource);
 
 	/**
 	 * @author ruan
@@ -89,7 +75,7 @@ public abstract class AbstractJDBC {
 				list.add(t);
 			}
 			return list;
-		} catch (DataAccessException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 		}
 		return list;
@@ -279,7 +265,7 @@ public abstract class AbstractJDBC {
 		//类名转化成数据表名
 		String className = clazz.getSimpleName().substring(1);
 		StringBuilder tableName = new StringBuilder();
-		int l = className.length();
+		int l =className.length();
 		for (int i = 0; i < l; i++) {
 			char c = className.charAt(i);
 			if (i > 0 && Character.isUpperCase(c)) {
@@ -290,7 +276,7 @@ public abstract class AbstractJDBC {
 			}
 		}
 		sql.append(tableName.toString().toLowerCase());
-
+		
 		sql.append("` set ");
 
 		// 组成参数列表
@@ -356,7 +342,7 @@ public abstract class AbstractJDBC {
 		//类名转化成数据表名
 		String className = clazz.getSimpleName().substring(1);
 		StringBuilder tableName = new StringBuilder();
-		int l = className.length();
+		int l =className.length();
 		for (int i = 0; i < l; i++) {
 			char c = className.charAt(i);
 			if (i > 0 && Character.isUpperCase(c)) {
@@ -367,7 +353,7 @@ public abstract class AbstractJDBC {
 			}
 		}
 		sql.append(tableName.toString().toLowerCase());
-
+		
 		sql.append(" (");
 
 		try {
@@ -439,13 +425,52 @@ public abstract class AbstractJDBC {
 	}
 
 	/**
+	 * 批量执行sql语句
+	 * @param sql sql语句
+	 * @return 每一条sql语句对应影响的行数
+	 */
+	//	public final int[] batchUpdate(String sql, List<Object[]> batchArgs) {
+	//		try {
+	//			return jdbc.batchUpdate(sql, batchArgs);
+	//		} catch (DataAccessException e) {
+	//			logger.error("batchUpdate sql:{}, error:{}", sql, e);
+	//			return null;
+	//		}
+	//	}
+
+	/**
+	 * 数据库字段->程序字段(admin_phone_id->adminPhoneId)
+	 * @param columnName 数据库字段
+	 * @return fieldName 程序字段 
+	 */
+	private String columnNameToFieldName(String columnName) {
+		StringBuilder fieldName = new StringBuilder();
+		int l = columnName.length();
+		boolean xiahuaxianIs = false;
+		for (int i = 0; i < l; i++) {
+			char c = columnName.charAt(i);
+			if (c == '_') {
+				xiahuaxianIs = true;
+				continue;
+			}
+			if (xiahuaxianIs) {
+				fieldName.append(Character.toUpperCase(c));
+				xiahuaxianIs = false;
+			} else {
+				fieldName.append(c);
+			}
+		}
+		return fieldName.toString();
+	}
+	
+	/**
 	 * 程序字段->数据库字段(adminPhoneId->admin_phone_id)
 	 * @param fieldName 程序字段 
 	 * @return columnName 数据库字段
 	 */
 	private String fieldNameToColumnName(String fieldName) {
 		StringBuilder columnName = new StringBuilder();
-		int l = fieldName.length();
+		int l =fieldName.length();
 		for (int i = 0; i < l; i++) {
 			char c = fieldName.charAt(i);
 			if (i > 0 && Character.isUpperCase(c)) {
