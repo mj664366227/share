@@ -47,6 +47,7 @@ public final class FileSystem {
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
+	private final static boolean isMacOSX = System.getProperty("os.name").indexOf("Mac OS X") != -1;
 	private static Properties property = new Properties();
 	static {
 		loadProperties();
@@ -70,11 +71,17 @@ public final class FileSystem {
 	}
 
 	/**
-	 * 判断是否为windows
-	 * @return
+	 * 判断是否为windows系统
 	 */
 	public final static boolean isWindows() {
 		return isWindows;
+	}
+
+	/**
+	 * 判断是否为是不是OS X系统
+	 */
+	public static boolean isMacOSX() {
+		return isMacOSX;
 	}
 
 	/**
