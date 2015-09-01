@@ -14,11 +14,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.share.admin.common.SessionKey;
 import com.share.admin.common.URL;
-import com.share.admin.util.SessionUtil;
 import com.share.core.annotation.Menu;
 import com.share.core.annotation.processor.MenuProcessor;
 import com.share.core.util.JSONObject;
 import com.share.core.util.Secret;
+import com.share.core.util.SessionUtil;
 
 @Controller
 public class UserController {
@@ -33,7 +33,7 @@ public class UserController {
 		String username = parameters.getString("username");
 		String password = parameters.getString("password");
 		if ("admin".equals(username) && "admin".equals(password)) {
-			SessionUtil.addValue(request.getSession(), SessionKey.LoginData, Secret.SHA(username + password));
+			SessionUtil.addValue(request.getSession(), SessionKey.LoginData.toString(), Secret.SHA(username + password));
 			response.sendRedirect(URL.Index);
 			return null;
 		}
@@ -45,7 +45,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = URL.UserLogout)
 	public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		SessionUtil.removeValue(request.getSession(), SessionKey.LoginData);
+		SessionUtil.removeValue(request.getSession(), SessionKey.LoginData.toString());
 		response.sendRedirect(URL.UserLogin);
 	}
 

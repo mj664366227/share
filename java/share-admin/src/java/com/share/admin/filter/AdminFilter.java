@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.share.admin.common.SessionKey;
 import com.share.admin.common.URL;
-import com.share.admin.util.SessionUtil;
+import com.share.core.util.SessionUtil;
 
 public class AdminFilter implements Filter {
 	/**
@@ -53,7 +53,7 @@ public class AdminFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		String url = req.getRequestURI().trim();
-		String session = SessionUtil.getString(req.getSession(), SessionKey.LoginData);
+		String session = SessionUtil.getString(req.getSession(), SessionKey.LoginData.toString());
 		logger.info(url);
 		if("/".equals(url)){
 			res.sendRedirect(URL.Index);
