@@ -24,6 +24,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.share.core.annotation.processor.PojoProcessor;
+import com.share.core.exception.MysqlConnectException;
 import com.share.core.util.StringUtil;
 
 /**
@@ -50,6 +51,16 @@ public abstract class AbstractJDBC {
 	 * @param dataSource
 	 */
 	public abstract void setDataSource(DataSource dataSource);
+
+	/**
+	 * 检查连接
+	 */
+	protected void check() {
+		byte one = queryByte("select 1");
+		if (one != 1) {
+			throw new MysqlConnectException("can not connect to mysql!");
+		}
+	}
 
 	/**
 	 * @author ruan
@@ -240,8 +251,8 @@ public abstract class AbstractJDBC {
 	public final boolean update(String sql, Object... args) {
 		try {
 			return jdbc.update(sql, args) > 0;
-		} catch (DataAccessException dae) {
-			logger.error("update-" + sql, dae);
+		} catch (DataAccessException e) {
+			logger.error("", e);
 		}
 		return false;
 	}
@@ -249,58 +260,57 @@ public abstract class AbstractJDBC {
 	/**
 	 * 更新一条数据
 	 * @param t pojo对象(pojo对象的名和表名是对应的)
-	 * @param data 要修改的数据
 	 */
-	public final <T> boolean update(T t, Map<String, Object> data) {
-		if (data == null || data.isEmpty()) {
-			logger.error("update date map is empty");
-			return false;
-		}
-
+	public final <T> boolean update(T t) {
 		// 生成sql update头
 		Class<?> clazz = t.getClass();
 		StringBuilder sql = new StringBuilder();
 		sql.append("update `");
-
-		//类名转化成数据表名
-		String className = clazz.getSimpleName().substring(1);
-		StringBuilder tableName = new StringBuilder();
-		int l =className.length();
-		for (int i = 0; i < l; i++) {
-			char c = className.charAt(i);
-			if (i > 0 && Character.isUpperCase(c)) {
-				tableName.append("_");
-				tableName.append(c);
-			} else {
-				tableName.append(c);
-			}
-		}
-		sql.append(tableName.toString().toLowerCase());
-		
+		sql.append(classNameToTableName(clazz));
 		sql.append("` set ");
-
-		// 组成参数列表
-		Object[] args = new Object[data.size() + 1];
-		int count = 0;
-		for (Entry<String, Object> e : data.entrySet()) {
-			sql.append("`");
-			sql.append(e.getKey());
-			sql.append("`=?,");
-			args[count] = e.getValue();
-			count += 1;
-		}
-		int len = sql.length();
-		sql.delete(len - 1, len);
-		sql.append(" where id=?");
-
-		// 最后取出id的值
-		Map<String, Method> methodMap = pojoProcessor.getGetMethodMapByClass(clazz);
 		try {
+			// 统计有多少个字段
+			int count = 1;
+
+			// 组成参数列表
+			Map<String, Method> methodMap = pojoProcessor.getGetMethodMapByClass(clazz);
+			for (Entry<String, Method> e : methodMap.entrySet()) {
+				String column = fieldNameToColumnName(e.getKey());//程序字段->数据库字段(adminPhoneId->admin_phone_id)
+				if ("id".equals(column)) {
+					continue;
+				}
+
+				sql.append("`");
+				sql.append(column);
+				sql.append("`=?,");
+
+				count += 1;
+			}
+
+			int len = sql.length();
+			sql.delete(len - 1, len);
+			sql.append(" where id=?");
+
+			// 传入参数
+			Object[] args = new Object[count];
+			count = 0;
+			for (Entry<String, Method> e : methodMap.entrySet()) {
+				if ("id".equals(e.getKey())) {
+					continue;
+				}
+				args[count] = e.getValue().invoke(t);
+
+				count += 1;
+			}
+
+			// 把id也set进去
 			args[args.length - 1] = methodMap.get("id").invoke(t);
+			return update(sql.toString(), args);
 		} catch (Exception e) {
 			logger.error("", e);
 		}
-		return update(sql.toString(), args);
+
+		return true;
 	}
 
 	/**
@@ -329,6 +339,28 @@ public abstract class AbstractJDBC {
 	}
 
 	/**
+	 * 删除一条数据
+	 * @param t pojo对象(pojo对象的名和表名是对应的)
+	 */
+	public final <T> boolean delete(T t) {
+		// 生成sql delete头
+		Class<?> clazz = t.getClass();
+		StringBuilder sql = new StringBuilder();
+		sql.append("delete from `");
+		sql.append(classNameToTableName(clazz));
+		sql.append("` where id=?");
+
+		Map<String, Method> methodMap = pojoProcessor.getGetMethodMapByClass(clazz);
+		Method method = methodMap.get("id");
+		try {
+			return update(sql.toString(), method.invoke(t));
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		return false;
+	}
+
+	/**
 	 * 保存整个pojo对象
 	 * @param t pojo对象
 	 * @return -1 异常 
@@ -337,24 +369,9 @@ public abstract class AbstractJDBC {
 		// 生成sql insert头
 		Class<?> clazz = t.getClass();
 		StringBuilder sql = new StringBuilder();
-		sql.append("insert into ");
-
-		//类名转化成数据表名
-		String className = clazz.getSimpleName().substring(1);
-		StringBuilder tableName = new StringBuilder();
-		int l =className.length();
-		for (int i = 0; i < l; i++) {
-			char c = className.charAt(i);
-			if (i > 0 && Character.isUpperCase(c)) {
-				tableName.append("_");
-				tableName.append(c);
-			} else {
-				tableName.append(c);
-			}
-		}
-		sql.append(tableName.toString().toLowerCase());
-		
-		sql.append(" (");
+		sql.append("insert into `");
+		sql.append(classNameToTableName(clazz));
+		sql.append("` (");
 
 		try {
 			// 统计有多少个字段
@@ -462,7 +479,7 @@ public abstract class AbstractJDBC {
 		}
 		return fieldName.toString();
 	}
-	
+
 	/**
 	 * 程序字段->数据库字段(adminPhoneId->admin_phone_id)
 	 * @param fieldName 程序字段 
@@ -470,7 +487,7 @@ public abstract class AbstractJDBC {
 	 */
 	private String fieldNameToColumnName(String fieldName) {
 		StringBuilder columnName = new StringBuilder();
-		int l =fieldName.length();
+		int l = fieldName.length();
 		for (int i = 0; i < l; i++) {
 			char c = fieldName.charAt(i);
 			if (i > 0 && Character.isUpperCase(c)) {
@@ -481,5 +498,26 @@ public abstract class AbstractJDBC {
 			}
 		}
 		return columnName.toString().toLowerCase();
+	}
+
+	/**
+	 * pojo类型转化成表名
+	 * @param clazz
+	 */
+	private String classNameToTableName(Class<?> clazz) {
+		//类名转化成数据表名
+		String className = clazz.getSimpleName().substring(1);
+		StringBuilder tableName = new StringBuilder();
+		int l = className.length();
+		for (int i = 0; i < l; i++) {
+			char c = className.charAt(i);
+			if (i > 0 && Character.isUpperCase(c)) {
+				tableName.append("_");
+				tableName.append(c);
+			} else {
+				tableName.append(c);
+			}
+		}
+		return tableName.toString().toLowerCase();
 	}
 }

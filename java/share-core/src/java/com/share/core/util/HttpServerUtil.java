@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
+
 /**
  * http服务器工具
  * @author ruan
@@ -76,5 +78,14 @@ public final class HttpServerUtil {
 				logger.error("", e);
 			}
 		}
+	}
+
+	/**
+	 * 剪切url，并拼接参数
+	 * @param url
+	 * @param objects
+	 */
+	public final static String cutURL(String url, Object... objects) {
+		return url.substring(0, url.indexOf("/{") + 1) + Joiner.on("/").join(objects);
 	}
 }

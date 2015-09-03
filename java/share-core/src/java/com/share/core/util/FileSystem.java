@@ -46,8 +46,8 @@ public final class FileSystem {
 	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
-	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
-	private final static boolean isMacOSX = System.getProperty("os.name").indexOf("Mac OS X") != -1;
+	private final static boolean isWindows = StringUtil.getString(System.getProperty("os.name")).indexOf("Windows") != -1;
+	private final static boolean isMacOSX = StringUtil.getString(System.getProperty("os.name"))	.indexOf("Mac OS X") != -1;
 	private static Properties property = new Properties();
 	static {
 		loadProperties();
@@ -298,7 +298,7 @@ public final class FileSystem {
 			logger.error("", e);
 			return null;
 		} finally {
-			logger.info("load properties: {}", file);
+			logger.warn("load properties: {}", file);
 		}
 	}
 
@@ -465,8 +465,8 @@ public final class FileSystem {
 			if (file.lastIndexOf(".xml") <= -1) {
 				continue;
 			}
+			logger.warn("load spring config: {}", file);
 			new ClassPathXmlApplicationContext("classpath:" + file).registerShutdownHook();
-			logger.info("load spring config: {}", file);
 		}
 	}
 

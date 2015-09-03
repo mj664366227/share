@@ -55,5 +55,6 @@ public class JunitTest {
 	
 	@Test
 	public void junitTest() throws Exception {
+		shareObjectService.test(1);
 	}
 }

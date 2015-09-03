@@ -31,6 +31,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.share.core.util.StringUtil;
 import com.share.core.util.SystemUtil;
 
 /**
@@ -188,7 +189,7 @@ public final class HttpClient {
 		for (Entry<String, Object> e : data.entrySet()) {
 			sb.append(e.getKey());
 			sb.append("=");
-			sb.append(e.getValue());
+			sb.append(StringUtil.getString(e.getValue()));
 			sb.append("&");
 		}
 		int len = sb.length();
@@ -208,7 +209,7 @@ public final class HttpClient {
 		try {
 			List<NameValuePair> valuePairList = new ArrayList<NameValuePair>();
 			for (Entry<String, Object> e : data.entrySet()) {
-				valuePairList.add(new BasicNameValuePair(e.getKey().trim(), e.getValue().toString().trim()));
+				valuePairList.add(new BasicNameValuePair(StringUtil.getString(e.getKey()), StringUtil.getString(e.getValue())));
 			}
 			httppost.setEntity(new UrlEncodedFormEntity(valuePairList, charset));
 			HttpResponse response = client.execute(httppost);

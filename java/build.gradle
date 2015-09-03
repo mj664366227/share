@@ -72,6 +72,8 @@ project(':share-core') {
 		compile 'commons-cli:commons-cli:1.2'
 		compile 'commons-codec:commons-codec:1.10'
 		compile 'commons-io:commons-io:2.4'
+		compile 'com.dyuproject.protostuff:protostuff-core:1.0.9'
+		compile 'com.dyuproject.protostuff:protostuff-runtime:1.0.9'
 		compile 'org.apache.commons:commons-math:2.2'
 		compile 'org.apache.commons:commons-compress:1.9'
 		compile 'org.apache.commons:commons-lang3:3.3.2'

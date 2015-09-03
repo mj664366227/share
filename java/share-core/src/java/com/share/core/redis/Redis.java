@@ -1,6 +1,7 @@
 package com.share.core.redis;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -150,6 +151,9 @@ public class Redis {
 			jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
 		}
 		logger.info("redis init " + host + ":" + port);
+		
+		// 测试连接
+		KEYS.del("test");
 	}
 
 	/**
@@ -976,19 +980,49 @@ public class Redis {
 		 * 向集合中增加一堆记录,如果这个值已存在，这个值对应的权重将被置为新的权重
 		 * @param key
 		 * @param scoreMembers member => 权重
-		 * @return 状态码 1成功，0已存在member的值
+		 * @return 状态码 1成功，0已存在member的值，-1为出现异常
 		 * */
 		public long zadd(String key, Map<String, Double> scoreMembers) {
 			Jedis jedis = null;
 			try {
 				jedis = jedisPool.getResource();
-				return jedis.zadd(key, scoreMembers);
+
+				// 如果传进来的map大小大于100，拆成每批100来保存
+				int size = scoreMembers.size();
+				if (size > maxPipelineLen) {
+					int i = 1;
+					Map<String, Double> tmpMap = new HashMap<String, Double>(maxPipelineLen);
+					Iterator<Entry<String, Double>> it = scoreMembers.entrySet().iterator();
+					while (it.hasNext()) {
+						Entry<String, Double> e = it.next();
+						tmpMap.put(e.getKey(), e.getValue());
+						if (++i % maxPipelineLen == 0) {
+							// 添加途中可能出错，但忽略
+							// 一般来说，出错的情况是redis无法访问，这个几率很低
+							// member重复的情况会经常出现，不过只是更新score值而已，不会造成重大影响
+							jedis.zadd(key, tmpMap);
+							tmpMap.clear();
+						}
+
+						// 用迭代器来做，这样每处理一个就移除一个
+						it.remove();
+					}
+
+					// 可能还会有多余的，要判断一次
+					if (!tmpMap.isEmpty()) {
+						jedis.zadd(key, tmpMap);
+					}
+					return 1;
+				} else {
+					// 如果不超100就不拆
+					return jedis.zadd(key, scoreMembers);
+				}
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
 				jedis.close();
 			}
-			return 0;
+			return -1;
 		}
 
 		/**

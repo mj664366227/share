@@ -84,7 +84,7 @@ public class HttpServer extends AbstractServer {
 				webappFile = new File(FileSystem.getSystemDir() + webappPath, webXmlPath);
 			}
 			if (webappFile.exists()) {
-				logger.info("find " + webappFile.getAbsolutePath());
+				logger.warn("find " + webappFile.getAbsolutePath());
 				return webappPath;
 			}
 		}
@@ -110,7 +110,7 @@ public class HttpServer extends AbstractServer {
 			} else {
 				serverName = FileSystem.getProjectName();
 			}
-			logger.info("http server {} start success, bind port {} ...", serverName, port);
+			logger.warn("http server {} start success, bind port {} ...", serverName, port);
 		}
 	}
 }

@@ -69,4 +69,12 @@ public final class Check {
 	public final static boolean isChinese(String chinese) {
 		return chinese.matches("^[\\u4E00-\\u9FA5]+$");
 	}
+
+	/**
+	 * 邮箱地址合法性检查
+	 * @param email 邮箱地址
+	 */
+	public final static boolean isEmail(String email) {
+		return email.matches("^\\w+[@]\\w+([.][a-zA-Z]+)+$");
+	}
 }

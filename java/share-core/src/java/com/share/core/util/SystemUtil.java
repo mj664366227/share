@@ -47,6 +47,10 @@ public final class SystemUtil {
 	 */
 	private final static String systemCharset = FileSystem.getPropertyString("system.charset");
 	/**
+	 * 服务器环境：dev开发模式，product生产模式
+	 */
+	private final static String systemENV = FileSystem.getPropertyString("system.env");
+	/**
 	 * 系统字符集
 	 */
 	private final static Charset charset = Charset.forName(systemCharset);
@@ -63,6 +67,20 @@ public final class SystemUtil {
 	 */
 	public final static int getCore() {
 		return core;
+	}
+
+	/**
+	 * 是否为开发模式
+	 */
+	public final static boolean isDEV() {
+		return "dev".equals(systemENV);
+	}
+
+	/**
+	 * 是否为生产模式
+	 */
+	public final static boolean isProduct() {
+		return "product".equals(systemENV);
 	}
 
 	/**
