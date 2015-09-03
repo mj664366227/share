@@ -59,6 +59,25 @@ public final class SystemUtil {
 	 */
 	private final static int core = Runtime.getRuntime().availableProcessors() * 2;
 
+	static {
+		if (systemKey.isEmpty()) {
+			logger.error("config.properties missing property: system.key, please check config.properties!!!");
+			System.exit(0);
+		}
+		if (systemLang.isEmpty()) {
+			logger.error("config.properties missing property: system.lang, please check config.properties!!!");
+			System.exit(0);
+		}
+		if (systemCharset.isEmpty()) {
+			logger.error("config.properties missing property: system.charset, please check config.properties!!!");
+			System.exit(0);
+		}
+		if (systemENV.isEmpty()) {
+			logger.error("config.properties missing property: system.env, please check config.properties!!!");
+			System.exit(0);
+		}
+	}
+
 	private SystemUtil() {
 	}
 

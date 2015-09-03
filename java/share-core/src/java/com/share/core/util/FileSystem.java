@@ -47,7 +47,7 @@ public final class FileSystem {
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	private final static boolean isWindows = StringUtil.getString(System.getProperty("os.name")).indexOf("Windows") != -1;
-	private final static boolean isMacOSX = StringUtil.getString(System.getProperty("os.name"))	.indexOf("Mac OS X") != -1;
+	private final static boolean isMacOSX = StringUtil.getString(System.getProperty("os.name")).indexOf("Mac OS X") != -1;
 	private static Properties property = new Properties();
 	static {
 		loadProperties();

@@ -8,7 +8,7 @@ import java.util.List;
 import com.share.core.interfaces.AbstractSocketServerInitializer;
 import com.share.core.protocol.protocol.ProtocolRequest;
 import com.share.core.protocol.protocol.ProtocolResponse;
-import com.share.core.util.Serialize;
+import com.share.core.util.SerialUtil;
 import com.share.test.protocol.ResDemo;
 
 public class MySocketlientInitializer extends AbstractSocketServerInitializer<ProtocolRequest, ProtocolResponse> {
@@ -41,7 +41,7 @@ public class MySocketlientInitializer extends AbstractSocketServerInitializer<Pr
 
 	@Override
 	protected void encodeData(ChannelHandlerContext ctx, ProtocolRequest request, ByteBuf buffer) throws Exception {
-		byte[] bytes = Serialize.serialize(request);
+		byte[] bytes = SerialUtil.toBytes(request);
 		buffer.writeInt(bytes.length);
 		buffer.writeBytes(bytes);
 	}
@@ -50,7 +50,7 @@ public class MySocketlientInitializer extends AbstractSocketServerInitializer<Pr
 	protected void decodeData(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) {
 		byte[] bytes = new byte[buffer.readableBytes()];
 		buffer.readBytes(bytes);
-		ResDemo res = Serialize.deserialize(bytes, ResDemo.class);
+		ResDemo res = SerialUtil.fromBytes(bytes, ResDemo.class);
 		out.add(res);
 	}
 

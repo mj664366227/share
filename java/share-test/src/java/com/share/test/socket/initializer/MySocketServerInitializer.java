@@ -16,7 +16,7 @@ import com.share.core.interfaces.AbstractSocketServerInitializer;
 import com.share.core.interfaces.AbstractTask;
 import com.share.core.protocol.protocol.ProtocolRequest;
 import com.share.core.protocol.protocol.ProtocolResponse;
-import com.share.core.util.Serialize;
+import com.share.core.util.SerialUtil;
 import com.share.test.protocol.ReqDemo;
 import com.share.test.socket.handler.DemoHandler;
 
@@ -71,7 +71,7 @@ public final class MySocketServerInitializer extends AbstractSocketServerInitial
 	}
 
 	protected void encodeData(ChannelHandlerContext ctx, ProtocolResponse response, ByteBuf buffer) throws Exception {
-		byte[] bytes = Serialize.serialize(response);
+		byte[] bytes = SerialUtil.toBytes(response);
 		buffer.writeInt(bytes.length);
 		buffer.writeBytes(bytes);
 	}
@@ -79,7 +79,7 @@ public final class MySocketServerInitializer extends AbstractSocketServerInitial
 	protected void decodeData(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) {
 		byte[] bytes = new byte[buffer.readableBytes()];
 		buffer.readBytes(bytes);
-		ReqDemo req = Serialize.deserialize(bytes, ReqDemo.class);
+		ReqDemo req = SerialUtil.fromBytes(bytes, ReqDemo.class);
 		out.add(req);
 	}
 
