@@ -98,8 +98,6 @@ public final class MenuProcessor extends AnnotationProcessor {
 
 	/**
 	 * 获取所有菜单
-	 * @author ruan
-	 * @return
 	 */
 	public TreeMap<String, ArrayList<String>> getAllMenu() {
 		return menuMap;
@@ -121,7 +119,7 @@ public final class MenuProcessor extends AnnotationProcessor {
 	public HashMap<String, String> getAllUrl() {
 		return menu2URLMap;
 	}
-	
+
 	/**
 	 * 根据菜单名获取url
 	 * @author ruan

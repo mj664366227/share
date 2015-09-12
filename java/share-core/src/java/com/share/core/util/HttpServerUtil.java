@@ -7,12 +7,11 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
 
 /**
  * http服务器工具
@@ -81,11 +80,86 @@ public final class HttpServerUtil {
 	}
 
 	/**
-	 * 剪切url，并拼接参数
-	 * @param url
-	 * @param objects
+	 * 发送数据(自动转换JSON格式)
+	 * @param data 数据对象
+	 * @param response
+	 * @throws IOException
 	 */
-	public final static String cutURL(String url, Object... objects) {
-		return url.substring(0, url.indexOf("/{") + 1) + Joiner.on("/").join(objects);
+	public final static void send(SResponse data, ServletResponse response) {
+		response.setContentType("application/json;charset=UTF-8");
+		JSONObject json = new JSONObject();
+		json.put("status", 0);
+		json.put("data", data);
+		json.put("time", Time.now(true));
+
+		ServletOutputStream outputStream = null;
+		try {
+			outputStream = response.getOutputStream();
+			outputStream.write(json.toString().getBytes());
+			outputStream.flush();
+		} catch (IOException e) {
+			logger.error("", e);
+		} finally {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				logger.error("", e);
+			}
+		}
+	}
+	
+	/**
+	 * 发送成功(只返回1)
+	 */
+	public final static void sendSuccess(ServletResponse response) {
+		response.setContentType("application/json;charset=UTF-8");
+		JSONObject json = new JSONObject();
+		json.put("status", 0);
+		json.put("data", 1);
+		json.put("time", Time.now(true));
+
+		ServletOutputStream outputStream = null;
+		try {
+			outputStream = response.getOutputStream();
+			outputStream.write(json.toString().getBytes());
+			outputStream.flush();
+		} catch (IOException e) {
+			logger.error("", e);
+		} finally {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				logger.error("", e);
+			}
+		}
+	}
+
+	/**
+	 * 发送错误(自动转换JSON格式)
+	 * @param error 错误对象
+	 * @param response http response对象
+	 * @throws IOException
+	 */
+	public final static void sendError(Error error, ServletResponse response) {
+		response.setContentType("application/json;charset=UTF-8");
+		JSONObject json = new JSONObject();
+		json.put("status", error.getErrorCode());
+		json.put("errorMsg", error.getErrorMsg());
+		json.put("time", Time.now());
+
+		ServletOutputStream outputStream = null;
+		try {
+			outputStream = response.getOutputStream();
+			outputStream.write(json.toString().getBytes());
+			outputStream.flush();
+		} catch (IOException e) {
+			logger.error("", e);
+		} finally {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+				logger.error("", e);
+			}
+		}
 	}
 }

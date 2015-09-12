@@ -1,4 +1,4 @@
-package com.share.core.util;
+package com.gu.core.util;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
@@ -18,13 +19,15 @@ import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.GeneratedMessage;
 
 
-
 /**
  * Java 序列化工具类, 目前使用的序列化使用的Kryo
  */
+@SuppressWarnings("unchecked")
 public class SerialUtil {
-	private final static Logger logger = LoggerFactory.getLogger(SerialUtil.class);
-    private static Charset charset = SystemUtil.getSystemCharset();
+
+    private static Logger logger = LoggerFactory.getLogger(SerialUtil.class);
+
+    private static Charset charset = Charset.forName("UTF-8");
 	private static ImmutableSet<? extends Class<? extends Serializable>> primitiveSet;
 
 	static {
@@ -141,6 +144,7 @@ public class SerialUtil {
 	 * 将数据类型转换成相对应的对像,或字符类型;
 	 * @param data 要转换成byte[] 数据组;
 	 * @param clazzType 被转成的数据类型;
+	 * @return
 	 */
 	public static <T> T parseValue( Class<T> clazzType, byte[] data) { //boolean.class, pojo.class ,String.class
 
@@ -173,5 +177,19 @@ public class SerialUtil {
 			return (T) value;
 		}
 		return null;
+	}
+	/**
+	 * 将list转化为数组
+	 * @param list
+	 * @return
+	 */
+	public static <V> byte[][] tranformStrTobyte(String prefix,Set<V> set){
+		byte[][] arr = new byte[set.size()][];
+		int i = 0 ;
+		for (V v : set) {
+			arr[i]=(prefix + v).getBytes();
+			i++;
+		}
+		return arr;
 	}
 }

@@ -1,4 +1,4 @@
-package com.share.core.util;
+package com.gu.core.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

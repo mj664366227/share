@@ -1,12 +1,14 @@
 package com.share.core.client;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpResponse;
@@ -16,12 +18,13 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.ConnectionConfig;
-import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -73,14 +76,16 @@ public final class HttpClient {
 	public void init() {
 		try {
 			// 支持http和https
-			RegistryBuilder<ConnectionSocketFactory> registryBuilder = RegistryBuilder.<ConnectionSocketFactory> create();
-			registryBuilder.register("http", PlainConnectionSocketFactory.getSocketFactory());
-			registryBuilder.register("https", new SSLConnectionSocketFactory(SSLContext.getDefault()));
-			Registry<ConnectionSocketFactory> socketFactoryRegistry = registryBuilder.build();
+			SSLContext sslcontext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+			HostnameVerifier hostnameVerifier = SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, hostnameVerifier);
+			RegistryBuilder<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create();
+			socketFactoryRegistry.register("http", PlainConnectionSocketFactory.getSocketFactory());
+			socketFactoryRegistry.register("https", sslsf);
 
 			// 初始化连接池
-			cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-			cm.setMaxTotal(2000);
+			cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry.build());
+			cm.setMaxTotal(200);
 			cm.setDefaultMaxPerRoute(100);
 			cm.setValidateAfterInactivity(connectTimeout);
 
@@ -145,6 +150,7 @@ public final class HttpClient {
 	 * @param url
 	 */
 	public String getString(String url) {
+		logger.warn("request url: {}", url);
 		HttpGet get = new HttpGet(url);
 		try {
 			HttpResponse httpResponse = client.execute(get);
@@ -186,11 +192,16 @@ public final class HttpClient {
 			sb.append("/");
 		}
 		sb.append("?");
-		for (Entry<String, Object> e : data.entrySet()) {
-			sb.append(e.getKey());
-			sb.append("=");
-			sb.append(StringUtil.getString(e.getValue()));
-			sb.append("&");
+		try {
+			for (Entry<String, Object> e : data.entrySet()) {
+				sb.append(e.getKey());
+				sb.append("=");
+				sb.append(URLEncoder.encode(StringUtil.getString(e.getValue()), SystemUtil.getSystemCharsetString()));
+				sb.append("&");
+			}
+		} catch (Exception e1) {
+			logger.error("", e1);
+			return "";
 		}
 		int len = sb.length();
 		sb.delete(len - 1, len);
@@ -209,7 +220,7 @@ public final class HttpClient {
 		try {
 			List<NameValuePair> valuePairList = new ArrayList<NameValuePair>();
 			for (Entry<String, Object> e : data.entrySet()) {
-				valuePairList.add(new BasicNameValuePair(StringUtil.getString(e.getKey()), StringUtil.getString(e.getValue())));
+				valuePairList.add(new BasicNameValuePair(StringUtil.getString(e.getKey()), URLEncoder.encode(StringUtil.getString(e.getValue()), SystemUtil.getSystemCharsetString())));
 			}
 			httppost.setEntity(new UrlEncodedFormEntity(valuePairList, charset));
 			HttpResponse response = client.execute(httppost);

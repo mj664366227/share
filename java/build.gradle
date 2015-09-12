@@ -7,7 +7,7 @@ buildscript {
 			maven { url "http://repository.exoplatform.org/content/groups/public/" }
         }
         dependencies {
-            classpath "net.saliman:gradle-cobertura-plugin:2.2.2"
+            classpath "net.saliman:gradle-cobertura-plugin:2.2.8"
         }
 }
 
@@ -72,6 +72,7 @@ project(':share-core') {
 		compile 'commons-cli:commons-cli:1.2'
 		compile 'commons-codec:commons-codec:1.10'
 		compile 'commons-io:commons-io:2.4'
+		compile 'org.apache.poi:poi-ooxml:3.12'
 		compile 'com.dyuproject.protostuff:protostuff-core:1.0.9'
 		compile 'com.dyuproject.protostuff:protostuff-runtime:1.0.9'
 		compile 'org.apache.commons:commons-math:2.2'

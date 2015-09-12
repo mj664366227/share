@@ -25,7 +25,9 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.share.core.annotation.processor.PojoProcessor;
 import com.share.core.exception.MysqlConnectException;
+import com.share.core.interfaces.DSuper;
 import com.share.core.util.StringUtil;
+import com.share.core.util.SystemUtil;
 
 /**
  * jdbc抽象类
@@ -60,6 +62,7 @@ public abstract class AbstractJDBC {
 		if (one != 1) {
 			throw new MysqlConnectException("can not connect to mysql!");
 		}
+		update("set names utf8mb4");
 	}
 
 	/**
@@ -261,7 +264,7 @@ public abstract class AbstractJDBC {
 	 * 更新一条数据
 	 * @param t pojo对象(pojo对象的名和表名是对应的)
 	 */
-	public final <T> boolean update(T t) {
+	public final <T> boolean update(DSuper t) {
 		// 生成sql update头
 		Class<?> clazz = t.getClass();
 		StringBuilder sql = new StringBuilder();
@@ -446,38 +449,13 @@ public abstract class AbstractJDBC {
 	 * @param sql sql语句
 	 * @return 每一条sql语句对应影响的行数
 	 */
-	//	public final int[] batchUpdate(String sql, List<Object[]> batchArgs) {
-	//		try {
-	//			return jdbc.batchUpdate(sql, batchArgs);
-	//		} catch (DataAccessException e) {
-	//			logger.error("batchUpdate sql:{}, error:{}", sql, e);
-	//			return null;
-	//		}
-	//	}
-
-	/**
-	 * 数据库字段->程序字段(admin_phone_id->adminPhoneId)
-	 * @param columnName 数据库字段
-	 * @return fieldName 程序字段 
-	 */
-	private String columnNameToFieldName(String columnName) {
-		StringBuilder fieldName = new StringBuilder();
-		int l = columnName.length();
-		boolean xiahuaxianIs = false;
-		for (int i = 0; i < l; i++) {
-			char c = columnName.charAt(i);
-			if (c == '_') {
-				xiahuaxianIs = true;
-				continue;
-			}
-			if (xiahuaxianIs) {
-				fieldName.append(Character.toUpperCase(c));
-				xiahuaxianIs = false;
-			} else {
-				fieldName.append(c);
-			}
+	public final int[] batchUpdate(String sql, List<Object[]> batchArgs) {
+		try {
+			return jdbc.batchUpdate(sql, batchArgs);
+		} catch (DataAccessException e) {
+			logger.error("batchUpdate sql:{}, error:{}", sql, SystemUtil.stackTrace2String(e));
+			return null;
 		}
-		return fieldName.toString();
 	}
 
 	/**

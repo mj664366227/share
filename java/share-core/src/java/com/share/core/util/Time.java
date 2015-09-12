@@ -1,4 +1,4 @@
-package com.share.core.util;
+package com.gu.core.util;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -40,11 +40,9 @@ public final class Time {
 
 	/**
 	 * 获取当天凌晨的时间戳
-	 * 
-	 * @param time
-	 *            时间格式
-	 * @param isMicrotime
-	 *            是否显示毫秒
+	 * @param time 时间
+	 * @param format 时间格式
+	 * @param isMicrotime 是否显示毫秒
 	 */
 	public static final long dayBreak(String time, String format, boolean isMicrotime) {
 		return str2time(time, format, isMicrotime);
@@ -52,12 +50,30 @@ public final class Time {
 
 	/**
 	 * 获取当天凌晨的时间戳
-	 * 
-	 * @param time
-	 *            时间格式
+	 * @param time 时间
+	 * @param format 时间格式
 	 */
 	public static final int dayBreak(String time, String format) {
 		return str2time(time2str(time), format);
+	}
+
+	/**
+	 * 获取当天最后一秒的时间戳
+	 * @param time 时间
+	 * @param format 时间格式
+	 */
+	public static final int dayEnd(String time, String format) {
+		return dayBreak(time, format) + 86399;
+	}
+
+	/**
+	 * 获取当天最后一秒的时间戳
+	 * @param time 时间
+	 * @param format 时间格式
+	 * @param isMicrotime 是否显示毫秒
+	 */
+	public static final long dayEnd(String time, String format, boolean isMicrotime) {
+		return dayBreak(time, format, isMicrotime) + 86399L * 1000L;
 	}
 
 	/**
@@ -76,9 +92,7 @@ public final class Time {
 
 	/**
 	 * 获取输入的时间戳是星期几
-	 * 
-	 * @param timestamp
-	 *            时间戳
+	 * @param timestamp 时间戳
 	 */
 	public static final int getDayOfWeek(int timestamp) {
 		calendar.setTimeInMillis((long) timestamp * 1000);
@@ -94,9 +108,7 @@ public final class Time {
 
 	/**
 	 * 获取输入的时间戳是当年的第几周
-	 * 
-	 * @param timestamp
-	 *            时间戳
+	 * @param timestamp 时间戳
 	 */
 	public static final int getWeekOfYear(int timestamp) {
 		calendar.setTimeInMillis((long) timestamp * 1000);
@@ -105,9 +117,7 @@ public final class Time {
 
 	/**
 	 * 把当前时间戳转字符串
-	 * 
-	 * @param format
-	 *            时间格式
+	 * @param format 时间格式
 	 */
 	public static final String time2str(String format) {
 		return time2str(now(true), format);
@@ -115,11 +125,8 @@ public final class Time {
 
 	/**
 	 * 时间戳转字符串
-	 * 
-	 * @param timestamp
-	 *            时间戳
-	 * @param format
-	 *            时间格式
+	 * @param timestamp 时间戳
+	 * @param format 时间格式
 	 */
 	public static final String time2str(long timestamp, String format) {
 		return new SimpleDateFormat(format).format(timestamp);
@@ -127,47 +134,37 @@ public final class Time {
 
 	/**
 	 * 字符串转时间戳
-	 * 
-	 * @param str
-	 *            字符串
-	 * @param format
-	 *            时间格式
-	 * @param isMicrotime
-	 *            是否输出毫秒
+	 * @param str 字符串
+	 * @param format 时间格式
+	 * @param isMicrotime 是否输出毫秒
 	 */
 	public static final long str2time(String str, String format, boolean isMicrotime) {
 		if (str == null || "".equals(str)) {
-			return -1;
+			return -Integer.MAX_VALUE;
 		}
 		try {
 			if (isMicrotime) {
 				return new SimpleDateFormat(format).parse(str).getTime();
 			}
-			return new SimpleDateFormat(format).parse(str).getTime() / 1000;
+			return new SimpleDateFormat(format).parse(str).getTime() / 1000L;
 		} catch (Exception e) {
-			return -1;
+			return -Integer.MAX_VALUE;
 		}
 	}
 
 	/**
 	 * 字符串转时间戳
-	 * 
-	 * @param str
-	 *            字符串
-	 * @param format
-	 *            时间格式
+	 * @param str 字符串
+	 * @param format 时间格式
 	 */
 	public static final int str2time(String str) {
 		return (int) str2time(str, DEFAULT_FORMAT, false);
 	}
-	
+
 	/**
 	 * 字符串转时间戳
-	 * 
-	 * @param str
-	 *            字符串
-	 * @param isMicrotime
-	 *            是否输出毫秒
+	 * @param str 字符串
+	 * @param isMicrotime 是否输出毫秒
 	 */
 	public static final long str2time(String str, boolean isMicrotime) {
 		return str2time(str, DEFAULT_FORMAT, isMicrotime);
@@ -175,11 +172,8 @@ public final class Time {
 
 	/**
 	 * 字符串转时间戳
-	 * 
-	 * @param str
-	 *            字符串
-	 * @param format
-	 *            时间格式
+	 * @param str 字符串
+	 * @param format 时间格式
 	 */
 	public static final int str2time(String str, String format) {
 		return (int) str2time(str, format, false);
@@ -187,9 +181,7 @@ public final class Time {
 
 	/**
 	 * 计算一个时间段相隔多少秒
-	 * 
-	 * @param hm
-	 *            12:00-13:00
+	 * @param hm 12:00-13:00
 	 */
 	public static final int diff(String hm) {
 		String[] time = hm.split("-");
@@ -200,13 +192,9 @@ public final class Time {
 
 	/**
 	 * 计算两个时间段相差多少秒
-	 * 
-	 * @param time1
-	 *            时间1
-	 * @param time2
-	 *            时间2
-	 * @param format
-	 *            时间格式
+	 * @param time1  时间1
+	 * @param time2 时间2
+	 * @param format 时间格式
 	 */
 	public static final int diff(String time1, String time2, String format) {
 		try {
@@ -219,13 +207,9 @@ public final class Time {
 
 	/**
 	 * 计算两个时间段相差多少分钟
-	 * 
-	 * @param time1
-	 *            时间1
-	 * @param time2
-	 *            时间2
-	 * @param format
-	 *            时间格式
+	 * @param time1 时间1
+	 * @param time2  时间2
+	 * @param format 时间格式
 	 */
 	public static final int diffMinute(String time1, String time2, String format) {
 		return diff(time1, time2, format) / 60;
@@ -233,13 +217,9 @@ public final class Time {
 
 	/**
 	 * 计算两个时间段相差多少小时
-	 * 
-	 * @param time1
-	 *            时间1
-	 * @param time2
-	 *            时间2
-	 * @param format
-	 *            时间格式
+	 * @param time1  时间1
+	 * @param time2  时间2
+	 * @param format 时间格式
 	 */
 	public static final int diffHour(String time1, String time2, String format) {
 		return diff(time1, time2, format) / 3600;
@@ -247,13 +227,9 @@ public final class Time {
 
 	/**
 	 * 计算两个时间段相差多少天
-	 * 
-	 * @param time1
-	 *            时间1
-	 * @param time2
-	 *            时间2
-	 * @param format
-	 *            时间格式
+	 * @param time1 时间1
+	 * @param time2  时间2
+	 * @param format 时间格式
 	 */
 	public static final int diffDay(String time1, String time2, String format) {
 		return diff(time1, time2, format) / 86400;
@@ -261,8 +237,6 @@ public final class Time {
 
 	/**
 	 * 把当前时间格式化成yyyy-MM-dd HH:mm:ss
-	 * 
-	 * @return String
 	 */
 	public static final String date() {
 		return date(DEFAULT_FORMAT);
@@ -270,9 +244,7 @@ public final class Time {
 
 	/**
 	 * 把当前时间格式化
-	 * 
-	 * @param format
-	 * @return String
+	 * @param format 时间格式
 	 */
 	public static final String date(String format) {
 		return date(format, System.currentTimeMillis());
@@ -280,9 +252,7 @@ public final class Time {
 
 	/**
 	 * 把时间戳（秒）格式化成yyyy-MM-dd HH:mm:ss
-	 * 
-	 * @param timestamp
-	 * @return String
+	 * @param timestamp 时间戳
 	 */
 	public static final String date(int timestamp) {
 		return date(DEFAULT_FORMAT, timestamp);
@@ -290,9 +260,7 @@ public final class Time {
 
 	/**
 	 * 把时间戳（毫秒）格式化成yyyy-MM-dd HH:mm:ss
-	 * 
-	 * @param timestamp
-	 * @return String
+	 * @param timestamp 时间戳
 	 */
 	public static final String date(long timestamp) {
 		return date(DEFAULT_FORMAT, timestamp);
@@ -300,11 +268,8 @@ public final class Time {
 
 	/**
 	 * 把时间戳格式化
-	 * 
-	 * @param format
-	 * @param timestamp
-	 *            秒
-	 * @return String
+	 * @param format 时间格式
+	 * @param timestamp 时间戳
 	 */
 	public static final String date(String format, int timestamp) {
 		return date(format, timestamp * 1000L);
@@ -312,11 +277,8 @@ public final class Time {
 
 	/**
 	 * 把时间戳格式化
-	 * 
-	 * @param format
-	 * @param timestamp
-	 *            毫秒
-	 * @return String
+	 * @param format 时间格式
+	 * @param timestamp 毫秒
 	 */
 	public static final String date(String format, long timestamp) {
 		return new SimpleDateFormat(format).format(timestamp);
@@ -324,10 +286,7 @@ public final class Time {
 
 	/**
 	 * 寻找最合适的单位来显示时间
-	 * 
-	 * @author ruan 2013-7-21
-	 * @param time
-	 * @return
+	 * @param time 时间
 	 */
 	public static final String showTime(long time) {
 		String str = "";
@@ -341,5 +300,30 @@ public final class Time {
 			str = new DecimalFormat("0.00").format(time / 1000000000.0) + " s";
 		}
 		return str;
+	}
+	
+	/**
+	 * 获取传入时间的前后N天,时分秒为0
+	 * @param time 时间戳
+	 * @param days 天数,用来做加减,可以为负数
+	 * @return
+	 */
+	public static final long dayBegin(long time, int days) {
+		calendar.setTimeInMillis(time);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.add(Calendar.DATE, days);
+		return calendar.getTimeInMillis();
+	}
+	
+	/**
+	 * 返回int类型日期,例子:20150101
+	 * @param time 时间戳
+	 * @return 例子:20150101
+	 */
+	public static final int intDate(long time){
+		return StringUtil.getInt(new SimpleDateFormat("yyyyMMdd").format(time));
 	}
 }

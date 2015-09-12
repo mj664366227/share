@@ -46,8 +46,8 @@ public final class FileSystem {
 	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
-	private final static boolean isWindows = StringUtil.getString(System.getProperty("os.name")).indexOf("Windows") != -1;
-	private final static boolean isMacOSX = StringUtil.getString(System.getProperty("os.name")).indexOf("Mac OS X") != -1;
+	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
+	private final static boolean isMacOSX = System.getProperty("os.name").indexOf("Mac OS X") != -1;
 	private static Properties property = new Properties();
 	static {
 		loadProperties();
@@ -193,40 +193,43 @@ public final class FileSystem {
 	 * 读取文件类容
 	 * @author ruan
 	 * @param filename 文件的完整路径
-	 * @param isCreateNewFile 如果文件不存在，是否新建一个？如果否，则报错
-	 * @return
 	 */
-	public final static String read(String filename, boolean isCreateNewFile) {
+	public final static String read(String filename) {
+		if (filename == null || filename.isEmpty()) {
+			return "";
+		}
 		try {
-			String text = null;
-			StringBuilder sb = new StringBuilder();
-			BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
-			while ((text = input.readLine()) != null) {
-				sb.append(text);
-				sb.append("\n");
-			}
-			input.close();
-			return sb.toString().trim();
-		} catch (IOException e) {
-			if (isCreateNewFile) {
-				write(filename, "", false);
-			} else {
-				logger.error("", e);
-			}
+			return read(new FileInputStream(filename));
+		} catch (Exception e) {
+			logger.error("", e);
 		}
 		return "";
 	}
 
 	/**
-	 * 读取文件类容
-	 * @author ruan
-	 * @param filename 文件的完整路径
-	 * @return
+	 * 通过文件流读取文件
+	 * @param inputStream 文件流
 	 */
-	public final static String read(String filename) {
-		return read(filename, false);
+	public final static String read(InputStream inputStream) {
+		try {
+			String text = null;
+			StringBuilder sb = new StringBuilder();
+			InputStreamReader inputStreamReader = new InputStreamReader(inputStream, SystemUtil.getSystemCharsetString());
+			BufferedReader input = new BufferedReader(inputStreamReader);
+			while ((text = input.readLine()) != null) {
+				sb.append(text);
+				sb.append("\n");
+			}
+			inputStream.close();
+			inputStreamReader.close();
+			input.close();
+			return sb.toString().trim();
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		return "";
 	}
-
+	
 	/**
 	 * 读取jar包内指定类型的文件
 	 * @param jarFileName jar文件路径

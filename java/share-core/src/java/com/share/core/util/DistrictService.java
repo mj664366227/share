@@ -1,5 +1,6 @@
 package com.share.core.util;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,18 +23,6 @@ public class DistrictService {
 	 * logger
 	 */
 	private final static Logger logger = LoggerFactory.getLogger(DistrictService.class);
-	/**
-	 * 省份文件路径
-	 */
-	private final String provincePath = StringUtil.getString(getClass().getClassLoader().getResource("province.json")).replace("file:/", "");
-	/**
-	 * 城市文件路径
-	 */
-	private final String cityPath = StringUtil.getString(getClass().getClassLoader().getResource("city.json")).replace("file:/", "");
-	/**
-	 * 区县文件路径
-	 */
-	private final String areaPath = StringUtil.getString(getClass().getClassLoader().getResource("area.json")).replace("file:/", "");
 	/**
 	 * 省份map
 	 */
@@ -72,12 +61,16 @@ public class DistrictService {
 	 * 初始化省份
 	 */
 	private void initProvince() {
-		ArrayList<HashMap<String, Object>> provinceList = JSONObject.decode(FileSystem.read(provincePath), new TypeToken<ArrayList<HashMap<String, Object>>>() {
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("province.json");
+		if (inputStream == null) {
+			return;
+		}
+		ArrayList<HashMap<String, Object>> provinceList = JSONObject.decode(FileSystem.read(inputStream), new TypeToken<ArrayList<HashMap<String, Object>>>() {
 		}.getType());
 		if (provinceList == null || provinceList.isEmpty()) {
 			return;
 		}
-		logger.warn("load province config: {}", provincePath);
+		logger.warn("load province config: province.json");
 		for (HashMap<String, Object> data : provinceList) {
 			provinceMap.put(StringUtil.getInt(data.get("ProID")), StringUtil.getString(data.get("name")));
 		}
@@ -87,12 +80,16 @@ public class DistrictService {
 	 * 初始化城市
 	 */
 	private void initCity() {
-		ArrayList<HashMap<String, Object>> cityList = JSONObject.decode(FileSystem.read(cityPath), new TypeToken<ArrayList<HashMap<String, Object>>>() {
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("city.json");
+		if (inputStream == null) {
+			return;
+		}
+		ArrayList<HashMap<String, Object>> cityList = JSONObject.decode(FileSystem.read(inputStream), new TypeToken<ArrayList<HashMap<String, Object>>>() {
 		}.getType());
 		if (cityList == null || cityList.isEmpty()) {
 			return;
 		}
-		logger.warn("load city config: {}", cityPath);
+		logger.warn("load city config: city.json");
 		for (HashMap<String, Object> data : cityList) {
 			cityMap.put(StringUtil.getInt(data.get("ProID")) + "," + StringUtil.getInt(data.get("CityID")), StringUtil.getString(data.get("name")));
 		}
@@ -102,12 +99,16 @@ public class DistrictService {
 	 * 初始化区县
 	 */
 	private void initArea() {
-		ArrayList<HashMap<String, Object>> areaList = JSONObject.decode(FileSystem.read(areaPath), new TypeToken<ArrayList<HashMap<String, Object>>>() {
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("area.json");
+		if (inputStream == null) {
+			return;
+		}
+		ArrayList<HashMap<String, Object>> areaList = JSONObject.decode(FileSystem.read(inputStream), new TypeToken<ArrayList<HashMap<String, Object>>>() {
 		}.getType());
 		if (areaList == null || areaList.isEmpty()) {
 			return;
 		}
-		logger.warn("load area config: {}", areaPath);
+		logger.warn("load area config: area.json");
 		for (HashMap<String, Object> data : areaList) {
 			areaMap.put(StringUtil.getInt(data.get("CityID")) + "," + StringUtil.getInt(data.get("Id")), StringUtil.getString(data.get("DisName")));
 		}
@@ -140,5 +141,26 @@ public class DistrictService {
 	 */
 	public String getArea(int cityId, int areaId) {
 		return areaMap.get(cityId + "," + areaId);
+	}
+
+	/**
+	 * 获取省份map
+	 */
+	public Map<Integer, String> getProvinceMap() {
+		return provinceMap;
+	}
+
+	/**
+	 * 获取城市map
+	 */
+	public Map<String, String> getCityMap() {
+		return cityMap;
+	}
+
+	/**
+	 * 获取区县map
+	 */
+	public Map<String, String> getAreaMap() {
+		return areaMap;
 	}
 }

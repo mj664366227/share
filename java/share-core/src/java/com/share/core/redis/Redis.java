@@ -24,6 +24,8 @@ import redis.clients.jedis.Transaction;
 import redis.clients.jedis.ZParams;
 import redis.clients.util.SafeEncoder;
 
+import com.share.core.util.StringUtil;
+
 /**
  * redis类
  */
@@ -138,10 +140,10 @@ public class Redis {
 		GenericObjectPoolConfig jedisPoolConfig = new GenericObjectPoolConfig();
 		jedisPoolConfig.setMinIdle(minIdle);
 		jedisPoolConfig.setMaxIdle(maxIdle);
-		jedisPoolConfig.setTestOnBorrow(false);// 检查连接是否可用
+		jedisPoolConfig.setTestOnBorrow(true);// 检查连接是否可用
 		jedisPoolConfig.setTestOnCreate(false);
 		jedisPoolConfig.setTestWhileIdle(false);
-		jedisPoolConfig.setTestOnReturn(false);
+		jedisPoolConfig.setTestOnReturn(true);
 		jedisPoolConfig.setMaxWaitMillis(maxWait);
 		jedisPoolConfig.setMaxTotal(maxTotal);
 
@@ -152,7 +154,7 @@ public class Redis {
 		}
 		logger.info("redis init " + host + ":" + port);
 		
-		// 测试连接
+		// 检查连接
 		KEYS.del("test");
 	}
 
@@ -1034,7 +1036,7 @@ public class Redis {
 			Jedis jedis = null;
 			try {
 				jedis = jedisPool.getResource();
-				return jedis.zcard(key);
+				return StringUtil.getLong(jedis.zcard(key));
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
@@ -1271,7 +1273,7 @@ public class Redis {
 			Jedis jedis = null;
 			try {
 				jedis = jedisPool.getResource();
-				return jedis.zscore(key, memebr);
+				return StringUtil.getDouble(jedis.zscore(key, memebr));
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {

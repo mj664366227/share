@@ -57,7 +57,7 @@ public class HttpServer extends AbstractServer {
 		webappPaths.add("lib/webapp");
 		webappPaths.add("src/webapp");
 
-		server = new Server(new QueuedThreadPool(5));
+		server = new Server(new QueuedThreadPool(200));
 		String webappPath = getWebappPath();
 		WebAppContext webAppContext = new WebAppContext(webappPath + webXmlPath, "/");
 		webAppContext.setResourceBase(webappPath);

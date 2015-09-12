@@ -1,4 +1,4 @@
-package com.share.core.util;
+package com.gu.core.util;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

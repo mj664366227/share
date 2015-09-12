@@ -1,4 +1,4 @@
-package com.share.core.util;
+package com.gu.core.util;
 
 import javax.servlet.http.HttpSession;
 
@@ -78,5 +78,27 @@ public final class SessionUtil {
 	 */
 	public final static String getString(HttpSession session, String sessionKey) {
 		return StringUtil.getString(session.getAttribute(sessionKey));
+	}
+
+	/**
+	 * getBytes	
+	 */
+	public final static byte[] getBytes(HttpSession session, String sessionKey) {
+		return (byte[]) session.getAttribute(sessionKey);
+	}
+
+	/**
+	 * getObject
+	 */
+	public final static Object getObject(HttpSession session, String sessionKey) {
+		return session.getAttribute(sessionKey);
+	}
+
+	/**
+	 * getT
+	 */
+	@SuppressWarnings("unchecked")
+	public final static <T> T getT(HttpSession session, String sessionKey, Class<T> t) {
+		return (T) session.getAttribute(sessionKey);
 	}
 }
