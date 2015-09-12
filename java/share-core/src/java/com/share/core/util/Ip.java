@@ -1,4 +1,4 @@
-package com.gu.core.util;
+package com.share.core.util;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

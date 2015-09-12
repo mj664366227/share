@@ -1,4 +1,4 @@
-package com.gu.core.util;
+package com.share.core.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
