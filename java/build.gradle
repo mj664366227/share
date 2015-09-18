@@ -2,8 +2,10 @@
 
 buildscript {
 		// http://mvnrepository.com  
+		// http://maven.oschina.net
         repositories {
 			maven { url "http://127.0.0.1:8081/nexus/content/repositories/central/" }
+			maven { url "http://maven.oschina.net/content/groups/public/" }
 			maven { url "http://repository.exoplatform.org/content/groups/public/" }
         }
         dependencies {
@@ -37,6 +39,7 @@ subprojects {
 	
 	repositories {
 		maven { url "http://127.0.0.1:8081/nexus/content/repositories/central/" }
+		maven { url "http://maven.oschina.net/content/groups/public/" }
 		maven { url "http://repository.exoplatform.org/content/groups/public/" }
 	}
 	
