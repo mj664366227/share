@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.share.core.util.StringUtil;
+
 import redis.clients.jedis.BinaryClient.LIST_POSITION;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -23,8 +25,6 @@ import redis.clients.jedis.SortingParams;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.ZParams;
 import redis.clients.util.SafeEncoder;
-
-import com.share.core.util.StringUtil;
 
 /**
  * redis类
@@ -152,10 +152,15 @@ public class Redis {
 		} else {
 			jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
 		}
-		logger.info("redis init " + host + ":" + port);
-		
+		logger.warn("redis init " + host + ":" + port);
+
 		// 检查连接
-		KEYS.del("test");
+		try {
+			KEYS.del("test");
+		} catch (Exception e) {
+			logger.error("", e);
+			System.exit(0);
+		}
 	}
 
 	/**
@@ -163,7 +168,7 @@ public class Redis {
 	 */
 	public void close() {
 		jedisPool.close();
-		logger.info("redis closed");
+		logger.warn("redis closed");
 	}
 
 	public class Keys {
@@ -2042,7 +2047,7 @@ public class Redis {
 			} finally {
 				jedis.close();
 			}
-			return null;
+			return "";
 		}
 
 		/**

@@ -1,6 +1,5 @@
 package com.share.core.util;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -229,7 +228,7 @@ public final class FileSystem {
 		}
 		return "";
 	}
-	
+
 	/**
 	 * 读取jar包内指定类型的文件
 	 * @param jarFileName jar文件路径
@@ -291,7 +290,7 @@ public final class FileSystem {
 	public final static synchronized Properties loadProperties(String file) {
 		try {
 			FileInputStream fileInputStream = new FileInputStream(file);
-			InputStream in = new BufferedInputStream(fileInputStream);
+			InputStreamReader in = new InputStreamReader(fileInputStream, "utf-8");
 			Properties properties = new Properties();
 			properties.load(in);
 			fileInputStream.close();
@@ -303,6 +302,13 @@ public final class FileSystem {
 		} finally {
 			logger.warn("load properties: {}", file);
 		}
+	}
+
+	/**
+	 * 获取整个property文件
+	 */
+	public final static Properties getProperty() {
+		return property;
 	}
 
 	/**

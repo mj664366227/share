@@ -60,6 +60,10 @@ public final class MenuProcessor extends AnnotationProcessor {
 	 */
 	private static TreeMap<String, ArrayList<String>> menuMap = new TreeMap<String, ArrayList<String>>(comparator);
 	/**
+	 * 要显示的菜单map
+	 */
+	private static TreeMap<String, ArrayList<String>> showMenuMap = new TreeMap<String, ArrayList<String>>(comparator);
+	/**
 	 * 菜单名 => URL map
 	 */
 	private static HashMap<String, String> menu2URLMap = new HashMap<String, String>();
@@ -89,6 +93,14 @@ public final class MenuProcessor extends AnnotationProcessor {
 				menuList = new ArrayList<String>();
 				menuMap.put(menu.parentMenu().trim(), menuList);
 			}
+			if (!menu.isInner()) {
+				ArrayList<String> showMenuList = showMenuMap.get(menu.parentMenu().trim());
+				if (showMenuList == null) {
+					showMenuList = new ArrayList<String>();
+					showMenuMap.put(menu.parentMenu().trim(), showMenuList);
+				}
+				showMenuList.add(menu.menu().trim());
+			}
 			menuList.add(menu.menu().trim());
 			Collections.sort(menuList, comparator);
 			menu2URLMap.put(menu.menu().trim(), requestMapping.value()[0]);
@@ -101,6 +113,13 @@ public final class MenuProcessor extends AnnotationProcessor {
 	 */
 	public TreeMap<String, ArrayList<String>> getAllMenu() {
 		return menuMap;
+	}
+
+	/**
+	 * 获取所有要显示的菜单
+	 */
+	public TreeMap<String, ArrayList<String>> getShowMenuMap() {
+		return showMenuMap;
 	}
 
 	/**
@@ -122,7 +141,6 @@ public final class MenuProcessor extends AnnotationProcessor {
 
 	/**
 	 * 根据菜单名获取url
-	 * @author ruan
 	 * @param menu
 	 */
 	public String getUrlByMenu(String menu) {

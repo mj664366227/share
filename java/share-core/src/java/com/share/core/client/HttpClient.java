@@ -1,15 +1,22 @@
 package com.share.core.client;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -22,14 +29,14 @@ import org.apache.http.config.RegistryBuilder;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContexts;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +50,10 @@ import com.share.core.util.SystemUtil;
  */
 public final class HttpClient {
 	/**
+	 * 空map
+	 */
+	private final static Map<String, Object> nullMap = new HashMap<String, Object>(0);
+	/**
 	 * logger
 	 */
 	private final static Logger logger = LoggerFactory.getLogger(HttpClient.class);
@@ -55,6 +66,22 @@ public final class HttpClient {
 	 */
 	private int connectTimeout = 3000;
 	/**
+	 * 证书编码格式
+	 */
+	private String keystore = "";
+	/**
+	 * 证书路径(相对于classpath)
+	 */
+	private String cert = "";
+	/**
+	 * 证书密码
+	 */
+	private String password = "";
+	/**
+	 * ssl加密算法
+	 */
+	private String[] sslProtocols = new String[0];
+	/**
 	 * http连接池
 	 */
 	private CloseableHttpClient client;
@@ -64,9 +91,50 @@ public final class HttpClient {
 	private PoolingHttpClientConnectionManager cm;
 
 	/**
-	 * 私有构造函数
+	 * 构造函数
 	 */
+	@SuppressWarnings("unused")
 	private HttpClient() {
+	}
+
+	/**
+	 * 构造函数
+	 * @param connectTimeout 超时时间
+	 */
+	public HttpClient(int connectTimeout) {
+		this("", "", "", null, connectTimeout);
+	}
+
+	/**
+	 * 构造函数
+	 * @param keystore 证书编码格式
+	 * @param cert 证书路径(相对于classpath)
+	 * @param password 证书密码
+	 * @param sslProtocols ssl加密算法
+	 */
+	public HttpClient(String keystore, String cert, String password, String[] sslProtocols) {
+		this(keystore, cert, password, sslProtocols, 0);
+	}
+
+	/**
+	 * 构造函数
+	 * @param keystore 证书编码格式
+	 * @param cert 证书路径(相对于classpath)
+	 * @param password 证书密码
+	 * @param sslProtocols ssl加密算法
+	 * @param connectTimeout 超时时间
+	 */
+	public HttpClient(String keystore, String cert, String password, String[] sslProtocols, int connectTimeout) {
+		this.keystore = keystore;
+		this.cert = cert;
+		this.password = password;
+		if (connectTimeout > 0) {
+			this.connectTimeout = connectTimeout;
+		}
+		if (sslProtocols != null && sslProtocols.length > 0) {
+			this.sslProtocols = sslProtocols;
+		}
+		init();
 	}
 
 	/**
@@ -74,14 +142,26 @@ public final class HttpClient {
 	 * @author ruan
 	 */
 	public void init() {
+		// 是否需要有https证书
+		boolean isCert = !keystore.isEmpty() && !cert.isEmpty() && !password.isEmpty() && sslProtocols.length > 0;
+
 		try {
-			// 支持http和https
-			SSLContext sslcontext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
-			HostnameVerifier hostnameVerifier = SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, hostnameVerifier);
 			RegistryBuilder<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create();
 			socketFactoryRegistry.register("http", PlainConnectionSocketFactory.getSocketFactory());
-			socketFactoryRegistry.register("https", sslsf);
+			if (isCert) {
+				KeyStore keyStore = KeyStore.getInstance(keystore);
+				InputStream instream = ClassLoader.getSystemResourceAsStream(cert);
+				keyStore.load(instream, password.toCharArray());
+				instream.close();
+				SSLContext sslcontext = SSLContexts.custom().loadKeyMaterial(keyStore, password.toCharArray()).build();
+				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, sslProtocols, null,new DefaultHostnameVerifier());
+				socketFactoryRegistry.register("https", sslsf);
+			} else {
+				SSLContext sslcontext = SSLContext.getInstance("SSL");
+				sslcontext.init(null, new TrustManager[] { new TrustAllSSLCert() }, new SecureRandom());
+				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+				socketFactoryRegistry.register("https", sslsf);
+			}
 
 			// 初始化连接池
 			cm = new PoolingHttpClientConnectionManager(socketFactoryRegistry.build());
@@ -144,6 +224,22 @@ public final class HttpClient {
 		this.connectTimeout = connectTimeout;
 	}
 
+	public void setKeystore(String keystore) {
+		this.keystore = keystore;
+	}
+
+	public void setCert(String cert) {
+		this.cert = cert;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setSslProtocols(String sslProtocols) {
+		this.sslProtocols = sslProtocols.split(",");
+	}
+
 	/**
 	 * 发送get请求，返回string
 	 * @author ruan
@@ -188,9 +284,6 @@ public final class HttpClient {
 	 */
 	public String get(String url, Map<String, Object> data) {
 		StringBuilder sb = new StringBuilder(url);
-		if (url.lastIndexOf("/") != url.length() - 1) {
-			sb.append("/");
-		}
 		sb.append("?");
 		try {
 			for (Entry<String, Object> e : data.entrySet()) {
@@ -212,19 +305,31 @@ public final class HttpClient {
 	 * 发送post请求
 	 * @author ruan
 	 * @param url
+	 * @return 字符串
+	 */
+	public String post(String url) {
+		return post(url, nullMap);
+	}
+
+	/**
+	 * 发送post请求
+	 * @author ruan
+	 * @param url
 	 * @param data
 	 * @return 字符串
 	 */
 	public String post(String url, Map<String, Object> data) {
 		HttpPost httppost = new HttpPost(url);
 		try {
-			List<NameValuePair> valuePairList = new ArrayList<NameValuePair>();
-			for (Entry<String, Object> e : data.entrySet()) {
-				valuePairList.add(new BasicNameValuePair(StringUtil.getString(e.getKey()), URLEncoder.encode(StringUtil.getString(e.getValue()), SystemUtil.getSystemCharsetString())));
+			if (data != null && !data.isEmpty()) {
+				List<NameValuePair> valuePairList = new ArrayList<NameValuePair>();
+				for (Entry<String, Object> e : data.entrySet()) {
+					valuePairList.add(new BasicNameValuePair(StringUtil.getString(e.getKey()), URLEncoder.encode(StringUtil.getString(e.getValue()), SystemUtil.getSystemCharsetString())));
+				}
+				httppost.setEntity(new UrlEncodedFormEntity(valuePairList, charset));
 			}
-			httppost.setEntity(new UrlEncodedFormEntity(valuePairList, charset));
 			HttpResponse response = client.execute(httppost);
-			return EntityUtils.toString(response.getEntity());
+			return EntityUtils.toString(response.getEntity(), charset);
 		} catch (IOException e) {
 			logger.error("", e);
 		} finally {
@@ -253,5 +358,23 @@ public final class HttpClient {
 			httppost.releaseConnection();
 		}
 		return null;
+	}
+
+	/**
+	 * 信任所有ssl证书
+	 * @author ruan
+	 */
+	private final static class TrustAllSSLCert implements TrustManager, X509TrustManager {
+		public X509Certificate[] getAcceptedIssuers() {
+			return null;
+		}
+
+		public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+			return;
+		}
+
+		public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+			return;
+		}
 	}
 }

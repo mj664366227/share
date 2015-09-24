@@ -1,4 +1,4 @@
-package com.share.core.util;
+package com.share.core.general;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.reflect.TypeToken;
+import com.share.core.util.FileSystem;
+import com.share.core.util.JSONObject;
+import com.share.core.util.StringUtil;
 
 /**
  * 地区配置服务

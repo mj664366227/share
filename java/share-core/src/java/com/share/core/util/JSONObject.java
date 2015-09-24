@@ -207,6 +207,13 @@ public final class JSONObject {
 	}
 
 	/**
+	 * 是否为空
+	 */
+	public boolean isEmpty() {
+		return json.isEmpty();
+	}
+
+	/**
 	 * 哈希码
 	 * @author ruan
 	 * @return

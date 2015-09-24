@@ -97,6 +97,26 @@ public abstract class AbstractJDBC {
 
 	/**
 	 * @author ruan
+	 * @param sql
+	 * @param clazz
+	 * @param args
+	 */
+	public final List<Long> queryLongList(String sql, Object... args) {
+		List<Long> list = new ArrayList<Long>();
+		try {
+			SqlRowSet rs = jdbc.queryForRowSet(sql, args);
+			while (rs.next()) {
+				list.add(rs.getLong(1));
+			}
+			return list;
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		return list;
+	}
+
+	/**
+	 * @author ruan
 	 * @param <T>
 	 * @param sql
 	 * @param clazz

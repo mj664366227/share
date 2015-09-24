@@ -29,4 +29,9 @@ public @interface Menu {
 	 * 父菜单(二级菜单用)
 	 */
 	String parentMenu() default "";
+
+	/**
+	 * 是否为内部使用(即不显示在菜单栏上，默认显示)
+	 */
+	boolean isInner() default false;
 }

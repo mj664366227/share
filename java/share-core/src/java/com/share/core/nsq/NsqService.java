@@ -12,6 +12,7 @@ import com.share.core.exception.ParametersIncorrectException;
 import com.share.core.exception.UnimplementsException;
 import com.share.core.interfaces.NsqMessageHandler;
 import com.share.core.util.Ip;
+import com.share.core.util.SpringUtil;
 import com.share.core.util.SystemUtil;
 import com.trendrr.nsq.NSQConsumer;
 import com.trendrr.nsq.NSQLookup;
@@ -114,8 +115,9 @@ public final class NsqService {
 							channel += "_" + Ip.getValidIPAddress("");
 						}
 
-						new NSQConsumer(lookup, nsqCallback.topic(), channel, new DefaultNSQMessageCallback((NsqMessageHandler) clazz.newInstance())).start();
-						logger.info("find nsq callback, bind channel: {}, method: {}", channel, method);
+						// 获取bean
+						new NSQConsumer(lookup, nsqCallback.topic(), channel, new DefaultNSQMessageCallback((NsqMessageHandler) SpringUtil.getBean(clazz))).start();
+						logger.warn("find nsq callback, bind channel: {}, method: {}", channel, method);
 					}
 				}
 			}
@@ -133,6 +135,7 @@ public final class NsqService {
 	public void produce(String topic, byte[] message) {
 		try {
 			producer.produce(topic, message);
+			logger.warn("produce {}  {}", topic, message);
 		} catch (Exception e) {
 			logger.error(topic + "," + message, e);
 		}
@@ -146,6 +149,7 @@ public final class NsqService {
 	public void produceBatch(String topic, byte[] message) {
 		try {
 			producer.produceBatch(topic, message);
+			logger.warn("produceBatch {}  {}", topic, message);
 		} catch (Exception e) {
 			logger.error(topic + "," + message, e);
 		}
@@ -159,6 +163,7 @@ public final class NsqService {
 	public void produceMulti(String topic, List<byte[]> message) {
 		try {
 			producer.produceMulti(topic, message);
+			logger.warn("produceMulti {}  {}", topic, message);
 		} catch (Exception e) {
 			logger.error(topic + "," + message, e);
 		}

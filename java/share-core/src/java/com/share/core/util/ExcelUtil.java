@@ -3,6 +3,7 @@ package com.share.core.util;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,41 +26,39 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExcelUtil {
-	private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
+public final class ExcelUtil {
+	private final static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
+	private final static String charsetString = SystemUtil.getSystemCharsetString();
 
-	public void exportExcelWithIndex(String exportFileName, String[] cellTitle, String[] cellContentName, HttpServletResponse response, List<Map<String, Object>> list) {
-		exportExcel(exportFileName, cellTitle, cellContentName, response, list, true);
-	}
-
-	public void exportExcelWithOutIndex(String exportFileName, String[] cellTitle, String[] cellContentName, HttpServletResponse response, List<Map<String, Object>> list) {
-		exportExcel(exportFileName, cellTitle, cellContentName, response, list, false);
-	}
-
-	private void exportExcel(String exportFileName, String[] cellTitle, String[] cellContentName, HttpServletResponse response, List<Map<String, Object>> list, boolean needIndex) {
+	/**
+	 * 导出excel文件
+	 * @author ruan  
+	 * @param exportFileName 文件名
+	 * @param cellTitle 列名
+	 * @param cellContentName 列对应的字段名
+	 * @param response
+	 * @param list 数据
+	 */
+	public final static void exportExcel(String exportFileName, String[] cellTitle, String[] cellContentName, HttpServletResponse response, List<Map<String, Object>> list) {
 		XSSFWorkbook workBook = new XSSFWorkbook();
-		buildSheet(workBook, "sheet1", cellTitle, cellContentName, list, needIndex);
+		buildSheet(workBook, exportFileName, cellTitle, cellContentName, list);
 
 		try {
-			int index = exportFileName.indexOf(".xlsx");
-			if (index <= 0)
-				exportFileName = exportFileName + ".xlsx";
 			// 表示以附件的形式把文件发送到客户端 
-			response.setHeader("Content-Disposition", "attachment;filename=" + new String((exportFileName).getBytes(), "ISO-8859-1"));
+			response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(exportFileName, charsetString) + ".xlsx");
 			//设定输出文件头 
-			response.setContentType("application/x-download;charset=UTF-8");
+			response.setContentType("application/x-download;charset=" + charsetString);
 			//通过response的输出流把工作薄的流发送浏览器形成文件 
 			OutputStream outStream = response.getOutputStream();
 			workBook.write(outStream);
 			outStream.flush();
 			outStream.close();
-
 		} catch (Exception e) {
 			logger.warn("", e);
 		}
 	}
 
-	private void buildSheet(XSSFWorkbook workBook, String sheetName, String[] cellTitle, String[] cellContentName, List<Map<String, Object>> list, boolean needIndex) {
+	private final static void buildSheet(XSSFWorkbook workBook, String sheetName, String[] cellTitle, String[] cellContentName, List<Map<String, Object>> list) {
 		XSSFSheet sheet = workBook.createSheet();
 		workBook.setSheetName(0, sheetName);// 工作簿名称
 		XSSFFont font = workBook.createFont();
@@ -81,35 +80,15 @@ public class ExcelUtil {
 				Map<String, Object> entity = list.get(i);
 				XSSFRow row = sheet.createRow((short) i + 1);
 				for (int j = 0, length = cellTitle.length; j < length; j++) {
-					//XSSFCell cell = row.createCell(j, 0);// 在上面行索引0的位置创建单元格
-					if (needIndex) {
-						if (j == 0) {// 第一个单元格是序号
-							contentStyle.setAlignment(XSSFCellStyle.ALIGN_CENTER);
-							createNumCell(row, j, contentStyle, i + 1);
-						} else {
-							Object obj = entity.get(cellContentName[j - 1]);
-							contentStyle.setAlignment(XSSFCellStyle.ALIGN_LEFT);
-							createStringCell(row, j, contentStyle, obj == null ? "" : obj.toString());
-						}
-					} else {
-						Object obj = entity.get(cellContentName[j]);
-						contentStyle.setAlignment(XSSFCellStyle.ALIGN_LEFT);
-						createStringCell(row, j, contentStyle, obj == null ? "" : obj.toString());
-					}
+					Object obj = entity.get(cellContentName[j]);
+					contentStyle.setAlignment(XSSFCellStyle.ALIGN_LEFT);
+					createStringCell(row, j, contentStyle, StringUtil.getString(obj));
 				}
 			}
 		}
 	}
 
-	private void createNumCell(XSSFRow row, int index, XSSFCellStyle cellStyle, int cellValue) {
-		XSSFCell cell = row.createCell(index, 0);
-		cell.setCellStyle(cellStyle);
-		cell.setCellType(XSSFCell.CELL_TYPE_NUMERIC);
-		cell.setCellValue(cellValue);
-
-	}
-
-	private void createStringCell(XSSFRow row, int index, XSSFCellStyle cellStyle, String cellValue) {
+	private final static void createStringCell(XSSFRow row, int index, XSSFCellStyle cellStyle, String cellValue) {
 		XSSFCell cell = row.createCell(index, 0);
 		cell.setCellStyle(cellStyle);
 		cell.setCellType(XSSFCell.CELL_TYPE_STRING);

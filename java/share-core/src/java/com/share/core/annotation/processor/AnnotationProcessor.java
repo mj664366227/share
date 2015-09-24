@@ -2,6 +2,7 @@ package com.share.core.annotation.processor;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,15 @@ abstract class AnnotationProcessor {
 		}
 		try {
 			for (String pkgName : packageName.split(",")) {
-				for (Class<?> c : SystemUtil.getClasses(pkgName)) {
+				Set<Class<?>> classSet = SystemUtil.getClasses(pkgName);
+				if (classSet == null || classSet.isEmpty()) {
+					throw new RuntimeException("package " + pkgName + " is empty");
+				}
+				for (Class<?> c : classSet) {
+					if (c.getName().indexOf("$") > -1) {
+						// 过滤内部类
+						continue;
+					}
 					Object o = c.newInstance();
 
 					// 首先判断类有没有目标注解

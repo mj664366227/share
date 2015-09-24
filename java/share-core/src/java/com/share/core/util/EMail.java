@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -32,21 +32,21 @@ public class EMail {
 	 */
 	private final static Logger logger = LoggerFactory.getLogger(EMail.class);
 	/**
-	 * 加载配置文件
-	 */
-	private final static Properties config = FileSystem.loadProperties("mail.properties");
-	/**
 	 * smtp服务器地址
 	 */
-	private final static String smtpHost = config.getProperty("mail.smtp.host").trim();
+	private final static String smtpHost = FileSystem.getPropertyString("mail.smtp.host");
 	/**
 	 * 发件人用户名
 	 */
-	private final static String senderUser = config.getProperty("mail.sender.user").trim();
+	private final static String senderUser = FileSystem.getPropertyString("mail.sender.user");
 	/**
 	 * 发件人密码
 	 */
-	private final static String senderPass = config.getProperty("mail.sender.pass").trim();
+	private final static String senderPass = FileSystem.getPropertyString("mail.sender.pass");
+	/**
+	 * 邮件地址别名
+	 */
+	private final static String senderAlias = FileSystem.getPropertyString("mail.smtp.alias");
 	/**
 	 * 消息结构体
 	 */
@@ -59,9 +59,7 @@ public class EMail {
 	/**
 	 * 构造函数
 	 */
-	public EMail() {
-		s = Session.getInstance(config);
-		message = new MimeMessage(s);
+	private EMail() {
 	}
 
 	/**
@@ -74,9 +72,19 @@ public class EMail {
 	 * @param receiver 收件人
 	 */
 	public void send(String title, MailType mailType, String content, List<String> fileList, String... receiver) {
+		Transport transport = null;
+
 		try {
-			// 发件人
-			InternetAddress from = new InternetAddress(senderUser);
+			s = Session.getInstance(FileSystem.getProperty());
+			message = new MimeMessage(s);
+
+			// 设置发件人信息
+			InternetAddress from = null;
+			if (senderAlias.isEmpty()) {
+				from = new InternetAddress(senderUser);
+			} else {
+				from = new InternetAddress(senderUser, senderAlias);
+			}
 			message.setFrom(from);
 
 			// 收件人
@@ -95,7 +103,7 @@ public class EMail {
 
 			// 文字内容
 			MimeBodyPart mailContent = new MimeBodyPart();
-			mailContent.setContent(content.trim(), "text/" + mailType.toString() + ";charset=utf-8");
+			mailContent.setContent(content.trim(), "text/" + mailType.toString() + ";charset=" + SystemUtil.getSystemCharsetString());
 			mailPart.addBodyPart(mailContent);
 
 			// 添加附件
@@ -111,19 +119,38 @@ public class EMail {
 			message.setContent(mailPart);
 			message.setSentDate(new Date());
 			message.saveChanges();
-			Transport transport = s.getTransport("smtp");
+			transport = s.getTransport("smtp");
 
 			// smtp验证，就是你用来发邮件的邮箱用户名密码
 			transport.connect(smtpHost, senderUser, senderPass);
 
 			// 发送
-			transport.sendMessage(message, message.getAllRecipients());
-			transport.close();
+			Address[] allRecipients = message.getAllRecipients();
+			transport.sendMessage(message, allRecipients);
 
-			logger.info("all recipients : {}", JSONObject.encode(message.getAllRecipients()));
-		} catch (MessagingException e) {
+			logger.info("mail content: {}", content);
+			logger.info("all recipients : {}", JSONObject.encode(allRecipients));
+		} catch (Exception e) {
 			logger.error("", e);
+		} finally {
+			try {
+				transport.close();
+			} catch (MessagingException e) {
+				logger.error("", e);
+			}
 		}
+	}
+
+	/**
+	 * 发送邮件
+	 * @author ruan
+	 * @param title 邮件标题
+	 * @param mailType 邮件类型(可选：纯文本、html格式)
+	 * @param content 邮件内容
+	 * @param receiver 收件人
+	 */
+	public void send(String title, MailType mailType, String content, String... receiver) {
+		send(title, mailType, content, new ArrayList<String>(0), receiver);
 	}
 
 	/**

@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ public final class HttpServerUtil {
 		try {
 			response.reset();
 			response.setContentType("application/x-msdownload");
-			response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "utf-8") + "." + fileName.substring(fileName.lastIndexOf(".") + 1) + "");
+			response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, SystemUtil.getSystemCharsetString()) + "." + fileName.substring(fileName.lastIndexOf(".") + 1));
 			response.setContentLengthLong(fileLength);
 
 			inStream = new FileInputStream(file);
