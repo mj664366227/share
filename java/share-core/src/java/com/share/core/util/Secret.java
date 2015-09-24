@@ -14,6 +14,9 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,8 +27,6 @@ import javax.crypto.spec.DESKeySpec;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import it.sauronsoftware.base64.Base64;
 
 /**
  * 加密类
@@ -64,6 +65,14 @@ public final class Secret {
 	 * RSA最大解密密文大小
 	 */
 	private final static int MAX_DECRYPT_BLOCK = 1024;
+	/**
+	 * base64加密
+	 */
+	private final static Encoder base64Encoder = Base64.getEncoder();
+	/**
+	 * base64解密
+	 */
+	private final static Decoder base64Decoder = Base64.getDecoder();
 
 	private Secret() {
 	}
@@ -154,17 +163,80 @@ public final class Secret {
 	 * base64加密
 	 * @param str
 	 */
-	public final static String base64Encode(String str) {
-		return Base64.encode(str);
+	public final static String base64EncodeToString(String str) {
+		return base64Encoder.encodeToString(str.getBytes());
+	}
+
+	/**
+	 * base64加密
+	 * @param bytes
+	 */
+	public final static String base64EncodeToString(byte[] bytes) {
+		return base64Encoder.encodeToString(bytes);
+	}
+
+	/**
+	 * base64加密
+	 * @param str
+	 */
+	public final static byte[] base64Encode(String str) {
+		return base64Encoder.encode(str.getBytes());
+	}
+
+	/**
+	 * base64加密
+	 * @param bytes
+	 */
+	public final static byte[] base64Encode(byte[] bytes) {
+		return base64Encoder.encode(bytes);
 	}
 
 	/**
 	 * base64解密
 	 * @param str
 	 */
-	public final static String base64Decode(String str) {
+	public final static String base64DecodeToString(String str) {
 		try {
-			return Base64.decode(str);
+			return new String(base64Decode(str));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * base64解密
+	 * @param bytes
+	 */
+	public final static String base64DecodeToString(byte[] bytes) {
+		try {
+			return new String(base64Decode(bytes));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * base64解密
+	 * @param str
+	 */
+	public final static byte[] base64Decode(String str) {
+		try {
+			return base64Decoder.decode(str);
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * base64解密
+	 * @param bytes
+	 */
+	public final static byte[] base64Decode(byte[] bytes) {
+		try {
+			return base64Decoder.decode(bytes);
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -200,14 +272,14 @@ public final class Secret {
 	 */
 	public final static String sign(byte[] data, String privateKey) {
 		try {
-			byte[] keyBytes = Base64.decode(privateKey.getBytes());
+			byte[] keyBytes = base64Decode(privateKey);
 			PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
 			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 			PrivateKey privateK = keyFactory.generatePrivate(pkcs8KeySpec);
 			Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
 			signature.initSign(privateK);
 			signature.update(data);
-			return new String(Base64.encode(signature.sign()));
+			return base64EncodeToString(signature.sign());
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -222,14 +294,14 @@ public final class Secret {
 	 */
 	public final static boolean verify(byte[] data, String publicKey, String sign) {
 		try {
-			byte[] keyBytes = Base64.decode(publicKey.getBytes());
+			byte[] keyBytes = base64Decode(publicKey);
 			X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
 			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 			PublicKey publicK = keyFactory.generatePublic(keySpec);
 			Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
 			signature.initVerify(publicK);
 			signature.update(data);
-			return signature.verify(Base64.decode(sign.getBytes()));
+			return signature.verify(base64Encode(sign));
 		} catch (Exception e) {
 			logger.error("", e);
 			return false;
@@ -243,7 +315,7 @@ public final class Secret {
 	 */
 	public final static byte[] decryptByPrivateKey(byte[] encryptedData, String privateKey) {
 		try {
-			byte[] keyBytes = Base64.decode(privateKey.getBytes());
+			byte[] keyBytes = base64Decode(privateKey);
 			PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
 			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 			Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
@@ -281,7 +353,7 @@ public final class Secret {
 	 */
 	public final static byte[] decryptByPublicKey(byte[] encryptedData, String publicKey) {
 		try {
-			byte[] keyBytes = Base64.decode(publicKey.getBytes());
+			byte[] keyBytes = base64Decode(publicKey);
 			X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
 			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 			Key publicK = keyFactory.generatePublic(x509KeySpec);
@@ -319,7 +391,7 @@ public final class Secret {
 	 */
 	public final static byte[] encryptByPublicKey(byte[] data, String publicKey) {
 		try {
-			byte[] keyBytes = Base64.decode(publicKey.getBytes());
+			byte[] keyBytes = base64Decode(publicKey);
 			X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
 			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 			Key publicK = keyFactory.generatePublic(x509KeySpec);
@@ -358,7 +430,7 @@ public final class Secret {
 	 */
 	public final static byte[] encryptByPrivateKey(byte[] data, String privateKey) {
 		try {
-			byte[] keyBytes = Base64.decode(privateKey.getBytes());
+			byte[] keyBytes = base64Decode(privateKey);
 			PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
 			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
 			Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
@@ -395,7 +467,7 @@ public final class Secret {
 	 */
 	public final static String getPrivateKey(Map<String, Object> keyMap) {
 		Key key = (Key) keyMap.get(PRIVATE_KEY);
-		return new String(Base64.encode(key.getEncoded()));
+		return base64EncodeToString(key.getEncoded());
 	}
 
 	/**
@@ -404,7 +476,7 @@ public final class Secret {
 	 */
 	public final static String getPublicKey(Map<String, Object> keyMap) {
 		Key key = (Key) keyMap.get(PUBLIC_KEY);
-		return new String(Base64.encode(key.getEncoded()));
+		return base64EncodeToString(key.getEncoded());
 	}
 
 	/**
