@@ -1,22 +1,12 @@
 package com.share.core.util;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -29,6 +19,9 @@ import org.slf4j.LoggerFactory;
 public final class ExcelUtil {
 	private final static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
 	private final static String charsetString = SystemUtil.getSystemCharsetString();
+
+	private ExcelUtil() {
+	}
 
 	/**
 	 * 导出excel文件
@@ -66,10 +59,10 @@ public final class ExcelUtil {
 		font.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);
 		XSSFCellStyle titleCellStyle = workBook.createCellStyle();// 创建格式
 		titleCellStyle.setFont(font);
-		titleCellStyle.setAlignment(XSSFCellStyle.ALIGN_CENTER);
-		titleCellStyle.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);
+		titleCellStyle.setAlignment(XSSFCellStyle.ALIGN_LEFT);
+		titleCellStyle.setVerticalAlignment(XSSFCellStyle.ALIGN_LEFT);
 		// 创建第一行标题
-		XSSFRow titleRow = sheet.createRow((short) 0);// 第一行标题
+		XSSFRow titleRow = sheet.createRow(0);// 第一行标题
 		for (int i = 0, size = cellTitle.length; i < size; i++) {// 创建第1行标题单元格
 			createStringCell(titleRow, i, titleCellStyle, cellTitle[i]);
 		}
@@ -78,7 +71,7 @@ public final class ExcelUtil {
 			XSSFCellStyle contentStyle = workBook.createCellStyle();// 创建格式
 			for (int i = 0, size = list.size(); i < size; i++) {
 				Map<String, Object> entity = list.get(i);
-				XSSFRow row = sheet.createRow((short) i + 1);
+				XSSFRow row = sheet.createRow(i + 1);
 				for (int j = 0, length = cellTitle.length; j < length; j++) {
 					Object obj = entity.get(cellContentName[j]);
 					contentStyle.setAlignment(XSSFCellStyle.ALIGN_LEFT);
@@ -93,53 +86,5 @@ public final class ExcelUtil {
 		cell.setCellStyle(cellStyle);
 		cell.setCellType(XSSFCell.CELL_TYPE_STRING);
 		cell.setCellValue(cellValue);
-	}
-
-	/**
-	 * 读取excel文件
-	 * @param inputStream 文件流
-	 * @return sheetName => List<sheetContent>
-	 */
-	public final static Map<String, List<String>> readExcel(InputStream inputStream) {
-		Map<String, List<String>> data = new HashMap<String, List<String>>();
-		try {
-			Workbook wb = WorkbookFactory.create(inputStream);
-			int sheetsNum = wb.getNumberOfSheets();
-			for (int i = 0; i < sheetsNum; i++) {
-				Sheet sheet = wb.getSheetAt(i);
-				String sheetName = sheet.getSheetName().trim();
-				List<String> list = data.get(sheetName);
-				if (list == null) {
-					list = new ArrayList<String>();
-					data.put(sheetName, list);
-				}
-
-				for (Row row : sheet) {
-					Iterator<Cell> it = row.iterator();
-					while (it.hasNext()) {
-						Cell cell = it.next();
-						list.add(cell.toString().trim());
-					}
-				}
-			}
-		} catch (Exception e) {
-			logger.warn("", e);
-			return data;
-		}
-		return data;
-	}
-
-	/**
-	 * 读取excel文件
-	 * @param filePath 文件路径
-	 * @return sheetName => List<sheetContent>
-	 */
-	public final static Map<String, List<String>> readExcel(String filePath) {
-		try {
-			return readExcel(new FileInputStream(filePath));
-		} catch (Exception e) {
-			logger.warn("", e);
-		}
-		return null;
 	}
 }

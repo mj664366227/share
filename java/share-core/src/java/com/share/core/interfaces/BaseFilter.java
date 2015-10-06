@@ -1,8 +1,7 @@
 package com.share.core.interfaces;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -13,11 +12,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.share.core.exception.ClassInterfacesException;
+import com.share.core.session.LocalSession;
 import com.share.core.util.SpringUtil;
+import com.share.core.util.StringUtil;
+import com.share.core.util.Time;
 
 /**
  * 所有filter类都继承这个类
@@ -33,50 +35,86 @@ public abstract class BaseFilter implements Filter {
 	 */
 	private String skin;
 	/**
-	 * 是否初始化完成
+	 * 本地session
 	 */
-	private boolean init = false;
+	protected Session session;
+	/**
+	 * 采用的session类名
+	 */
+	private String sessionClassName = "";
+	/**
+	 * 采用的session类
+	 */
+	private Class<?> sessionClass;
+	/**
+	 * session过期时间(单位：秒)
+	 */
+	private int sessionExpire = 3600;
 
 	public void init(FilterConfig config) throws ServletException {
-		final Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-			public void run() {
-				skin = SpringUtil.getBean(JSPResourceViewResolver.class).getSkin();
-				timer.cancel();
-				logger.info("jsp skin name: {}", skin);
-				init = true;
+		try {
+			// 初始化session类
+			sessionClassName = StringUtil.getString(config.getInitParameter("sessionClass"));
+			if (!sessionClassName.isEmpty()) {
+				sessionClass = Class.forName(sessionClassName);
+				Class<?>[] interfacesClass = sessionClass.getInterfaces();
+				if (interfacesClass.length != 1) {
+					throw new ClassInterfacesException("class " + sessionClass.getName() + " must only implements " + Session.class.getName());
+				}
+				if (!Session.class.equals(interfacesClass[0])) {
+					throw new ClassInterfacesException("class " + sessionClass.getName() + " must only implements " + Session.class.getName());
+				}
+			} else {
+				sessionClass = LocalSession.class;
 			}
-		}, 10000);
+
+			// 初始化session失效时间
+			int sessionExpire = StringUtil.getInt(config.getInitParameter("sessionExpire"));
+			if (sessionExpire > 0) {
+				this.sessionExpire = sessionExpire;
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+			System.exit(0);
+		} finally {
+			logger.info("session strategy: {}, expire: {}", sessionClass.getName(), Time.showTime(TimeUnit.SECONDS.toNanos(sessionExpire)));
+		}
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletResponse res = (HttpServletResponse) response;
-		if (!getIsInit()) {
-			logger.warn("not init finish");
-			res.sendError(HttpStatus.BAD_GATEWAY_502);
+		HttpServletRequest req = (HttpServletRequest) request;
+		
+		// 获取皮肤名
+		if (skin == null) {
+			//这样是为了防止并发
+			synchronized (this) {
+				skin = SpringUtil.getBean(JSPResourceViewResolver.class).getSkin();
+			}
+		}
+
+		// 初始化sesion策略
+		if (session == null) {
+			//这样是为了防止并发
+			synchronized (this) {
+				session = (Session) SpringUtil.getBean(sessionClass);
+			}
+		}
+
+		request.setAttribute("skin", getSkin());
+		boolean b = doFilter(req, res, chain);
+		if (!b) {
 			return;
 		}
-		HttpServletRequest req = (HttpServletRequest) request;
-		doFilter(req, res, chain);
-		request.setAttribute("skin", getSkin());
 		chain.doFilter(request, response);
 	}
 
-	protected abstract void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException;
+	protected abstract boolean doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException;
 
 	/**
 	 * 获取皮肤名
-	 * @author ruan 
 	 */
-	private String getSkin() {
+	public String getSkin() {
 		return skin;
-	}
-
-	/**
-	 * 获取是否已经完成初始化
-	 * @author ruan 
-	 */
-	public boolean getIsInit() {
-		return init;
 	}
 }

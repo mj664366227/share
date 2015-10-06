@@ -28,15 +28,6 @@
 		</property>
 	</bean>
 
-	<!-- 启动redis -->
-	<bean class="com.share.core.redis.Redis" init-method="init" destroy-method="close" />
-
-	<!-- 启动ssdb -->
-	<bean class="com.share.core.ssdb.SSDB" init-method="init" destroy-method="close" />
-
-	<!-- 启动Mongodb -->
-	<bean class="com.share.core.mongo.Mongodb" init-method="init" destroy-method="close" />
-
 	<!-- 自动加载配置 -->
 	<bean class="com.share.core.annotation.processor.ConfigProcessor" init-method="init">
 		<!-- 定义要扫描的包，可用逗号分割 -->

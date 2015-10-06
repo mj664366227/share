@@ -39,16 +39,25 @@ import com.share.core.util.SortUtil.Order;
  * 文件系统
  */
 public final class FileSystem {
+	private static String projectName = "";
 	private final static ClassLoader classLoader = FileSystem.class.getClassLoader();
-	private final static String projectName = StringUtil.getString(System.getProperty("project"));
-	private final static String systemDir = classLoader.getResource("").toString().replace("file:", "").replace("/etc", "").trim() + (projectName.isEmpty() ? "" : projectName + "/");
 	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
 	private final static boolean isMacOSX = System.getProperty("os.name").indexOf("Mac OS X") != -1;
 	private static Properties property = new Properties();
+	private final static String systemDir = classLoader.getResource("").toString().replace("file:", "").replace("/etc", "").trim() + (StringUtil.getString(projectName).isEmpty() ? "" : projectName + "/");
+
 	static {
+		// 初始化项目名
+		if (FileSystem.isWindows() || FileSystem.isMacOSX()) {
+			projectName = FileSystem.getSystemDir().replace("/bin/", "");
+			projectName = projectName.substring(projectName.lastIndexOf("/") + 1);
+		} else {
+			projectName = StringUtil.getString(System.getProperty("project"));
+		}
+
 		loadProperties();
 	}
 

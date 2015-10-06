@@ -17,7 +17,7 @@ public abstract class Verification {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
-	 * 各自业务实现验证逻辑
+	 * 各自业务实现验证逻辑 
 	 * @param request
 	 * @param response
 	 */

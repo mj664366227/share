@@ -86,9 +86,8 @@ public final class JSONObject {
 	 * @author ruan
 	 * @param key
 	 */
-	public JSONObject remove(String key) {
-		json.remove(key);
-		return this;
+	public Object remove(String key) {
+		return json.remove(key);
 	}
 
 	/**
@@ -97,6 +96,22 @@ public final class JSONObject {
 	 */
 	public void clear() {
 		json.clear();
+	}
+
+	/**
+	 * 获取json的key的数量
+	 * @author ruan 
+	 */
+	public int size() {
+		return json.size();
+	}
+
+	/**
+	 * 判断某个key是否存在
+	 * @param key 键
+	 */
+	public boolean containsKey(String key) {
+		return json.containsKey(key);
 	}
 
 	/**

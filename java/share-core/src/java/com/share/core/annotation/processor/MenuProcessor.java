@@ -146,4 +146,11 @@ public final class MenuProcessor extends AnnotationProcessor {
 	public String getUrlByMenu(String menu) {
 		return menu2URLMap.get(menu);
 	}
+
+	/**
+	 * 获取排序比较器
+	 */
+	public Comparator<String> getComparator() {
+		return comparator;
+	}
 }

@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_4_1.xsd"
-	version="4.1">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_4_1.xsd" version="4.1">
 	<!-- 定义servlet -->
 	<servlet>
 		<servlet-name>share-admin</servlet-name>
@@ -36,7 +33,18 @@
 	<filter>
 		<filter-name>share-admin</filter-name>
 		<filter-class>com.share.admin.filter.AdminFilter</filter-class>
+		<!-- 采用哪一种session策略 -->
+		<init-param>
+			<param-name>sessionClass</param-name>
+			<param-value>com.share.core.session.LocalSession</param-value>
+		</init-param>
+		<!-- session过期时间(单位：秒) -->
+		<init-param>
+			<param-name>sessionExpire</param-name>
+			<param-value>3600</param-value>
+		</init-param>
 		<async-supported>true</async-supported>
+		<load-on-startup>1</load-on-startup>
 	</filter>
 	<!-- 定义过滤器要拦截的东西 -->
 	<filter-mapping>

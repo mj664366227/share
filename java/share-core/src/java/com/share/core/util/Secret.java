@@ -21,9 +21,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,9 +43,9 @@ public final class Secret {
 	 */
 	private final static String systemKey = SystemUtil.getSystemKey();
 	/**
-	 * 加密算法RSA
+	 * 系统字符集
 	 */
-	public final static String KEY_ALGORITHM = "RSA";
+	private final static String systemCharsetString = SystemUtil.getSystemCharsetString();
 	/**
 	 * 签名算法
 	 */
@@ -73,6 +75,10 @@ public final class Secret {
 	 * base64解密
 	 */
 	private final static Decoder base64Decoder = Base64.getDecoder();
+	/**
+	 * AES加密位数
+	 */
+	private final static int AES_ENCRYPT_KEY_SIZE = 256;
 
 	private Secret() {
 	}
@@ -81,13 +87,26 @@ public final class Secret {
 	 * des加密
 	 * @param data
 	 */
-	public final static byte[] desEncode(byte[] data) {
+	public final static byte[] desEncrypt(String data) {
+		try {
+			return desEncrypt(data.getBytes(systemCharsetString));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * des加密
+	 * @param data
+	 */
+	public final static byte[] desEncrypt(byte[] data) {
 		try {
 			// 生成一个可信任的随机数源
 			SecureRandom sr = new SecureRandom();
 
 			// 从原始密钥数据创建DESKeySpec对象
-			DESKeySpec dks = new DESKeySpec(systemKey.getBytes());
+			DESKeySpec dks = new DESKeySpec(systemKey.getBytes(systemCharsetString));
 
 			// 创建一个密钥工厂，然后用它把DESKeySpec转换成SecretKey对象
 			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
@@ -107,13 +126,26 @@ public final class Secret {
 	 * des解密
 	 * @param data
 	 */
-	public final static byte[] desDecode(byte[] data) {
+	public final static byte[] desDecrypt(String data) {
+		try {
+			return desDecrypt(data.getBytes(systemCharsetString));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * des解密
+	 * @param data
+	 */
+	public final static byte[] desDecrypt(byte[] data) {
 		try {
 			// 生成一个可信任的随机数源
 			SecureRandom sr = new SecureRandom();
 
 			// 从原始密钥数据创建DESKeySpec对象
-			DESKeySpec dks = new DESKeySpec(systemKey.getBytes());
+			DESKeySpec dks = new DESKeySpec(systemKey.getBytes(systemCharsetString));
 
 			// 创建一个密钥工厂，然后用它把DESKeySpec转换成SecretKey对象
 			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
@@ -130,14 +162,123 @@ public final class Secret {
 	}
 
 	/**
-	 * MD5加密
-	 * 
-	 * @param string
-	 * @return String
+	 * AES加密
+	 * @param bytes 待加密的内容
 	 */
-	public final static String MD5(String string) {
+	public final static byte[] aesEncrypt(byte[] bytes) {
 		try {
-			return byteArrayToHexString(MessageDigest.getInstance("MD5").digest(string.getBytes()));
+			KeyGenerator kgen = KeyGenerator.getInstance("AES");
+			kgen.init(AES_ENCRYPT_KEY_SIZE, new SecureRandom(systemKey.getBytes(systemCharsetString)));
+			Cipher cipher = Cipher.getInstance("AES");
+			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(kgen.generateKey().getEncoded(), "AES"));
+			return cipher.doFinal(bytes);
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * AES加密
+	 * @param content 待加密的内容
+	 */
+	public final static byte[] aesEncrypt(String content) {
+		try {
+			return aesEncrypt(content.getBytes(systemCharsetString));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * AES加密
+	 * @param bytes 待加密的内容
+	 */
+	public final static String aesEncryptToString(byte[] bytes) {
+		return base64EncodeToString(aesEncrypt(bytes));
+	}
+
+	/**
+	 * AES加密
+	 * @param content 待加密的内容
+	 */
+	public final static String aesEncryptToString(String content) {
+		try {
+			return aesEncryptToString(content.getBytes(systemCharsetString));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * AES解密
+	 * @param encryptBytes 待解密的byte[]
+	 * @return 解密后的String
+	 */
+	public static byte[] aesDecrypt(byte[] encryptBytes) {
+		try {
+			KeyGenerator kgen = KeyGenerator.getInstance("AES");
+			kgen.init(AES_ENCRYPT_KEY_SIZE, new SecureRandom(systemKey.getBytes(systemCharsetString)));
+			Cipher cipher = Cipher.getInstance("AES");
+			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(kgen.generateKey().getEncoded(), "AES"));
+			return cipher.doFinal(encryptBytes);
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * AES解密
+	 * @param encryptString 待解密的字符串
+	 * @return 解密后的String
+	 */
+	public static byte[] aesDecrypt(String encryptString) {
+		try {
+			return Secret.aesDecrypt(base64Decode(encryptString.getBytes(systemCharsetString)));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * AES解密
+	 * @param encryptBytes 待解密的byte[]
+	 * @return 解密后的String
+	 */
+	public static String aesDecryptToString(byte[] encryptBytes) {
+		try {
+			return new String(aesDecrypt(encryptBytes), systemCharsetString);
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * AES解密
+	 * @param encryptString 待解密的字符串
+	 * @return 解密后的String
+	 */
+	public static String aesDecryptToString(String encryptString) {
+		try {
+			return new String(aesDecrypt(encryptString), systemCharsetString);
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * MD5加密
+	 * @param string
+	 */
+	public final static String md5(String string) {
+		try {
+			return byteArrayToHexString(MessageDigest.getInstance("MD5").digest(string.getBytes(systemCharsetString)));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -146,13 +287,11 @@ public final class Secret {
 
 	/**
 	 * 哈希加密
-	 * 
 	 * @param string
-	 * @return String
 	 */
-	public final static String SHA(String string) {
+	public final static String sha(String string) {
 		try {
-			return byteArrayToHexString(MessageDigest.getInstance("SHA").digest(string.getBytes()));
+			return byteArrayToHexString(MessageDigest.getInstance("SHA").digest(string.getBytes(systemCharsetString)));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -164,7 +303,12 @@ public final class Secret {
 	 * @param str
 	 */
 	public final static String base64EncodeToString(String str) {
-		return base64Encoder.encodeToString(str.getBytes());
+		try {
+			return base64Encoder.encodeToString(str.getBytes(systemCharsetString));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
 	}
 
 	/**
@@ -180,7 +324,12 @@ public final class Secret {
 	 * @param str
 	 */
 	public final static byte[] base64Encode(String str) {
-		return base64Encoder.encode(str.getBytes());
+		try {
+			return base64Encoder.encode(str.getBytes(systemCharsetString));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
 	}
 
 	/**
@@ -248,9 +397,9 @@ public final class Secret {
 	 */
 	public final static Map<String, Object> genKeyPair() {
 		try {
-			KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(KEY_ALGORITHM);
+			KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
 			SecureRandom secrand = new SecureRandom();
-			secrand.setSeed(SystemUtil.getSystemKey().getBytes()); // 初始化随机产生器
+			secrand.setSeed(SystemUtil.getSystemKey().getBytes(systemCharsetString)); // 初始化随机产生器
 			keyPairGen.initialize(MAX_DECRYPT_BLOCK, secrand);
 			KeyPair keyPair = keyPairGen.generateKeyPair();
 			RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
@@ -274,7 +423,7 @@ public final class Secret {
 		try {
 			byte[] keyBytes = base64Decode(privateKey);
 			PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
-			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 			PrivateKey privateK = keyFactory.generatePrivate(pkcs8KeySpec);
 			Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
 			signature.initSign(privateK);
@@ -296,7 +445,7 @@ public final class Secret {
 		try {
 			byte[] keyBytes = base64Decode(publicKey);
 			X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 			PublicKey publicK = keyFactory.generatePublic(keySpec);
 			Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
 			signature.initVerify(publicK);
@@ -317,7 +466,7 @@ public final class Secret {
 		try {
 			byte[] keyBytes = base64Decode(privateKey);
 			PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
-			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 			Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
 			Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
 			cipher.init(Cipher.DECRYPT_MODE, privateK);
@@ -355,7 +504,7 @@ public final class Secret {
 		try {
 			byte[] keyBytes = base64Decode(publicKey);
 			X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
-			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 			Key publicK = keyFactory.generatePublic(x509KeySpec);
 			Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
 			cipher.init(Cipher.DECRYPT_MODE, publicK);
@@ -393,7 +542,7 @@ public final class Secret {
 		try {
 			byte[] keyBytes = base64Decode(publicKey);
 			X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
-			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 			Key publicK = keyFactory.generatePublic(x509KeySpec);
 			// 对数据加密
 			Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
@@ -432,7 +581,7 @@ public final class Secret {
 		try {
 			byte[] keyBytes = base64Decode(privateKey);
 			PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
-			KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 			Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
 			Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
 			cipher.init(Cipher.ENCRYPT_MODE, privateK);
@@ -488,10 +637,10 @@ public final class Secret {
 	private final static String byteArrayToHexString(byte[] bytes) {
 		StringBuilder buf = new StringBuilder(bytes.length * 2);
 		for (int i = 0; i < bytes.length; i++) {
-			if (((int) bytes[i] & 0xff) < 0x10) {
+			if ((bytes[i] & 0xff) < 0x10) {
 				buf.append("0");
 			}
-			buf.append(Long.toString((int) bytes[i] & 0xff, 16));
+			buf.append(Long.toString(bytes[i] & 0xff, 16));
 		}
 		buf.trimToSize();
 		return buf.toString();

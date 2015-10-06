@@ -154,12 +154,12 @@ public final class HttpClient {
 				keyStore.load(instream, password.toCharArray());
 				instream.close();
 				SSLContext sslcontext = SSLContexts.custom().loadKeyMaterial(keyStore, password.toCharArray()).build();
-				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, sslProtocols, null,new DefaultHostnameVerifier());
+				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, sslProtocols, null, new DefaultHostnameVerifier());
 				socketFactoryRegistry.register("https", sslsf);
 			} else {
 				SSLContext sslcontext = SSLContext.getInstance("SSL");
 				sslcontext.init(null, new TrustManager[] { new TrustAllSSLCert() }, new SecureRandom());
-				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, new DefaultHostnameVerifier());
 				socketFactoryRegistry.register("https", sslsf);
 			}
 
@@ -178,6 +178,7 @@ public final class HttpClient {
 			SocketConfig.Builder socketConfigBuilder = SocketConfig.custom();
 			socketConfigBuilder.setTcpNoDelay(true);
 			socketConfigBuilder.setSoKeepAlive(false);
+			socketConfigBuilder.setSoReuseAddress(true);
 			socketConfigBuilder.setSoTimeout(connectTimeout);
 			cm.setDefaultSocketConfig(socketConfigBuilder.build());
 
@@ -197,7 +198,7 @@ public final class HttpClient {
 
 	/**
 	 * 获取http连接池
-		 */
+	 */
 	public CloseableHttpClient getClient() {
 		return client;
 	}

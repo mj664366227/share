@@ -4,27 +4,16 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.share.admin.common.SessionKey;
 import com.share.admin.common.URL;
-import com.share.core.util.SessionUtil;
+import com.share.core.interfaces.BaseFilter;
 
-public class AdminFilter implements Filter {
-	/**
-	 * logger
-	 */
-	private Logger logger = LoggerFactory.getLogger(getClass());
+public class AdminFilter extends BaseFilter {
 	/**
 	 * url白名单
 	 */
@@ -44,30 +33,23 @@ public class AdminFilter implements Filter {
 		urlWhiteList.add(".woff");
 	}
 
-	@Override
-	public void init(FilterConfig config) throws ServletException {
-	}
-
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		HttpServletRequest req = (HttpServletRequest) request;
-		HttpServletResponse res = (HttpServletResponse) response;
-		String url = req.getRequestURI().trim();
-		String session = SessionUtil.getString(req.getSession(), SessionKey.LoginData.toString());
+	protected boolean doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+		String url = request.getRequestURI().trim();
+		String sessionString = session.getString(request, response, SessionKey.LoginData.toString());
 		logger.info(url);
-		if("/".equals(url)){
-			res.sendRedirect(URL.Index);
-			return;
+		if ("/".equals(url)) {
+			response.sendRedirect(URL.Index);
+			return false;
 		}
-		if (!session.isEmpty() && url.equals(URL.UserLogin)) {
-			res.sendRedirect(URL.Index);
-			return;
+		if (!sessionString.isEmpty() && url.equals(URL.UserLogin)) {
+			response.sendRedirect(URL.Index);
+			return false;
 		}
-		if (session.isEmpty() && !isInWhiteList(url)) {
-			res.sendRedirect(URL.UserLogin);
-			return;
+		if (sessionString.isEmpty() && !isInWhiteList(url)) {
+			response.sendRedirect(URL.UserLogin);
+			return false;
 		}
-		chain.doFilter(request, response);
+		return true;
 	}
 
 	@Override

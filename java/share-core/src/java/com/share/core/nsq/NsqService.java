@@ -11,6 +11,7 @@ import com.share.core.annotation.NsqCallback;
 import com.share.core.exception.ParametersIncorrectException;
 import com.share.core.exception.UnimplementsException;
 import com.share.core.interfaces.NsqMessageHandler;
+import com.share.core.util.FileSystem;
 import com.share.core.util.Ip;
 import com.share.core.util.SpringUtil;
 import com.share.core.util.SystemUtil;
@@ -80,7 +81,7 @@ public final class NsqService {
 	public void init() {
 		producer = new NSQProducer();
 		for (String server : nsqd.trim().split(",")) {
-			producer.addAddress(server.trim(), 4150, poolSize);
+			producer.addAddress(server.trim(), 4150, /*解决win系统osx系统连接nsq慢的问题*/(FileSystem.isWindows() || FileSystem.isMacOSX()) ? 1 : poolSize);
 		}
 		producer.start();
 

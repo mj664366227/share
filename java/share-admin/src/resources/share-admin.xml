@@ -35,7 +35,7 @@
 	</bean>
 	
 	<!-- 视图配置 -->
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<bean class="com.share.core.interfaces.JSPResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix" value="/default/" /><!-- 这里定义皮肤的名字 -->
 		<property name="suffix" value=".jsp" />

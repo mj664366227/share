@@ -16,14 +16,16 @@ import com.share.admin.common.SessionKey;
 import com.share.admin.common.URL;
 import com.share.core.annotation.Menu;
 import com.share.core.annotation.processor.MenuProcessor;
+import com.share.core.session.LocalSession;
 import com.share.core.util.JSONObject;
 import com.share.core.util.Secret;
-import com.share.core.util.SessionUtil;
 
 @Controller
 public class UserController {
 	@Autowired
 	private MenuProcessor menuProcessor;
+	@Autowired
+	private LocalSession session;
 
 	/**
 	 * 登录
@@ -33,7 +35,7 @@ public class UserController {
 		String username = parameters.getString("username");
 		String password = parameters.getString("password");
 		if ("admin".equals(username) && "admin".equals(password)) {
-			SessionUtil.addValue(request.getSession(), SessionKey.LoginData.toString(), Secret.SHA(username + password));
+			session.addValue(request, response, SessionKey.LoginData.toString(), Secret.sha(username + password));
 			response.sendRedirect(URL.Index);
 			return null;
 		}
@@ -45,7 +47,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = URL.UserLogout)
 	public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		SessionUtil.removeValue(request.getSession(), SessionKey.LoginData.toString());
+		session.removeValue(request, response, SessionKey.LoginData.toString());
 		response.sendRedirect(URL.UserLogin);
 	}
 

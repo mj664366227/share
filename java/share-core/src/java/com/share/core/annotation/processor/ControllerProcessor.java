@@ -109,7 +109,7 @@ public class ControllerProcessor extends AnnotationProcessor {
 			cdnKey.append(key);
 			cdnKey.append(StringUtil.getString(e.getValue()[0]));
 		}
-		return Secret.MD5(cdnKey.toString());
+		return Secret.md5(cdnKey.toString());
 	}
 
 }

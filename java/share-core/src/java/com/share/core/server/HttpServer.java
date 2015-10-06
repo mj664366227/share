@@ -64,6 +64,7 @@ public class HttpServer extends AbstractServer {
 		server.setHandler(webAppContext);
 
 		ServerConnector serverConnector = new ServerConnector(server);
+		serverConnector.setName(FileSystem.getProjectName());
 		serverConnector.setReuseAddress(true);
 		serverConnector.setPort(port);
 		server.addConnector(serverConnector);
@@ -81,7 +82,7 @@ public class HttpServer extends AbstractServer {
 			} else if (FileSystem.isMacOSX()) {
 				webappFile = new File(webappPath, webXmlPath);
 			} else {
-				webappFile = new File(FileSystem.getSystemDir() + webappPath, webXmlPath);
+				webappFile = new File(FileSystem.getSystemDir() + FileSystem.getProjectName() + "/" + webappPath, webXmlPath);
 			}
 			if (webappFile.exists()) {
 				logger.warn("find " + webappFile.getAbsolutePath());
@@ -102,15 +103,7 @@ public class HttpServer extends AbstractServer {
 			logger.error("", e);
 			System.exit(0);
 		} finally {
-			// 这里的代码没啥意义，主要是为了打印出项目名称而已
-			String serverName;
-			if (FileSystem.isWindows()) {
-				serverName = FileSystem.getSystemDir().replace("/bin/", "");
-				serverName = serverName.substring(serverName.lastIndexOf("/") + 1);
-			} else {
-				serverName = FileSystem.getProjectName();
-			}
-			logger.warn("http server {} start success, bind port {} ...", serverName, port);
+			logger.warn("http server {} start success, bind port {} ...", FileSystem.getProjectName(), port);
 		}
 	}
 }

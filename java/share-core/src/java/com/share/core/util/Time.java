@@ -296,12 +296,16 @@ public final class Time {
 			str = new DecimalFormat("0.00").format(time / 1000.0) + " μs";
 		} else if (time > 1000000 && time <= 1000000000) {
 			str = new DecimalFormat("0.00").format(time / 1000000.0) + " ms";
-		} else {
+		} else if (time > 1000000000 && time < 60000000000D) {
 			str = new DecimalFormat("0.00").format(time / 1000000000.0) + " s";
+		} else if (time >= 60000000000D && time < 3600000000000D) {
+			str = new DecimalFormat("0").format(time / 60000000000D) + " min";
+		} else {
+			str = new DecimalFormat("0").format(time / 3600000000000D) + " h";
 		}
 		return str;
 	}
-	
+
 	/**
 	 * 获取传入时间的前后N天,时分秒为0
 	 * @param time 时间戳
@@ -317,13 +321,13 @@ public final class Time {
 		calendar.add(Calendar.DATE, days);
 		return calendar.getTimeInMillis();
 	}
-	
+
 	/**
 	 * 返回int类型日期,例子:20150101
 	 * @param time 时间戳
 	 * @return 例子:20150101
 	 */
-	public static final int intDate(long time){
+	public static final int intDate(long time) {
 		return StringUtil.getInt(new SimpleDateFormat("yyyyMMdd").format(time));
 	}
 }
