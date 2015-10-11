@@ -22,7 +22,6 @@
                   <input name="remember" type="checkbox" value="remember">
                   记住我</label>
               </div>
-              <!-- Change this to a button or input when using this as a form -->
               <input class="btn btn-lg btn-success btn-block" value="登录" type="submit">
             </fieldset>
           </form>
