@@ -4,7 +4,7 @@ package com.share.core.session;
  * 内部使用的数据结构
  * @author ruan
  */
-class DistributedSessionData {
+public class DistributedSessionData {
 	private Object data;
 
 	public void setData(Object data) {

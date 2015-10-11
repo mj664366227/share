@@ -43,6 +43,14 @@ public abstract class BaseFilter implements Filter {
 	 */
 	private String sessionClassName = "";
 	/**
+	 * session path
+	 */
+	protected String sessionPath = "";
+	/**
+	 * session domain
+	 */
+	protected String sessionDomain = "";
+	/**
 	 * 采用的session类
 	 */
 	private Class<?> sessionClass;
@@ -73,6 +81,12 @@ public abstract class BaseFilter implements Filter {
 			if (sessionExpire > 0) {
 				this.sessionExpire = sessionExpire;
 			}
+
+			// 初始化 session path
+			sessionPath = StringUtil.getString(config.getInitParameter("sessionPath"));
+
+			// 初始化 session domain
+			sessionDomain = StringUtil.getString(config.getInitParameter("sessionDomain"));
 		} catch (Exception e) {
 			logger.error("", e);
 			System.exit(0);
@@ -84,7 +98,7 @@ public abstract class BaseFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletResponse res = (HttpServletResponse) response;
 		HttpServletRequest req = (HttpServletRequest) request;
-		
+
 		// 获取皮肤名
 		if (skin == null) {
 			//这样是为了防止并发
@@ -98,6 +112,9 @@ public abstract class BaseFilter implements Filter {
 			//这样是为了防止并发
 			synchronized (this) {
 				session = (Session) SpringUtil.getBean(sessionClass);
+				session.setMaxAge(sessionExpire);
+				session.setSessionPath(sessionPath);
+				session.setSessionDomain(sessionDomain);
 			}
 		}
 

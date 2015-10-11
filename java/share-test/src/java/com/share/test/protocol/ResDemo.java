@@ -15,7 +15,7 @@ public class ResDemo extends ProtocolResponse {
 	}
 
 	public void setEmail(String email) {
-		StringUtil.copyToBytes(email, this.email);
+		//StringUtil.copyToBytes(email, this.email);
 	}
 
 	public void loadFromBuffer(ByteBuf buffer) {

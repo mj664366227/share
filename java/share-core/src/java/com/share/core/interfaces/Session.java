@@ -9,6 +9,26 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface Session {
 	/**
+	 * 设置session失效时间
+	 * @param maxAge 单位：秒
+	 */
+	public void setMaxAge(int maxAge);
+
+	/**
+	 * 设置session path
+	 * @author ruan 
+	 * @param sessionPath
+	 */
+	public void setSessionPath(String sessionPath);
+
+	/**
+	 * 设置 session domain
+	 * @author ruan 
+	 * @param sessionDomain
+	 */
+	public void setSessionDomain(String sessionDomain);
+
+	/**
 	 * 向session写入数据
 	 */
 	public void addValue(HttpServletRequest request, HttpServletResponse response, String sessionKey, Object value);

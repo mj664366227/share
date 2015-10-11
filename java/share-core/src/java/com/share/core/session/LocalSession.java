@@ -19,6 +19,15 @@ public class LocalSession implements Session {
 	private LocalSession() {
 	}
 
+	public void setMaxAge(int maxAge) {
+	}
+
+	public void setSessionPath(String sessionPath) {
+	}
+
+	public void setSessionDomain(String sessionDomain) {
+	}
+
 	/**
 	 * 向session写入数据
 	 * @param request.getSession()

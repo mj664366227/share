@@ -197,8 +197,8 @@ public final class HttpClient {
 	}
 
 	/**
-	 * 获取http连接池
-	 */
+	* 获取http连接池
+	*/
 	public CloseableHttpClient getClient() {
 		return client;
 	}

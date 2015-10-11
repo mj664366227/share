@@ -16,9 +16,11 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.share.core.interfaces.Session;
 import com.share.core.redis.Redis;
+import com.share.core.util.FileSystem;
 import com.share.core.util.Secret;
 import com.share.core.util.SerialUtil;
 import com.share.core.util.StringUtil;
+import com.share.core.util.SystemUtil;
 
 /**
  * 分布式Session<br>
@@ -33,7 +35,7 @@ public class DistributedSession implements Session {
 	/**
 	 * 公共sessionKey
 	 */
-	private final static String distributedSessionGlobalCookieKey = "distributedSessionId";
+	private final static String distributedSessionGlobalCookieKey = Secret.sha(FileSystem.getProjectName() + SystemUtil.getSystemKey());
 	/**
 	 * redis key
 	 */
@@ -46,6 +48,14 @@ public class DistributedSession implements Session {
 	 * 默认1小时session失效
 	 */
 	private int maxAge = 3600;
+	/**
+	 * session path
+	 */
+	private String sessionPath = "";
+	/**
+	 * session domain
+	 */
+	private String sessionDomain = "";
 	/**
 	 * redis
 	 */
@@ -79,6 +89,24 @@ public class DistributedSession implements Session {
 	}
 
 	/**
+	 * 设置session path
+	 * @author ruan 
+	 * @param sessionPath
+	 */
+	public void setSessionPath(String sessionPath) {
+		this.sessionPath = sessionPath;
+	}
+
+	/**
+	 * 设置 session domain
+	 * @author ruan 
+	 * @param sessionDomain
+	 */
+	public void setSessionDomain(String sessionDomain) {
+		this.sessionDomain = sessionDomain;
+	}
+
+	/**
 	 * 生成分布式sessionKey
 	 * @author ruan 
 	 */
@@ -102,6 +130,12 @@ public class DistributedSession implements Session {
 
 			// 写入cookie
 			Cookie cookie = new Cookie(distributedSessionGlobalCookieKey, distributedSessionKey);
+			if (!sessionPath.isEmpty()) {
+				cookie.setPath(sessionPath);
+			}
+			if (!sessionDomain.isEmpty()) {
+				cookie.setDomain(sessionDomain);
+			}
 			response.addCookie(cookie);
 		}
 
@@ -129,7 +163,7 @@ public class DistributedSession implements Session {
 	 */
 	public void removeValue(HttpServletRequest request, HttpServletResponse response, String sessionKey) {
 		String distributedSessionKey = genDistributedSessionKey(request, response, sessionKey);
-		redis.KEYS.del(distributedSessionKey);
+		redis.KEYS.del(distributedSessionKey, distributedSessionKey.substring(0, distributedSessionKey.indexOf("_")));
 	}
 
 	/**

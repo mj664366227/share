@@ -1,6 +1,13 @@
 package com.share.core.util;
 
-import java.util.Arrays;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 字符串工具类
@@ -9,52 +16,20 @@ import java.util.Arrays;
  * 
  */
 public final class StringUtil {
+	private final static Logger logger = LoggerFactory.getLogger(StringUtil.class);
+	private static Map<String, String> urlEncodeEscape = new HashMap<>();
+
+	static {
+		urlEncodeEscape.put("/", "$");
+		urlEncodeEscape.put("+", "ā");
+	}
+
 	/**
 	 * 私有构造函数
 	 * 
 	 * @author ruan 2013-1-24
 	 */
 	private StringUtil() {
-	}
-
-	/**
-	 * 把字符串复制到byte数组
-	 * 
-	 * @author ruan
-	 * @param str
-	 * @return
-	 */
-	public final static byte[] copyToBytes(String str) {
-		byte[] b = str.trim().getBytes();
-		b = Arrays.copyOf(b, b.length + 1);
-		return b;
-	}
-
-	/**
-	 * 把字符串复制到byte数组
-	 * 
-	 * @author ruan
-	 * @param str
-	 * @param bytes
-	 */
-	public final static void copyToBytes(String str, byte[] bytes) {
-		byte[] arr = str.trim().getBytes();
-		if (bytes == null) {
-			bytes = new byte[arr.length + 1];
-		}
-		for (int i = 0; i < arr.length; i++) {
-			bytes[i] = arr[i];
-		}
-	}
-
-	/**
-	 * 复制一个新的字符串
-	 * @author ruan
-	 * @param str
-	 * @return
-	 */
-	public final static String copyToString(String str) {
-		return new String(str).trim();
 	}
 
 	/**
@@ -316,5 +291,48 @@ public final class StringUtil {
 	public final static int strCount(String subject, String search) {
 		String[] arr = subject.toLowerCase().split(search.toLowerCase());
 		return arr.length > 0 ? arr.length - 1 : 0;
+	}
+
+	/**
+	 * urlEncode
+	 * @author ruan 
+	 * @param str
+	 */
+	public final static String urlEncode(String str) {
+		try {
+			str = getString(str);
+			if (str.isEmpty()) {
+				return "";
+			}
+			for (Entry<String, String> e : urlEncodeEscape.entrySet()) {
+				str = str.replace(e.getKey(), e.getValue());
+			}
+			return URLEncoder.encode(str, SystemUtil.getSystemCharsetString());
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		return "";
+	}
+
+	/**
+	 * urlDecode
+	 * @author ruan 
+	 * @param str
+	 */
+	public final static String urlDecode(String str) {
+		try {
+			str = getString(str);
+			if (str.isEmpty()) {
+				return "";
+			}
+			str = URLDecoder.decode(str, SystemUtil.getSystemCharsetString());
+			for (Entry<String, String> e : urlEncodeEscape.entrySet()) {
+				str = str.replace(e.getValue(), e.getKey());
+			}
+			return str;
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		return "";
 	}
 }

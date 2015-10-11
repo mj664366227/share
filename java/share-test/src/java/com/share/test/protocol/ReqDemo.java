@@ -25,7 +25,7 @@ public class ReqDemo extends ProtocolRequest {
 	}
 
 	public void setName(String name) {
-		StringUtil.copyToBytes(name, this.name);
+		//StringUtil.copyToBytes(name, this.name);
 	}
 
 	public String getEmail() {
@@ -33,7 +33,7 @@ public class ReqDemo extends ProtocolRequest {
 	}
 
 	public void setEmail(String email) {
-		StringUtil.copyToBytes(email, this.email);
+		//StringUtil.copyToBytes(email, this.email);
 	}
 
 	public void setName(byte[] name) {

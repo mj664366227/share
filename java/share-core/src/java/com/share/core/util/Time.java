@@ -87,7 +87,7 @@ public final class Time {
 	 * 获取当前时间是星期几(0为星期天)
 	 */
 	public static final int getDayOfWeek() {
-		return calendar.get(Calendar.DAY_OF_WEEK) - 1;
+		return getDayOfWeek(now());
 	}
 
 	/**
