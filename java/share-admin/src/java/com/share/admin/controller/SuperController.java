@@ -7,72 +7,94 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.share.admin.common.SessionKey;
 import com.share.admin.common.URL;
-import com.share.core.annotation.Menu;
 import com.share.core.annotation.processor.MenuProcessor;
+import com.share.core.general.YanZhengMaService;
 import com.share.core.session.LocalSession;
 import com.share.core.util.JSONObject;
 import com.share.core.util.Secret;
 
 @Controller
-public class UserController {
+public class SuperController {
 	@Autowired
 	private MenuProcessor menuProcessor;
 	@Autowired
 	private LocalSession session;
+	@Autowired
+	private YanZhengMaService yanZhengMaService;
 
 	/**
 	 * 登录
 	 */
-	@RequestMapping(value = URL.UserLogin)
+	@RequestMapping(value = URL.userlogin)
 	public ModelAndView login(JSONObject parameters, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String username = parameters.getString("username");
 		String password = parameters.getString("password");
 		if ("admin".equals(username) && "admin".equals(password)) {
 			session.addValue(request, response, SessionKey.LoginData.toString(), Secret.sha(username + password));
-			response.sendRedirect(URL.Index);
+			response.sendRedirect(URL.index);
 			return null;
 		}
-		return new ModelAndView("user/login");
+		return new ModelAndView("super/login");
+	}
+
+	/**
+	 * 输出验证码
+	 */
+	@RequestMapping(value = URL.yzm)
+	public void yzm(JSONObject parameters, HttpServletRequest request, HttpServletResponse response) {
+		yanZhengMaService.getRandomStringImg(100, 40, 4, request, response);
 	}
 
 	/**
 	 * 登出
 	 */
-	@RequestMapping(value = URL.UserLogout)
+	@RequestMapping(value = URL.userlogout)
 	public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		session.removeValue(request, response, SessionKey.LoginData.toString());
-		response.sendRedirect(URL.UserLogin);
+		response.sendRedirect(URL.userlogin);
 	}
 
 	/**
 	 * 首页
 	 */
-	@RequestMapping(value = URL.Index)
-	public Model index(Model model) {
-		model.addAttribute("menu", menuProcessor.getAllMenu());
-		model.addAttribute("url", menuProcessor.getAllUrl());
+	@RequestMapping(value = URL.index)
+	public ModelAndView index() {
+		ModelAndView model = new ModelAndView("super/frame");
+		//model.addAttribute("menu", menuProcessor.getAllMenu());
+		//model.addAttribute("url", menuProcessor.getAllUrl());
 		return model;
 	}
 
-	@RequestMapping(value = "/admin/1", method = RequestMethod.GET)
-	@Menu(menu = "示例1", parentMenu = "系统")
-	public void demo1() {
+	/**
+	 * 左边
+	 * @author ruan
+	 */
+	@RequestMapping(value = URL.left, method = RequestMethod.GET)
+	public ModelAndView left() {
+		return new ModelAndView("super/left");
 	}
 
-	@RequestMapping(value = "/admin/3", method = RequestMethod.GET)
-	@Menu(menu = "示例2", parentMenu = "系统")
-	public void demo2() {
+	/**
+	 * 上面
+	 * @author ruan
+	 */
+	@RequestMapping(value = URL.top, method = RequestMethod.GET)
+	public ModelAndView top() {
+		return new ModelAndView("super/top");
 	}
 
-	@RequestMapping(value = "/admin/4", method = RequestMethod.GET)
-	@Menu(menu = "示例3", parentMenu = "系统")
-	public void demo3() {
+	/**
+	 * 后台首页
+	 * @author ruan
+	 */
+	@RequestMapping(value = URL.main, method = RequestMethod.GET)
+	public ModelAndView main() {
+		return new ModelAndView("super/main");
 	}
 }

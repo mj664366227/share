@@ -6,6 +6,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>share-admin</title>
-<link href="default/css/bootstrap.min.css" rel="stylesheet">
+<link href="${skin}/css/bootstrap.min.css?v=${version}" rel="stylesheet">
 </head>
 <body>

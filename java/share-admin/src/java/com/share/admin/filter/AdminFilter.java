@@ -12,16 +12,22 @@ import javax.servlet.http.HttpServletResponse;
 import com.share.admin.common.SessionKey;
 import com.share.admin.common.URL;
 import com.share.core.interfaces.BaseFilter;
+import com.share.core.util.Time;
 
 public class AdminFilter extends BaseFilter {
 	/**
 	 * url白名单
 	 */
 	private static Set<String> urlWhiteList = new HashSet<>();
+	/**
+	 * 系统启动时间
+	 */
+	private final static int systemStartTime = Time.now();
 
 	static {
 		urlWhiteList.add("/");
-		urlWhiteList.add(URL.UserLogin);
+		urlWhiteList.add(URL.userlogin);
+		urlWhiteList.add(URL.yzm);
 		urlWhiteList.add(".css");
 		urlWhiteList.add(".js");
 		urlWhiteList.add(".ico");
@@ -36,17 +42,18 @@ public class AdminFilter extends BaseFilter {
 	protected boolean doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 		String url = request.getRequestURI().trim();
 		String sessionString = session.getString(request, response, SessionKey.LoginData.toString());
+		request.setAttribute("version", systemStartTime);
 		logger.info(url);
 		if ("/".equals(url)) {
-			response.sendRedirect(URL.Index);
+			response.sendRedirect(URL.index);
 			return false;
 		}
-		if (!sessionString.isEmpty() && url.equals(URL.UserLogin)) {
-			response.sendRedirect(URL.Index);
+		if (!sessionString.isEmpty() && url.equals(URL.userlogin)) {
+			response.sendRedirect(URL.index);
 			return false;
 		}
 		if (sessionString.isEmpty() && !isInWhiteList(url)) {
-			response.sendRedirect(URL.UserLogin);
+			response.sendRedirect(URL.userlogin);
 			return false;
 		}
 		return true;
