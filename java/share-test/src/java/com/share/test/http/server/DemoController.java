@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -90,9 +91,9 @@ public class DemoController {
 		return json.toString().getBytes();
 	}
 
-	@RequestMapping(value = "/demo/data", method = RequestMethod.POST)
-	@ResponseBody
-	public String data(ReqDemo reqDemo) throws IOException {
-		return reqDemo.toString();
+	@RequestMapping(value = "/demo/data/*")
+	public void data(@PathVariable("a") Object a, @PathVariable("b") Object b) throws IOException {
+		System.err.println(a);
+		System.err.println(b);
 	}
 }

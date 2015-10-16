@@ -10,6 +10,6 @@ public class DemoTimer {
 	
 	@Scheduled(cron = "* * * * * *")
 	public void demoTimer() {
-		logger.info("demo 定时器，１ｓ一次");
+		//logger.info("demo 定时器，１ｓ一次");
 	}
 }

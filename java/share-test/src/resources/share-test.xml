@@ -79,13 +79,13 @@
 		<!-- 超时时间，单位毫秒 -->
 		<property name="connectTimeout" value="10000" />
 		<!-- 证书编码格式 -->
-		<property name="keystore" value="PKCS12" />
+		<!-- <property name="keystore" value="PKCS12" /> -->
 		<!-- 证书路径(相对于classpath) -->
-		<property name="cert" value="cert/apiclient_cert.p12" />
+		<!-- <property name="cert" value="cert/apiclient_cert.p12" /> -->
 		<!-- 证书密码 -->
-		<property name="password" value="1269149901" />
+		<!-- <property name="password" value="1269149901" /> -->
 		<!-- SSL加密算法(","分割) -->
-		<property name="sslProtocols" value="TLSv1" />
+		<!-- <property name="sslProtocols" value="TLSv1" /> -->
 	</bean>
 
 	<!-- nsq -->
