@@ -7,10 +7,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.mongodb.BasicDBObject;
 import com.share.core.annotation.processor.MenuProcessor;
 import com.share.core.annotation.processor.ProtocolProcessor;
 import com.share.core.aspect.AspectHaHaHa;
 import com.share.core.client.HttpClient;
+import com.share.core.data.data.DUser;
 import com.share.core.memory.Memory;
 import com.share.core.mongo.Mongodb;
 import com.share.core.nsq.NsqService;
@@ -49,12 +51,14 @@ public class JunitTest {
 	@Autowired
 	private AspectHaHaHa aspectHaHaHa;
 	@Autowired
-	private ShareObjectService.Iface shareObjectService; 
+	private ShareObjectService.Iface shareObjectService;
 	@Autowired
 	private Userf.Iface user;
-	
+
 	@Test
 	public void junitTest() throws Exception {
-		shareObjectService.test(1);
+		BasicDBObject q = new BasicDBObject();
+		q.put("_id", 1);
+		System.err.println(mongodb.find(DUser.class, q));
 	}
 }

@@ -4,20 +4,22 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import com.share.core.annotation.AsMongoId;
 
 /**
@@ -37,7 +39,7 @@ public final class Mongodb {
 	/**
 	 * mongo db对象
 	 */
-	private DB db;
+	private MongoDatabase mongoDatabase;
 
 	/**
 	 * mongodb地址
@@ -66,6 +68,11 @@ public final class Mongodb {
 	private String dbName;
 
 	/**
+	 * 空的DBObject
+	 */
+	private final static BasicDBObject emptyBasicDBObject = new BasicDBObject();
+
+	/**
 	 * 构造函数
 	 */
 	private Mongodb() {
@@ -91,7 +98,7 @@ public final class Mongodb {
 			credentialsList.add(MongoCredential.createCredential(user, dbName, password.toCharArray()));
 			mongo = new MongoClient(serverAddressList, credentialsList, options);
 		}
-		db = mongo.getDB(dbName);
+		mongoDatabase = mongo.getDatabase(dbName);
 		logger.info("mongodb init " + host + ":" + port + ", database: " + dbName);
 	}
 
@@ -99,36 +106,24 @@ public final class Mongodb {
 	 * 保存单条数据
 	 * 
 	 * @author ruan 2013-7-25
-	 * @param collectionName
 	 * @param clazz 表对应的实体类名
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
 	 */
 	public <T> void save(T clazz) {
 		Class<?> cla = clazz.getClass();
-		db.getCollection(getClazzName(cla)).save(data2DBObject(cla, clazz));
+		mongoDatabase.getCollection(getClazzName(cla)).insertOne(data2Document(cla, clazz));
 	}
 
 	/**
 	 * 保存列表数据
-	 * 
 	 * @author ruan 2013-7-25
 	 * @param clazzList 实体类列表
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
 	 */
 	public <T> void save(ArrayList<T> clazzList) {
-		List<DBObject> list = new ArrayList<DBObject>();
+		List<Document> list = new ArrayList<Document>();
 		for (T t : clazzList) {
-			list.add(data2DBObject(t.getClass(), t));
+			list.add(data2Document(t.getClass(), t));
 		}
-		db.getCollection(getClazzName(clazzList.get(0).getClass())).insert(list);
+		mongoDatabase.getCollection(getClazzName(clazzList.get(0).getClass())).insertMany(list);
 	}
 
 	/**
@@ -199,26 +194,17 @@ public final class Mongodb {
 	 * @return
 	 */
 	public <T> List<T> find(Class<T> clazz, BasicDBObject query, BasicDBObject orderBy, int limit) {
-		DBCursor cursor = db.getCollection(getClazzName(clazz)).find(query).sort(orderBy);
+		FindIterable<Document> iterable = mongoDatabase.getCollection(getClazzName(clazz)).find(query == null ? emptyBasicDBObject : query).sort(orderBy == null ? emptyBasicDBObject : orderBy);
 		if (limit > 0) {
-			cursor.limit(limit);
+			iterable.limit(limit);
 		}
 		List<T> result = new ArrayList<T>();
+		MongoCursor<Document> cursor = iterable.iterator();
 		while (cursor.hasNext()) {
-			result.add(dbObject2Data(cursor.next(), clazz));
+			result.add(document2Data(cursor.next(), clazz));
 		}
+		cursor.close();
 		return result;
-	}
-
-	/**
-	 * 删除数据
-	 * 
-	 * @author ruan 2013-7-28
-	 * @param clazz 表对应的实体类名
-	 * @param query 查询条件
-	 */
-	public <T> void delete(Class<T> clazz, BasicDBObject query) {
-		db.getCollection(getClazzName(clazz)).remove(query == null ? new BasicDBObject() : query);
 	}
 
 	/**
@@ -229,7 +215,7 @@ public final class Mongodb {
 	 * @param query
 	 */
 	public <T> void delete(Class<T> clazz) {
-		delete(clazz, null);
+		mongoDatabase.getCollection(getClazzName(clazz)).drop();
 	}
 
 	/**
@@ -238,7 +224,12 @@ public final class Mongodb {
 	 * @return
 	 */
 	public Set<String> getCollectionNames() {
-		return db.getCollectionNames();
+		Set<String> set = new LinkedHashSet<>();
+		MongoCursor<String> it = mongoDatabase.listCollectionNames().iterator();
+		while (it.hasNext()) {
+			set.add(it.next());
+		}
+		return set;
 	}
 
 	/**
@@ -247,18 +238,7 @@ public final class Mongodb {
 	 */
 	public void dropAll() {
 		for (String collection : getCollectionNames()) {
-			db.getCollection(collection).drop();
-		}
-	}
-
-	/**
-	 * 清空所有表
-	 * @author ruan
-	 */
-	public void clearAll() {
-		BasicDBObject o = new BasicDBObject();
-		for (String collection : getCollectionNames()) {
-			db.getCollection(collection).remove(o);
+			mongoDatabase.getCollection(collection).drop();
 		}
 	}
 
@@ -268,7 +248,7 @@ public final class Mongodb {
 	 * @return
 	 */
 	public String toString() {
-		return db.getName();
+		return mongoDatabase.getName();
 	}
 
 	/**
@@ -299,29 +279,23 @@ public final class Mongodb {
 	 * @author ruan 2013-7-25
 	 * @param cla
 	 * @param clazz
-	 * @return
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
-	 * @throws NoSuchMethodException
-	 * @throws SecurityException
 	 */
-	private <T> BasicDBObject data2DBObject(Class<?> cla, T clazz) {
-		BasicDBObject dBObject = new BasicDBObject();
+	private <T> Document data2Document(Class<?> cla, T clazz) {
+		Document document = new Document();
 		try {
 			// 获取所有属性
 			for (Field field : cla.getDeclaredFields()) {
 				String filedName = field.getName();
 				if (field.getAnnotation(AsMongoId.class) == null) {
-					dBObject.put(filedName, getGetMethod(cla, filedName).invoke(clazz));
+					document.put(filedName, getGetMethod(cla, filedName).invoke(clazz));
 				} else {
-					dBObject.put("_id", getGetMethod(cla, filedName).invoke(clazz));
+					document.put("_id", getGetMethod(cla, filedName).invoke(clazz));
 				}
 			}
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 		}
-		return dBObject;
+		return document;
 	}
 
 	/**
@@ -330,27 +304,21 @@ public final class Mongodb {
 	 * @author ruan 2013-7-26
 	 * @param dbObject
 	 * @param cla
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
 	 */
-	private <T> T dbObject2Data(DBObject dbObject, Class<T> cla) {
+	private <T> T document2Data(Document document, Class<T> cla) {
 		try {
 			T obj = cla.newInstance();
 			// 获取所有属性
 			for (Field field : cla.getDeclaredFields()) {
 				Method method = getSetMethod(cla, field.getName(), field.getType());
 				if (field.getAnnotation(AsMongoId.class) == null) {
-					method.invoke(obj, dbObject.get(field.getName()));
+					method.invoke(obj, document.get(field.getName()));
 				} else {
-					method.invoke(obj, dbObject.get("_id"));
+					method.invoke(obj, document.get("_id"));
 				}
 			}
 			return obj;
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 		}
 		return null;
@@ -361,7 +329,6 @@ public final class Mongodb {
 	 * 
 	 * @author ruan 2013-7-25
 	 * @param cla
-	 * @return
 	 */
 	private String getClazzName(Class<?> cla) {
 		return cla.getSimpleName().substring(1).toLowerCase();
@@ -373,14 +340,11 @@ public final class Mongodb {
 	 * @author ruan 2013-7-25
 	 * @param cla
 	 * @param fieldName
-	 * @return
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
 	 */
 	private <T> Method getGetMethod(Class<T> cla, String fieldName) {
 		try {
 			return cla.getMethod("get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1));
-		} catch (NoSuchMethodException | SecurityException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 		}
 		return null;
@@ -392,14 +356,11 @@ public final class Mongodb {
 	 * @author ruan 2013-7-26
 	 * @param cla
 	 * @param fieldName
-	 * @return
-	 * @throws SecurityException
-	 * @throws NoSuchMethodExceptio
 	 */
 	private <T> Method getSetMethod(Class<T> cla, String fieldName, Class<?>... args) {
 		try {
 			return cla.getMethod("set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1), args);
-		} catch (NoSuchMethodException | SecurityException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 		}
 		return null;
