@@ -1,7 +1,9 @@
 package com.share.core.redis;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -1033,6 +1035,64 @@ public class Redis {
 		}
 
 		/**
+		 * 构造keyScoreMembers
+		 * @author ruan 
+		 * @param keyScoreMembers map
+		 * @param key 键
+		 * @param score 权重
+		 * @param member 元素
+		 */
+		public void genKeyScoreMembers(Map<String, Map<String, Double>> keyScoreMembers, String key, double score, String member) {
+			Map<String, Double> scoreMembers = keyScoreMembers.get(key);
+			if (scoreMembers == null) {
+				scoreMembers = new HashMap<>();
+				keyScoreMembers.put(key, scoreMembers);
+			}
+			scoreMembers.put(member, score);
+		}
+
+		/**
+		 * 向集合中增加一堆记录,如果这个值已存在，这个值对应的权重将被置为新的权重
+		 * @param keyScoreMembers key => (member => 权重)
+		 * */
+		public void zadd(Map<String, Map<String, Double>> keyScoreMembers) {
+			if (keyScoreMembers == null || keyScoreMembers.isEmpty()) {
+				logger.warn("keyScoreMembers is empty");
+				return;
+			}
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				Pipeline pipeline = jedis.pipelined();
+
+				// 如果传进来的map大小大于100，拆成每批100来保存
+				int size = keyScoreMembers.size();
+				if (size > maxPipelineLen) {
+					int i = 1;
+					for (Entry<String, Map<String, Double>> e : keyScoreMembers.entrySet()) {
+						pipeline.zadd(e.getKey(), e.getValue());
+						if (++i % maxPipelineLen == 0) {
+							pipeline.sync();
+						}
+					}
+
+					// 可能还会有多余的，要多请求一次
+					pipeline.sync();
+				} else {
+					// 如果不超100就一次过搞掂
+					for (Entry<String, Map<String, Double>> e : keyScoreMembers.entrySet()) {
+						pipeline.zadd(e.getKey(), e.getValue());
+					}
+					pipeline.sync();
+				}
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+		}
+
+		/**
 		 * 获取集合中的成员数量
 		 * @param key
 		 * @return 如果返回0则集合不存在
@@ -1285,6 +1345,61 @@ public class Redis {
 				jedis.close();
 			}
 			return 0;
+		}
+
+		/**
+		 * 批量返回有序集key中，成员member的score值
+		 * @author ruan 
+		 * @param keyMemebrMap
+		 */
+		public Map<String, Double> zscore(LinkedHashMap<String, String> keyMemebrMap) {
+			if (keyMemebrMap == null || keyMemebrMap.isEmpty()) {
+				return new HashMap<>(0);
+			}
+			int size = keyMemebrMap.size();
+			Map<String, Double> map = new LinkedHashMap<>(size);
+
+			int i = 0;
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				Pipeline pipeline = jedis.pipelined();
+				List<String> keyList = new ArrayList<>(maxPipelineLen);
+
+				for (Entry<String, String> e : keyMemebrMap.entrySet()) {
+					pipeline.zscore(e.getKey(), e.getValue());
+					keyList.add(e.getKey());
+
+					// 由于管道一次性不能传输太多，所以要分开来
+					if (++i % maxPipelineLen == 0) {
+						List<Object> list = pipeline.syncAndReturnAll();
+						if (list != null && !list.isEmpty()) {
+							for (int j = 0; j < maxPipelineLen; j++) {
+								Object obj = list.get(j);
+								if (obj != null) {
+									map.put(StringUtil.getString(keyList.get(j)), StringUtil.getDouble(obj));
+								}
+							}
+						}
+						keyList.clear();
+					}
+				}
+				List<Object> list = pipeline.syncAndReturnAll();
+				if (list != null && !list.isEmpty()) {
+					size = keyList.size();
+					for (int j = 0; j < size; j++) {
+						Object obj = list.get(j);
+						if (obj != null) {
+							map.put(StringUtil.getString(keyList.get(j)), StringUtil.getDouble(obj));
+						}
+					}
+				}
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return map;
 		}
 
 		/**
@@ -2446,6 +2561,37 @@ public class Redis {
 		}
 
 		/**
+		 * 批量存储记录，并设置过期时间
+		 * @param keysvalues
+		 * @param seconds
+		 */
+		public void msetex(Map<byte[], byte[]> keysvalues, int seconds) {
+			if (keysvalues == null || keysvalues.isEmpty()) {
+				logger.warn("keysvalues is empty");
+				return;
+			}
+
+			int i = 0;
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				Pipeline pipeline = jedis.pipelined();
+				for (Entry<byte[], byte[]> e : keysvalues.entrySet()) {
+					pipeline.setex(e.getKey(), seconds, e.getValue());
+					// 由于管道一次性不能传输太多，所以要分开来
+					if (++i % maxPipelineLen == 0) {
+						pipeline.sync();
+					}
+				}
+				pipeline.sync();
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+		}
+
+		/**
 		 * 批量存储记录
 		 * @param keysvalues
 		 */
@@ -2464,10 +2610,10 @@ public class Redis {
 					pipeline.set(e.getKey(), e.getValue());
 					// 由于管道一次性不能传输太多，所以要分开来
 					if (++i % maxPipelineLen == 0) {
-						pipeline.syncAndReturnAll();
+						pipeline.sync();
 					}
 				}
-				pipeline.syncAndReturnAll();
+				pipeline.sync();
 			} catch (Exception e) {
 				logger.error("", e);
 			} finally {
