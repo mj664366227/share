@@ -1,5 +1,10 @@
 package com.share.core.interfaces;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
@@ -8,11 +13,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.MessageToByteEncoder;
-
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 频道初始化，因为netty要实现4个类，所以特意封装一下，简化实现
@@ -139,7 +139,7 @@ public abstract class AbstractSocketServerInitializer<SEND, RECV> extends Channe
 		/**
 		 * 接收消息
 		 */
-		protected void channelRead0(ChannelHandlerContext ctx, RECV recv) throws Exception {
+		protected void messageReceived(ChannelHandlerContext ctx, RECV recv) throws Exception {
 			recvMessage(ctx, recv);
 		}
 
