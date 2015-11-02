@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -23,6 +24,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
+import com.google.common.base.Joiner;
 import com.share.core.annotation.processor.PojoProcessor;
 import com.share.core.exception.MysqlConnectException;
 import com.share.core.interfaces.DSuper;
@@ -337,6 +339,21 @@ public abstract class AbstractJDBC {
 	}
 
 	/**
+	 * 批量获取T
+	 * @param idSet id集合
+	 * @param clazz 实体类
+	 */
+	public <T, F> List<T> multiGetT(Set<F> idSet, Class<T> clazz) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select * from `");
+		sql.append(classNameToTableName(clazz));
+		sql.append("` where `id` in (");
+		sql.append(Joiner.on(",").join(idSet));
+		sql.append(") order by `id` desc");
+		return queryList(sql.toString(), clazz);
+	}
+
+	/**
 	 * 插入数据,返回自增id
 	 * @param sql  
 	 * @param key 主键字段名
@@ -502,7 +519,7 @@ public abstract class AbstractJDBC {
 	 * pojo类型转化成表名
 	 * @param clazz
 	 */
-	private String classNameToTableName(Class<?> clazz) {
+	private <T> String classNameToTableName(Class<T> clazz) {
 		//类名转化成数据表名
 		String className = clazz.getSimpleName().substring(1);
 		StringBuilder tableName = new StringBuilder();
