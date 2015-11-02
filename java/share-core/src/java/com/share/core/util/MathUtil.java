@@ -1,5 +1,6 @@
 package com.share.core.util;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 /**
@@ -39,7 +40,7 @@ public final class MathUtil {
 	 * @param number 任意数字
 	 * @return
 	 */
-	public final static String numberFormat(Number number) {
+	public final static String numberFormat(long number) {
 		return numberFormat.format(number);
 	}
 
@@ -52,5 +53,19 @@ public final class MathUtil {
 	 */
 	public final static double log(double base, double x) {
 		return Math.log(x) / Math.log(base);
+	}
+
+	/**
+	 * 把double按照四舍五入的方式保留n位小数
+	 * @author ruan 
+	 * @param number
+	 * @param n
+	 */
+	public final static double round(double number, int n) {
+		StringBuilder str = new StringBuilder("0.");
+		for (int i = 0; i < n; i++) {
+			str.append("0");
+		}
+		return StringUtil.getDouble(new DecimalFormat(str.toString()).format(number / 1.0));
 	}
 }

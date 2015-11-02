@@ -8,9 +8,11 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.mail.Address;
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -75,7 +77,11 @@ public class EMail {
 		Transport transport = null;
 
 		try {
-			s = Session.getInstance(FileSystem.getProperty());
+			SmtpAuth smtpAuth = new SmtpAuth();
+			smtpAuth.setUser(senderUser);
+			smtpAuth.setPassword(senderPass);
+
+			s = Session.getInstance(FileSystem.getProperty(), smtpAuth);
 			message = new MimeMessage(s);
 
 			// 设置发件人信息
@@ -128,8 +134,8 @@ public class EMail {
 			Address[] allRecipients = message.getAllRecipients();
 			transport.sendMessage(message, allRecipients);
 
-			logger.info("mail content: {}", content);
-			logger.info("all recipients : {}", JSONObject.encode(allRecipients));
+			logger.warn("mail content: {}", content);
+			logger.warn("all recipients : {}", JSONObject.encode(allRecipients));
 		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
@@ -168,6 +174,28 @@ public class EMail {
 			filePathList.add(file.getPath());
 		}
 		send(title, mailType, content, filePathList, receiver);
+	}
+
+	/**
+	 * 定义一个SMTP授权验证类
+	 * @author ruan
+	 */
+	private static class SmtpAuth extends Authenticator {
+		String user;//帐号
+		String password;//密码
+
+		@Override
+		protected PasswordAuthentication getPasswordAuthentication() {
+			return new PasswordAuthentication(user, password);
+		}
+
+		public void setUser(String user) {
+			this.user = user;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
 	}
 
 	/**

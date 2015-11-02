@@ -17,11 +17,11 @@ public class SerialUtil {
 	private static Logger logger = LoggerFactory.getLogger(SerialUtil.class);
 
 	/**
-	* 对象序列化成字节
-	*
-	* @param object java对象
-	* @return 序列化后的数组
-	*/
+	 * 对象序列化成字节
+	 *
+	 * @param object java对象
+	 * @return 序列化后的数组
+	 */
 	public static byte[] toBytes(Object object) {
 		LinkedBuffer buffer = LinkedBuffer.allocate(256);
 		try {

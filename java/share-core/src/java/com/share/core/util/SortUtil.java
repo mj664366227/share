@@ -279,7 +279,7 @@ public final class SortUtil<K, V> {
 	 * 给Map进行排序 对map的value进行排序(非对象)
 	 * 
 	 * @param map 被排序的map
-	 * @param args 排序方法条件：方法名x#1升序-1倒序, 方法名y#-1倒序
+	 * @param order 排序方式
 	 * @return List<T>
 	 */
 	public final static <K, V> List<V> sortMap(Map<K, V> map, Order order) {
@@ -312,6 +312,25 @@ public final class SortUtil<K, V> {
 	}
 
 	/**
+	 * 给Map进行排序 对map的kay进行排序
+	 * 
+	 * @param map 被排序的map
+	 * @param order 排序方式
+	 * @return List<T>
+	 */
+	public final static <K, V> List<K> sortMapKey(Map<K, V> map, Order order) {
+		List<K> list = new ArrayList<K>();
+		if (map == null || map.isEmpty()) {
+			return list;
+		}
+		for (K k : map.keySet()) {
+			list.add(k);
+		}
+		sort(list, order);
+		return list;
+	}
+
+	/**
 	 * 排序方式
 	 * 
 	 * @author ruan
@@ -321,10 +340,9 @@ public final class SortUtil<K, V> {
 		/**
 		 * 升序
 		 */
-		ASC,
-		/**
-		 * 反序
-		 */
+		ASC, /**
+				 * 反序
+				 */
 		DESC;
 	}
 
@@ -337,10 +355,9 @@ public final class SortUtil<K, V> {
 		/**
 		 * 根据key来排序
 		 */
-		KEY,
-		/**
-		 * 根据value来排序
-		 */
+		KEY, /**
+				 * 根据value来排序
+				 */
 		VALUE;
 	}
 }

@@ -1,7 +1,6 @@
 package com.share.core.util;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -55,6 +54,15 @@ public final class Time {
 	 */
 	public static final int dayBreak(String time, String format) {
 		return str2time(time2str(time), format);
+	}
+
+	/**
+	 * 获取今天最后一秒的时间戳
+	 * @param time 时间
+	 * @param format 时间格式
+	 */
+	public static final int dayEnd() {
+		return dayBreak(date("yyyy-MM-dd"), "yyyy-MM-dd") + 86399;
 	}
 
 	/**
@@ -288,20 +296,20 @@ public final class Time {
 	 * 寻找最合适的单位来显示时间
 	 * @param time 时间
 	 */
-	public static final String showTime(long time) {
+	public static final String showTime(double time) {
 		String str = "";
 		if (time > 0 && time <= 1000) {
 			str = time + " ns";
 		} else if (time > 1000 && time <= 1000000) {
-			str = new DecimalFormat("0.00").format(time / 1000.0) + " μs";
+			str = MathUtil.round(time / 1000.0, 2) + " μs";
 		} else if (time > 1000000 && time <= 1000000000) {
-			str = new DecimalFormat("0.00").format(time / 1000000.0) + " ms";
+			str = MathUtil.round(time / 1000000.0, 2) + " ms";
 		} else if (time > 1000000000 && time < 60000000000D) {
-			str = new DecimalFormat("0.00").format(time / 1000000000.0) + " s";
+			str = MathUtil.round(time / 1000000000.0, 2) + " s";
 		} else if (time >= 60000000000D && time < 3600000000000D) {
-			str = new DecimalFormat("0").format(time / 60000000000D) + " min";
+			str = MathUtil.round(time / 60000000000D, 2) + " min";
 		} else {
-			str = new DecimalFormat("0").format(time / 3600000000000D) + " h";
+			str = MathUtil.round(time / 3600000000000D, 2) + " h";
 		}
 		return str;
 	}

@@ -75,6 +75,6 @@ public final class Check {
 	 * @param email 邮箱地址
 	 */
 	public final static boolean isEmail(String email) {
-		return email.matches("^\\w+[@]\\w+([.][a-zA-Z]+)+$");
+		return email.matches("^[\\w\\.]+[@]\\w+([.][a-zA-Z]+)+$");
 	}
 }
