@@ -81,6 +81,41 @@ if [ ! -d $install_path/$libatomic ]; then
 	tar zxvf $base_path/$libatomic.tar.gz -C $install_path || exit
 fi
 
+# 安装GD库
+# # libpng
+if [ ! -d $php_install_path/libpng ]; then
+	libpng='1.6.19'
+	if [ ! -f $base_path/libpng-$libpng.tar.gz ]; then
+		wget -O $base_path/libpng-$libpng.tar.gz http://jaist.dl.sourceforge.net/project/libpng/libpng16/$libpng/libpng-$libpng.tar.gz || exit
+	fi
+	tar zxvf $base_path/libpng-$libpng.tar.gz -C $install_path || exit
+	cd $install_path/libpng-$libpng
+	./configure --prefix=$php_install_path/libpng && make && make install || exit
+	yes|cp $php_install_path/libpng/bin/* /usr/bin/
+fi
+# jpeg
+if [ ! -d $php_install_path/jpeg ]; then
+	if [ ! -f $base_path/jpegsrc.tar.gz ]; then
+		wget -O $base_path/jpegsrc.tar.gz http://www.ijg.org/files/jpegsrc.v9a.tar.gz || exit
+	fi
+	tar zxvf $base_path/jpegsrc.tar.gz -C $install_path || exit
+	cd $install_path/jpeg-9a
+	./configure --prefix=$php_install_path/jpeg && make && make install || exit
+	yes|cp $php_install_path/jpeg/bin/* /usr/bin/
+fi
+# freetype
+if [ ! -d $php_install_path/freetype ]; then
+	freetype='freetype-2.6.1'
+	if [ ! -f $base_path/$freetype.tar.gz ]; then
+		wget -O $base_path/$freetype.tar.gz http://download.savannah.gnu.org/releases/freetype/$freetype.tar.gz || exit
+	fi
+	rm -rf $install_path/$freetype
+	tar zxvf $base_path/$freetype.tar.gz -C $install_path || exit
+	cd $install_path/$freetype
+	./configure --prefix=$php_install_path/freetype && make && make install || exit
+	yes|cp $php_install_path/freetype/bin/* /usr/bin/
+fi
+
 #安装nginx
 nginx='nginx-'$nginx_version
 echo 'installing '$nginx' ...'
@@ -93,7 +128,7 @@ if [ ! -d $nginx_install_path/nginx ]; then
 	tar zxvf $base_path/$nginx.tar.gz -C $install_path || exit
 fi
 cd $install_path/$nginx
-./configure --prefix=$nginx_install_path/nginx --with-http_stub_status_module  --with-http_ssl_module --with-select_module --with-poll_module --with-file-aio --with-ipv6 --with-http_gzip_static_module --with-http_sub_module --with-http_ssl_module --with-pcre=$install_path/$pcre --with-zlib=$install_path/$zlib --with-openssl=$install_path/$openssl --with-md5=/usr/lib --with-sha1=/usr/lib --with-md5-asm --with-http_dyups_module --with-sha1-asm --with-mail --with-mail_ssl_module --with-http_spdy_module --with-http_realip_module --with-http_addition_module --with-cpu-opt --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_stub_status_module --with-libatomic=$install_path/$libatomic && make && make install || exit
+./configure --prefix=$nginx_install_path/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_v2_module --with-select_module --with-poll_module --with-file-aio --with-ipv6 --with-http_gzip_static_module --with-http_xslt_module --with-http_image_filter_module --with-http_sub_module --with-http_ssl_module --with-pcre=$install_path/$pcre --with-zlib=$install_path/$zlib --with-openssl=$install_path/$openssl --with-md5=/usr/lib --with-sha1=/usr/lib --with-google_perftools_module --with-md5-asm --with-http_geoip_module --with-sha1-asm --with-mail --with-mail_ssl_module --with-http_realip_module --with-http_perl_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_stub_status_module --with-stream --with-stream_ssl_module --with-libatomic=$install_path/$libatomic && make && make install || exit
 
 #添加nginx用户组
 user='www'
