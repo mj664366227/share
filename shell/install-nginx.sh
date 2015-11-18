@@ -2,19 +2,6 @@
 #运行例子：sh install-nginx.sh 1.9.7 /usr/local
 ntpdate time.nist.gov
  
-#乌班图系统比较特别，需要bash才可以使用source命令和read命令
-linux=$(uname -v | cut -b 5-10)
-if [ $linux = "Ubuntu" ]; then
-	bash_=$(ls -l `which sh`|cut -b 52-55)
-	if [ $bash_ != "bash" ]; then
-	second=5
-	echo '你的shell配置不正确，系统会帮你做出修改，请你在下面界面选择 no ...'
-	echo $second'秒后继续...'
-	sleep $second
-	dpkg-reconfigure dash
-	fi
-fi
-
 #定义本程序的当前目录
 base_path=$(pwd)
 
@@ -27,7 +14,7 @@ if [ ! $nginx_version ] || [ ! $nginx_install_path ]; then
 	exit
 fi
 
-yum -y install gcc libc6-dev gcc-c++ pcre-devel libgd2-xpm libgd2-xpm-dev geoip-database libgeoip-dev make libxslt-dev rsync lrzsz
+yum -y install gcc libc6-dev gcc-c++ pcre-devel libgd2-xpm gd-devel libgd2-xpm-dev geoip-database libgeoip-dev make libxslt-dev rsync lrzsz
 
 #建立临时安装目录
 echo 'preparing working path...'
@@ -79,41 +66,6 @@ if [ ! -d $install_path/$libatomic ]; then
 		echo 'download '$libatomic' finished...'
 	fi
 	tar zxvf $base_path/$libatomic.tar.gz -C $install_path || exit
-fi
-
-# 安装GD库
-# # libpng
-if [ ! -d $php_install_path/libpng ]; then
-	libpng='1.6.19'
-	if [ ! -f $base_path/libpng-$libpng.tar.gz ]; then
-		wget -O $base_path/libpng-$libpng.tar.gz http://jaist.dl.sourceforge.net/project/libpng/libpng16/$libpng/libpng-$libpng.tar.gz || exit
-	fi
-	tar zxvf $base_path/libpng-$libpng.tar.gz -C $install_path || exit
-	cd $install_path/libpng-$libpng
-	./configure --prefix=$php_install_path/libpng && make && make install || exit
-	yes|cp $php_install_path/libpng/bin/* /usr/bin/
-fi
-# jpeg
-if [ ! -d $php_install_path/jpeg ]; then
-	if [ ! -f $base_path/jpegsrc.tar.gz ]; then
-		wget -O $base_path/jpegsrc.tar.gz http://www.ijg.org/files/jpegsrc.v9a.tar.gz || exit
-	fi
-	tar zxvf $base_path/jpegsrc.tar.gz -C $install_path || exit
-	cd $install_path/jpeg-9a
-	./configure --prefix=$php_install_path/jpeg && make && make install || exit
-	yes|cp $php_install_path/jpeg/bin/* /usr/bin/
-fi
-# freetype
-if [ ! -d $php_install_path/freetype ]; then
-	freetype='freetype-2.6.1'
-	if [ ! -f $base_path/$freetype.tar.gz ]; then
-		wget -O $base_path/$freetype.tar.gz http://download.savannah.gnu.org/releases/freetype/$freetype.tar.gz || exit
-	fi
-	rm -rf $install_path/$freetype
-	tar zxvf $base_path/$freetype.tar.gz -C $install_path || exit
-	cd $install_path/$freetype
-	./configure --prefix=$php_install_path/freetype && make && make install || exit
-	yes|cp $php_install_path/freetype/bin/* /usr/bin/
 fi
 
 #安装nginx
