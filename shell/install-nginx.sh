@@ -1,5 +1,5 @@
 #linux nginx自动安装程序 
-#运行例子：sh install-nginx.sh 1.7.12 /usr/local
+#运行例子：sh install-nginx.sh 1.9.7 /usr/local
 ntpdate time.nist.gov
  
 #乌班图系统比较特别，需要bash才可以使用source命令和read命令
@@ -23,7 +23,7 @@ nginx_version=$1
 nginx_install_path=$2
 if [ ! $nginx_version ] || [ ! $nginx_install_path ]; then
 	echo 'error command!!! you must input nginx version and install path...'
-	echo 'for example: sh install-nginx.sh 1.7.12 /usr/local'
+	echo 'for example: sh install-nginx.sh 1.9.7 /usr/local'
 	exit
 fi
 
@@ -48,7 +48,7 @@ if [ ! -d $install_path/$zlib ]; then
 fi
 
 #下载pcre
-pcre='pcre-8.36'
+pcre='pcre-8.37'
 if [ ! -d $install_path/$pcre ]; then
 	echo 'installing '$pcre' ...'
 	if [ ! -f $base_path/$pcre.tar.gz ]; then

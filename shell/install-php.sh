@@ -1,5 +1,5 @@
 #linux php自动安装程序
-#运行例子：sh install-php.sh 5.6.7 /usr/local
+#运行例子：sh install-php.sh 5.6.15 /usr/local
  
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ php_version=$1
 php_install_path=$2 
 if [ ! $php_version ] || [ ! $php_install_path ]; then
 	echo 'error command!!! you must input php version and install path...'
-	echo 'for example: sh install-php.sh 5.6.7 /usr/local'
+	echo 'for example: sh install-php.sh 5.6.15 /usr/local'
 	exit
 fi
 
@@ -74,12 +74,12 @@ if [ ! -d $php_install_path/zlib ]; then
 fi
 
 # 安装python 
-python='Python-3.4.3'
+python='Python-3.5.0'
 if [ ! -d $php_install_path/python ]; then
 	echo 'installing '$python' ...'
 	if [ ! -f $base_path/$python.tgz ]; then
 		echo $python'.tar.xz is not exists, system will going to download it...'
-		wget -O $base_path/$python.tgz --no-check-certificate http://www.python.org/ftp/python/3.4.3/$python.tgz || exit
+		wget -O $base_path/$python.tgz --no-check-certificate http://www.python.org/ftp/python/3.5.0/$python.tgz || exit
 		echo 'download '$python' finished...'
 	fi
 	tar xvf $base_path/$python.tgz -C $install_path || exit
@@ -122,7 +122,7 @@ if [ ! -d $php_install_path/openssl ]; then
 fi
 
 # 安装pcre
-pcre='pcre-8.36'
+pcre='pcre-8.37'
 if [ ! -d $php_install_path/pcre ]; then
 	echo 'installing '$pcre' ...'
 	if [ ! -f $base_path/$pcre.tar.gz ]; then
@@ -138,7 +138,7 @@ if [ ! -d $php_install_path/pcre ]; then
 fi
 
 # 安装curl
-curl='curl-7.41.0'
+curl='curl-7.45.0'
 if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then
@@ -186,7 +186,7 @@ fi
 # 安装GD库
 # # libpng
 if [ ! -d $php_install_path/libpng ]; then
-	libpng='1.6.17'
+	libpng='1.6.19'
 	if [ ! -f $base_path/libpng-$libpng.tar.gz ]; then
 		wget -O $base_path/libpng-$libpng.tar.gz http://jaist.dl.sourceforge.net/project/libpng/libpng16/$libpng/libpng-$libpng.tar.gz || exit
 	fi
@@ -207,7 +207,7 @@ if [ ! -d $php_install_path/jpeg ]; then
 fi
 # freetype
 if [ ! -d $php_install_path/freetype ]; then
-	freetype='freetype-2.5.5'
+	freetype='freetype-2.6.1'
 	if [ ! -f $base_path/$freetype.tar.gz ]; then
 		wget -O $base_path/$freetype.tar.gz http://download.savannah.gnu.org/releases/freetype/$freetype.tar.gz || exit
 	fi

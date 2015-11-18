@@ -22,7 +22,7 @@ mkdir -p $install_path
 yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz
 
 #安装cmake
-cmake='cmake-3.2.3'
+cmake='cmake-3.4.0'
 if [ ! -d $mysql_install_path/cmake ]; then
 	echo 'installing '$cmake'...'
 	if [ ! -f $base_path/$cmake.tar.gz ]; then
@@ -39,7 +39,7 @@ if [ ! -d $mysql_install_path/cmake ]; then
 fi
 
 #安装jemalloc
-jemalloc='jemalloc-4.0.0'
+jemalloc='jemalloc-4.0.4'
 if [ ! -d $mysql_install_path/jemalloc ]; then
 	echo 'installing '$jemalloc' ...'
 	if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
@@ -75,7 +75,7 @@ chown mysql.mysql -R $mysql_data_path || exit
 
 #安装mysql
 echo 'installing mysql...'
-mysql='mysql-5.6.26'
+mysql='mysql-5.7.9'
 if [ ! -d $install_path/$mysql ]; then
 	if [ ! -f $base_path/$mysql.tar.gz ]; then
 		echo $mysql'.tar.gz is not exists, system will going to download it...'

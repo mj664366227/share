@@ -70,7 +70,7 @@ if [ ! -d $install_path/$libatomic ]; then
 fi
 
 #安装jemalloc
-jemalloc='jemalloc-4.0.0'
+jemalloc='jemalloc-4.0.4'
 echo 'installing '$jemalloc' ...'
 if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
 	echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
