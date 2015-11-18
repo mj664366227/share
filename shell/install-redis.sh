@@ -1,5 +1,5 @@
 #linux mongodb自动安装程序 
-#运行例子：sh install-redis.sh 3.0.0 /usr/local
+#运行例子：sh install-redis.sh 3.0.5 /usr/local
  
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ redis_version=$1
 redis_install_path=$2
 if [ ! $redis_version ] || [ ! $redis_install_path ] ; then
 	echo 'error command!!! you must input redis version and install path...'
-	echo 'for example: sh install-redis.sh 3.0.0 /usr/local'
+	echo 'for example: sh install-redis.sh 3.0.5 /usr/local'
 	exit
 fi
 
@@ -21,7 +21,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #安装jemalloc
-jemalloc='jemalloc-4.0.0'
+jemalloc='jemalloc-4.0.4'
 if [ ! -d $install_path/$jemalloc ]; then
 	echo 'installing '$jemalloc' ...'
 	if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
