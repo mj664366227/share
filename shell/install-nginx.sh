@@ -118,7 +118,10 @@ http {
 	client_header_buffer_size 32k;
 	client_max_body_size 200m;
 	
-	add_header Cache-Control no-store;
+	add_header Cache-Control no-cache;
+	add_header Cache-Control max-age=1;
+	
+	proxy_set_header  X-Real-IP  $remote_addr;
 	
 	fastcgi_connect_timeout 600;
 	fastcgi_send_timeout 600;
