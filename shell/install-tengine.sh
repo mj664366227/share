@@ -139,8 +139,7 @@ http {
 	client_header_buffer_size 32k;
 	client_max_body_size 200m;
 	
-	add_header Cache-Control no-cache;
-	add_header Cache-Control max-age=0;
+	add_header Cache-Control no-store,no-cache,must-revalidate,max-age=0;
 	
 	proxy_set_header  X-Real-IP \$remote_addr;
 	
