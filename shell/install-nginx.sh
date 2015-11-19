@@ -34,6 +34,22 @@ if [ ! -d $install_path/$zlib ]; then
 	tar zxvf $base_path/$zlib.tar.gz -C $install_path || exit
 fi
 
+# 安装libxml2
+libxml='libxml2-2.9.2'
+if [ ! -d $php_install_path/libxml2 ]; then
+	echo 'installing '$libxml' ...'
+	if [ ! -f $base_path/$libxml.tar.gz ]; then
+		echo $libxml'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/$libxml.tar.gz ftp://xmlsoft.org/libxml2/$libxml.tar.gz || exit
+		echo 'download '$libxml' finished...'
+	fi
+	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
+	cd $install_path/$libxml
+	./configure --prefix=$php_install_path/libxml2 --disable-static --with-iconv=$php_install_path/libiconv --with-zlib=$php_install_path/zlib/ && make && make install || exit
+	yes|cp $php_install_path/libxml2/bin/* /usr/bin/
+	echo $libxml' install finished...'
+fi
+
 #下载pcre
 pcre='pcre-8.37'
 if [ ! -d $install_path/$pcre ]; then
