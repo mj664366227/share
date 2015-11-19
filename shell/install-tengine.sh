@@ -15,7 +15,7 @@ if [ ! $tengine_version ] || [ ! $tengine_install_path ]; then
 	exit
 fi
 
-yum -y install gcc libc6-dev gcc-c++ pcre-devel libgd2-xpm libgd2-xpm-dev geoip-database libgeoip-dev make libxslt-dev rsync lrzsz
+yum -y install gcc libc6-dev gcc-c++ pcre-devel libgd2-xpm libgd2-xpm-dev geoip-database libxml2 libxml2-dev libgeoip-dev make libxslt-dev rsync lrzsz
 
 #建立临时安装目录
 echo 'preparing working path...'
