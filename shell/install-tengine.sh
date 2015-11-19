@@ -15,7 +15,7 @@ if [ ! $tengine_version ] || [ ! $tengine_install_path ]; then
 	exit
 fi
 
-yum -y install gcc libc6-dev gcc-c++ pcre-devel libgd2-xpm libgd2-xpm-dev geoip-database libxml2 libxml2-dev libgeoip-dev make libxslt-dev rsync lrzsz
+yum -y install gcc libc6-dev gcc-c++ pcre-devel perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev
 
 #建立临时安装目录
 echo 'preparing working path...'
@@ -33,22 +33,6 @@ if [ ! -d $install_path/$zlib ]; then
 		echo 'download '$zlib' finished...'
 	fi
 	tar zxvf $base_path/$zlib.tar.gz -C $install_path || exit
-fi
-
-# 安装libxml2
-libxml='libxml2-2.9.2'
-if [ ! -d $php_install_path/libxml2 ]; then
-	echo 'installing '$libxml' ...'
-	if [ ! -f $base_path/$libxml.tar.gz ]; then
-		echo $libxml'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.tar.gz ftp://xmlsoft.org/libxml2/$libxml.tar.gz || exit
-		echo 'download '$libxml' finished...'
-	fi
-	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
-	cd $install_path/$libxml
-	./configure --prefix=$php_install_path/libxml2 --disable-static --with-iconv=$php_install_path/libiconv --with-zlib=$php_install_path/zlib/ && make && make install || exit
-	yes|cp $php_install_path/libxml2/bin/* /usr/bin/
-	echo $libxml' install finished...'
 fi
 
 #下载pcre
