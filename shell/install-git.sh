@@ -19,9 +19,30 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-yum -y install curl curl-devel zlib-devel openssl-devel perl cpio expat-devel gettext-devel gcc libc6-dev gcc-c++ pcre-devel libgd2-xpm libgd2-xpm-dev geoip-database libgeoip-dev make libxslt-dev rsync lrzsz
+yum -y install curl curl-devel zlib-devel openssl-devel perl cpio expat-devel perl-ExtUtils-MakeMaker gettext-devel gcc libc6-dev gcc-c++ pcre-devel libgd2-xpm libgd2-xpm-dev geoip-database libgeoip-dev make libxslt-dev rsync lrzsz
 
 cd $install_path
+
+datadumper='Data-Dumper-2.154'
+if [ ! -f $base_path/$m4.tar.gz ]; then
+	wget -O $base_path/$datadumper.tar.gz http://www.cpan.org/modules/by-module/Data/$datadumper.tar.gz || exit
+fi
+tar xvzf $base_path/$datadumper.tar.gz -C $install_path || exit
+cd $install_path/$datadumper
+perl Makefile.PL
+make
+make install
+
+if [ ! -d $php_install_path/m4 ]; then
+	m4='m4-1.4.17'
+	if [ ! -f $base_path/$m4.tar.gz ]; then
+		wget -O $base_path/$m4.tar.gz http://ftp.gnu.org/gnu/m4/$m4.tar.gz || exit
+	fi
+	tar zxvf $base_path/$m4.tar.gz -C $install_path || exit
+	cd $install_path/$m4
+	./configure --prefix=$php_install_path/m4 && make && make install || exit
+	yes|cp $php_install_path/m4/bin/* /usr/bin/
+fi
 
 if [ ! -d $git_install_path/autoconf ]; then
 	autoconf='autoconf-2.69'
