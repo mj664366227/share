@@ -112,8 +112,11 @@ public final class NsqService {
 						}
 
 						String channel = nsqCallback.channel();
-						if (nsqCallback.onlyChannel()) {
-							channel += "_" + Ip.getValidIPAddress("");
+						if (!nsqCallback.onlyChannel()) {
+							// 这样可以保证在同一台机器上不同进程都可以每台都收到
+							String project = FileSystem.getProjectName();
+							project = project.substring(project.indexOf("-") + 1);
+							channel += "_" + project + "_" + Ip.getValidIPAddress("") + "_" + FileSystem.getPropertyInt("http." + project + ".port");
 						}
 
 						// 获取bean
@@ -178,11 +181,14 @@ public final class NsqService {
 		}
 
 		public void message(NSQMessage message) {
+			boolean b = false;
 			try {
-				nsqMessageHandler.handle(message.getMessage());
+				b = nsqMessageHandler.handle(message.getMessage());
 			} catch (Exception e) {
+				b = false;
 				logger.error("", e);
-			} finally {
+			}
+			if (b) {
 				message.finished();
 			}
 		}
