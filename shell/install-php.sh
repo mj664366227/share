@@ -95,7 +95,7 @@ if [ ! -d $php_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
 	if [ ! -f $base_path/$libxml.tar.gz ]; then
 		echo $libxml'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.tar.gz ftp://xmlsoft.org/libxml2/$libxml.tar.gz || exit
+		wget -O $base_path/$libxml.tar.gz http://xmlsoft.org/libxml2/$libxml.tar.gz || exit
 		echo 'download '$libxml' finished...'
 	fi
 	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit

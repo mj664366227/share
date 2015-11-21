@@ -46,13 +46,29 @@ if [ ! -d $install_path/$pcre ]; then
 	tar zxvf $base_path/$pcre.tar.gz -C $install_path || exit
 fi
 
+# 安装python 
+python='Python-3.5.0'
+if [ ! -d $php_install_path/python ]; then
+	echo 'installing '$python' ...'
+	if [ ! -f $base_path/$python.tgz ]; then
+		echo $python'.tar.xz is not exists, system will going to download it...'
+		wget -O $base_path/$python.tgz --no-check-certificate http://www.python.org/ftp/python/3.5.0/$python.tgz || exit
+		echo 'download '$python' finished...'
+	fi
+	tar xvf $base_path/$python.tgz -C $install_path || exit
+	cd $install_path/$python
+	./configure --prefix=$php_install_path/python --enable-shared && make && make install || exit
+	yes|cp $php_install_path/python/bin/* /usr/bin/
+	echo $python' install finished...'
+fi
+
 # 安装libxml2
 libxml='libxml2-2.9.2'
 if [ ! -d $php_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
 	if [ ! -f $base_path/$libxml.tar.gz ]; then
 		echo $libxml'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.tar.gz ftp://xmlsoft.org/libxml2/$libxml.tar.gz || exit
+		wget -O $base_path/$libxml.tar.gz http://xmlsoft.org/libxml2/$libxml.tar.gz || exit
 		echo 'download '$libxml' finished...'
 	fi
 	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
