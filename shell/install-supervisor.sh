@@ -3,7 +3,7 @@
  
 #定义本程序的当前目录
 base_path=$(pwd)
-ntpdate time.nist.gov
+ntpdate ntp.api.bz
 
 yum install -y python-setuptools && easy_install supervisor 
 

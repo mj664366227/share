@@ -1,5 +1,5 @@
 #更新yum源
-ntpdate time.nist.gov
+ntpdate ntp.api.bz
 
 #下载repo文件
 cd /etc/yum.repos.d/

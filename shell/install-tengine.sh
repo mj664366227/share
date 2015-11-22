@@ -1,6 +1,6 @@
 #linux nginx自动安装程序 
 #运行例子：sh install-tengine.sh 2.1.1 /usr/local
-ntpdate time.nist.gov
+ntpdate ntp.api.bz
  
 
 #定义本程序的当前目录

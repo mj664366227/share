@@ -1,6 +1,6 @@
 #linux nginx自动安装程序 
 #运行例子：sh install-nginx.sh 1.9.7 /usr/local
-ntpdate time.nist.gov
+ntpdate ntp.api.bz
  
 #定义本程序的当前目录
 base_path=$(pwd)

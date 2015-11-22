@@ -2,7 +2,7 @@
  
 #定义本程序的当前目录
 base_path=$(pwd)
-ntpdate time.nist.gov
+ntpdate ntp.api.bz
 
 #处理外部参数
 erlang_install_path=$1
