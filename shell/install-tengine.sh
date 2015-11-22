@@ -265,5 +265,6 @@ nginx
 
 #开机自启动
 echo '' >> /etc/rc.d/rc.local
+echo 'systemctl stop firewalld' >> /etc/rc.d/rc.local
 echo 'nginx' >> /etc/rc.d/rc.local
 $(source /etc/rc.d/rc.local)
