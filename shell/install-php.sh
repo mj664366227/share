@@ -21,7 +21,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #因为有些系统可能安装的类库不全，先给补上
-yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz
+yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz
 
 # 方便以后安装扩展，安装必备的工具
 if [ ! -d $php_install_path/m4 ]; then
