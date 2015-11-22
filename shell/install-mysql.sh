@@ -150,7 +150,7 @@ write_buffer = 200K
 interactive-timeout" > /etc/my.cnf || exit
 
 #初始化数据库
-$mysql_install_path/mysql/scripts/mysql_install_db --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path
+$mysql_install_path/mysql/bin/mysqld --initialize --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path
 
 #启动mysql服务
 yes|cp -rf $mysql_install_path/mysql/support-files/mysql.server /etc/init.d/mysqld || exit
