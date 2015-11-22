@@ -65,7 +65,7 @@ python='Python-3.4.0'
 if [ ! -d $nginx_install_path/python ]; then
 	echo 'installing '$python' ...'
 	if [ ! -f $base_path/$python.tgz ]; then
-		echo $python'.tar.xz is not exists, system will going to download it...'
+		echo $python'.tgz is not exists, system will going to download it...'
 		wget -O $base_path/$python.tgz --no-check-certificate http://www.python.org/ftp/python/3.4.0/$python.tgz || exit
 		echo 'download '$python' finished...'
 	fi
