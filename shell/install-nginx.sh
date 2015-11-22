@@ -14,7 +14,7 @@ if [ ! $nginx_version ] || [ ! $nginx_install_path ]; then
 	exit
 fi
 
-yum -y install gcc libc6-dev gcc-c++ pcre-devel perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev
+yum -y install gcc libc6-dev gcc-c++ pcre-devel perl-devel perl-ExtUtils-Embed geoip-database python-devel libgeoip-dev make libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev
 
 #建立临时安装目录
 echo 'preparing working path...'
@@ -46,9 +46,23 @@ if [ ! -d $install_path/$pcre ]; then
 	tar zxvf $base_path/$pcre.tar.gz -C $install_path || exit
 fi
 
+#安装libiconv
+if [ ! -d $nginx_install_path/libiconv ]; then
+	libiconv='libiconv-1.14'
+	if [ ! -f $base_path/$libiconv.tar.gz ]; then
+		wget -O $base_path/$libiconv.tar.gz http://ftp.gnu.org/pub/gnu/libiconv/$libiconv.tar.gz || exit
+	fi
+	tar zxvf $base_path/$libiconv.tar.gz -C $install_path || exit
+	cd $install_path/$libiconv/srclib
+	sed -i -e '/gets is a security/d' ./stdio.in.h
+	cd $install_path/$libiconv
+	./configure --prefix=$nginx_install_path/libiconv -enable-shared --host=arm-linux && make && make install || exit
+	yes|cp $nginx_install_path/libiconv/bin/* /usr/bin/
+fi
+
 # 安装python 
 python='Python-3.5.0'
-if [ ! -d $php_install_path/python ]; then
+if [ ! -d $nginx_install_path/python ]; then
 	echo 'installing '$python' ...'
 	if [ ! -f $base_path/$python.tgz ]; then
 		echo $python'.tar.xz is not exists, system will going to download it...'
@@ -57,14 +71,14 @@ if [ ! -d $php_install_path/python ]; then
 	fi
 	tar xvf $base_path/$python.tgz -C $install_path || exit
 	cd $install_path/$python
-	./configure --prefix=$php_install_path/python --enable-shared && make && make install || exit
-	yes|cp $php_install_path/python/bin/* /usr/bin/
+	./configure --prefix=$nginx_install_path/python --enable-shared && make && make install || exit
+	yes|cp $nginx_install_path/python/bin/* /usr/bin/
 	echo $python' install finished...'
 fi
 
 # 安装libxml2
 libxml='libxml2-2.9.2'
-if [ ! -d $php_install_path/libxml2 ]; then
+if [ ! -d $nginx_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
 	if [ ! -f $base_path/$libxml.tar.gz ]; then
 		echo $libxml'.tar.gz is not exists, system will going to download it...'
@@ -73,8 +87,8 @@ if [ ! -d $php_install_path/libxml2 ]; then
 	fi
 	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
 	cd $install_path/$libxml
-	./configure --prefix=$php_install_path/libxml2 --disable-static --with-iconv=$php_install_path/libiconv --with-zlib=$php_install_path/zlib/ && make && make install || exit
-	yes|cp $php_install_path/libxml2/bin/* /usr/bin/
+	./configure --prefix=$nginx_install_path/libxml2 --disable-static --with-iconv=$nginx_install_path/libiconv --with-zlib=$nginx_install_path/zlib/ && make && make install || exit
+	yes|cp $nginx_install_path/libxml2/bin/* /usr/bin/
 	echo $libxml' install finished...'
 fi
 

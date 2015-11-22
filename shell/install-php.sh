@@ -21,7 +21,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #因为有些系统可能安装的类库不全，先给补上
-yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc lrzsz
+yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz
 
 # 方便以后安装扩展，安装必备的工具
 if [ ! -d $php_install_path/m4 ]; then
@@ -53,8 +53,10 @@ if [ ! -d $php_install_path/libiconv ]; then
 		wget -O $base_path/$libiconv.tar.gz http://ftp.gnu.org/pub/gnu/libiconv/$libiconv.tar.gz || exit
 	fi
 	tar zxvf $base_path/$libiconv.tar.gz -C $install_path || exit
+	cd $install_path/$libiconv/srclib
+	sed -i -e '/gets is a security/d' ./stdio.in.h
 	cd $install_path/$libiconv
-	./configure --prefix=$php_install_path/libiconv && make && make install || exit
+	./configure --prefix=$php_install_path/libiconv -enable-shared --host=arm-linux && make && make install || exit
 	yes|cp $php_install_path/libiconv/bin/* /usr/bin/
 fi
  
