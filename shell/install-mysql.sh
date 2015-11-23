@@ -115,7 +115,7 @@ socket = "$mysql_install_path"/mysql/data/mysql.sock
 [mysqld]
 port = 3306
 socket = "$mysql_install_path"/mysql/data/mysql.sock
-#skip-grant-tables
+skip-grant-tables
 skip-name-resolve
 skip-external-locking
 key_buffer_size = 100K
@@ -175,7 +175,10 @@ yes|cp -rf $mysql_install_path/mysql/bin/* /usr/bin/ || exit
 service mysqld start
 
 #修改root密码
-mysqladmin -u root password root || exit
+mysql -u root -e "truncate mysql.user;" || exit
+mysql -u root -e "insert into mysql.user (host,user,authentication_string) values ('%','root',password('root'));" || exit
+
+sed -i 's/skip-grant-tables/#skip-grant-tables/' /etc/my.cnf || exit
 
 service mysqld restart
 
@@ -183,3 +186,6 @@ service mysqld restart
 echo '' >> /etc/rc.d/rc.local
 echo 'service mysqld start' >> /etc/rc.local
 source /etc/rc.d/rc.local
+
+#输出版本
+mysql -u root -e "select VERSION();" || exit
