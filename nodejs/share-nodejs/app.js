@@ -1,15 +1,8 @@
-function a(){
-	var aa = 1;
-}
-
-//module.exports = a;
-console.log(__filename);
-console.log(__dirname);
-console.log(module);
-var os = require('os');
-console.log(os.type());
-
-var crypto = require('crypto');
-console.log(crypto.createHash("md5"));
-var util = require('util');
-util.debuglog('dsds');
+var http = require("http");  
+http.createServer(function(request, response) {    
+    response.writeHead(200, {"Content-Type": "text/plain"});    
+    response.write("Hello World");    
+    response.end();  
+    console.log("Hello World");  
+}).listen(8888);  
+console.log("nodejs start listen 8888 port!");  

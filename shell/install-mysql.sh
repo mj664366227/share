@@ -138,6 +138,7 @@ innodb_lock_wait_timeout = 50
 key_buffer_size = 200K
 sort_buffer_size = 200K
 sql-mode=\"NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\"
+default_password_lifetime = 0
 long_query_time = 0
 slow_query_log = 0
 log_queries_not_using_indexes = 0
@@ -163,6 +164,7 @@ write_buffer = 200K
 interactive-timeout" > /etc/my.cnf || exit
 
 #初始化数据库
+rm -rf $mysql_data_path
 $mysql_install_path/mysql/bin/mysqld --initialize --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path
 
 #启动mysql服务
