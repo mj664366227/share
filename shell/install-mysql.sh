@@ -127,6 +127,7 @@ read_buffer_size = 400K
 read_rnd_buffer_size = 400K
 myisam_sort_buffer_size = 100K
 max_connections = 100
+back_log = 100
 join_buffer_size = 200K
 thread_cache_size = 1024
 server-id  = 1
