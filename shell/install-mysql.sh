@@ -189,4 +189,4 @@ echo 'service mysqld start' >> /etc/rc.local
 source /etc/rc.d/rc.local
 
 #输出版本
-mysql -u root -e "select VERSION();" || exit
+mysql -uroot -proot -e "select VERSION();" || exit
