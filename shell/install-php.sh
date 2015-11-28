@@ -92,12 +92,12 @@ if [ ! -d $php_install_path/python ]; then
 fi
 
 # 安装libxml2
-libxml='libxml2-2.9.2'
+libxml='libxml2-2.9.3'
 if [ ! -d $php_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
 	if [ ! -f $base_path/$libxml.tar.gz ]; then
 		echo $libxml'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.tar.gz http://xmlsoft.org/libxml2/$libxml.tar.gz || exit
+		wget -O $base_path/$libxml.tar.gz https://git.gnome.org/browse/libxml2/snapshot/$libxml.tar.xz || exit
 		echo 'download '$libxml' finished...'
 	fi
 	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
