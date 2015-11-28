@@ -92,21 +92,18 @@ if [ ! -d $php_install_path/python ]; then
 fi
 
 # 安装libxml2
-libxml='libxml2-2.9.2'
-if [ ! -d $php_install_path/libxml2 ]; then
+libxml='libxml2-2.9.3'
+if [ ! -d $nginx_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
-	if [ ! -f $base_path/$libxml.tar ]; then
-		echo $libxml'.tar.xz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.tar.xz https://git.gnome.org/browse/libxml2/snapshot/$libxml.tar.xz || exit
+	if [ ! -f $base_path/$libxml.tar.gz ]; then
+		echo $libxml'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/$libxml.tar.gz http://xmlsoft.org/sources/$libxml.tar.gz || exit
 		echo 'download '$libxml' finished...'
-		cd $base_path
-		xz -d $libxml.tar.xz || exit
 	fi
-	tar xvf $base_path/$libxml.tar -C $install_path || exit
+	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
 	cd $install_path/$libxml
-	autoconf
-	./configure --prefix=$php_install_path/libxml2 --with-python=$php_install_path/python --with-iconv=$php_install_path/libiconv --with-zlib=$php_install_path/zlib/ && make && make install || exit
-	yes|cp $php_install_path/libxml2/bin/* /usr/bin/
+	./configure --prefix=$nginx_install_path/libxml2 --disable-static --with-iconv=$nginx_install_path/libiconv --with-zlib=$nginx_install_path/zlib/ && make && make install || exit
+	yes|cp $nginx_install_path/libxml2/bin/* /usr/bin/
 	echo $libxml' install finished...'
 fi
 
