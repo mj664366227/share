@@ -77,7 +77,7 @@ if [ ! -d $nginx_install_path/python ]; then
 fi
 
 # 安装libxml2
-libxml='libxml2-2.9.3'
+libxml='libxml2-2.9.2'
 if [ ! -d $nginx_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
 	if [ ! -f $base_path/$libxml.tar ]; then
@@ -90,7 +90,7 @@ if [ ! -d $nginx_install_path/libxml2 ]; then
 	tar xvf $base_path/$libxml.tar -C $install_path || exit
 	cd $install_path/$libxml
 	autoconf
-	./configure --prefix=$nginx_install_path/libxml2 --disable-static --with-iconv=$nginx_install_path/libiconv --with-zlib=$nginx_install_path/zlib/ && make && make install || exit
+	./configure --prefix=$nginx_install_path/libxml2 --with-python=$nginx_install_path/python --with-iconv=$nginx_install_path/libiconv --with-zlib=$nginx_install_path/zlib/ && make && make install || exit
 	yes|cp $nginx_install_path/libxml2/bin/* /usr/bin/
 	echo $libxml' install finished...'
 fi
