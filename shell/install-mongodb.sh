@@ -25,13 +25,13 @@ yum -y install libtool sed gcc gcc-c++ make net-snmp curl net-snmp-devel net-snm
 bit=$(getconf LONG_BIT)
 if [ $bit = 32 ]; then
 	if [ ! -f $base_path/mongodb-$mongodb_version.tgz ]; then
-		curl -o $base_path/mongodb-$mongodb_version.tgz https://fastdl.mongodb.org/linux/mongodb-linux-i686-$mongodb_version.tgz || exit
+		wget -O $base_path/mongodb-$mongodb_version.tgz https://fastdl.mongodb.org/linux/mongodb-linux-i686-$mongodb_version.tgz || exit
 	fi
 	tar xzvf $base_path/mongodb-$mongodb_version.tgz -C $install_path || exit
 	mv $install_path/mongodb-linux-i686-$mongodb_version $mongodb_install_path/mongodb
 else
 	if [ ! -f $base_path/mongodb-$mongodb_version.tgz ]; then
-		curl -o $base_path/mongodb-$mongodb_version.tgz https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$mongodb_version.tgz || exit
+		wget -O $base_path/mongodb-$mongodb_version.tgz https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$mongodb_version.tgz || exit
 	fi
 	tar xzvf $base_path/mongodb-$mongodb_version.tgz -C $install_path || exit
 	mv $install_path/mongodb-linux-x86_64-$mongodb_version $mongodb_install_path/mongodb
