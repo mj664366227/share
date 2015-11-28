@@ -138,7 +138,7 @@ innodb_flush_log_at_trx_commit = 0
 innodb_lock_wait_timeout = 50
 key_buffer_size = 200K
 sort_buffer_size = 200K
-sql-mode=\"NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\"
+sql-mode=\"STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\"
 default_password_lifetime = 0
 long_query_time = 0
 slow_query_log = 0
@@ -177,7 +177,7 @@ service mysqld start
 
 #修改root密码
 mysql -u root -e "truncate mysql.user;" || exit
-mysql -u root -e "insert into mysql.user (host,user,authentication_string) values ('%','root',password('root'));" || exit
+mysql -u root -e "INSERT INTO `user` (`Host`,`User`,`Select_priv`,`Insert_priv`,`Update_priv`,`Delete_priv`,`Create_priv`,`Drop_priv`,`Reload_priv`,`Shutdown_priv`,`Process_priv`,`File_priv`,`Grant_priv`,`References_priv`,`Index_priv`,`Alter_priv`,`Show_db_priv`,`Super_priv`,`Create_tmp_table_priv`,`Lock_tables_priv`,`Execute_priv`,`Repl_slave_priv`,`Repl_client_priv`,`Create_view_priv`,`Show_view_priv`,`Create_routine_priv`,`Alter_routine_priv`,`Create_user_priv`,`Event_priv`,`Trigger_priv`,`Create_tablespace_priv`,`ssl_type`,`ssl_cipher`,`x509_issuer`,`x509_subject`,`max_questions`,`max_updates`,`max_connections`,`max_user_connections`,`plugin`,`authentication_string`,`password_expired`,`password_last_changed`,`password_lifetime`,`account_locked`) VALUES ('%', 'root', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','','','','', 0, 0, 0, 0,'mysql_native_password', password('root'),'N', NULL, NULL,'N');" || exit
 
 sed -i 's/skip-grant-tables/#skip-grant-tables/' /etc/my.cnf || exit
 
