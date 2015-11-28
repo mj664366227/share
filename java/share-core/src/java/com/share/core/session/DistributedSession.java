@@ -39,7 +39,7 @@ public class DistributedSession implements Session {
 	/**
 	 * redis key
 	 */
-	private final static String distributedSessionRedisKey = "distributedSession:";
+	private final static String distributedSessionRedisKey = "gatherupSession:";
 	/**
 	 * 一个空的byte数组
 	 */
@@ -136,6 +136,7 @@ public class DistributedSession implements Session {
 			if (!sessionDomain.isEmpty()) {
 				cookie.setDomain(sessionDomain);
 			}
+			cookie.setMaxAge(-1);
 			response.addCookie(cookie);
 		}
 
@@ -144,6 +145,8 @@ public class DistributedSession implements Session {
 		if (!redis.KEYS.exists(key)) {
 			redis.KEYS.del(key + "_" + sessionKey);
 			redis.STRINGS.setex(key, maxAge, "1");
+		} else {
+			redis.KEYS.expire(key, maxAge);
 		}
 		return key + "_" + sessionKey;
 	}
@@ -154,7 +157,7 @@ public class DistributedSession implements Session {
 	public void addValue(HttpServletRequest request, HttpServletResponse response, String sessionKey, Object value) {
 		String distributedSessionKey = genDistributedSessionKey(request, response, sessionKey);
 		DistributedSessionData data = new DistributedSessionData();
-		data.setData(value);
+		data.setData(SerialUtil.toBytes(value));
 		redis.STRINGS.setex(distributedSessionKey.getBytes(), maxAge, SerialUtil.toBytes(data));
 	}
 
@@ -170,49 +173,49 @@ public class DistributedSession implements Session {
 	 * getInt
 	 */
 	public int getInt(HttpServletRequest request, HttpServletResponse response, String sessionKey) {
-		return StringUtil.getInt(getObject(request, response, sessionKey));
+		return StringUtil.getInt(getT(request, response, sessionKey, Integer.class));
 	}
 
 	/**
 	 * getLong
 	 */
 	public long getLong(HttpServletRequest request, HttpServletResponse response, String sessionKey) {
-		return StringUtil.getLong(getObject(request, response, sessionKey));
+		return StringUtil.getLong(getT(request, response, sessionKey, Long.class));
 	}
 
 	/**
 	 * getShort
 	 */
 	public short getShort(HttpServletRequest request, HttpServletResponse response, String sessionKey) {
-		return StringUtil.getShort(getObject(request, response, sessionKey));
+		return StringUtil.getShort(getT(request, response, sessionKey, Short.class));
 	}
 
 	/**
 	 * getByte
 	 */
 	public byte getByte(HttpServletRequest request, HttpServletResponse response, String sessionKey) {
-		return StringUtil.getByte(getObject(request, response, sessionKey));
+		return StringUtil.getByte(getT(request, response, sessionKey, Byte.class));
 	}
 
 	/**
 	 * getFloat
 	 */
 	public float getFloat(HttpServletRequest request, HttpServletResponse response, String sessionKey) {
-		return StringUtil.getFloat(getObject(request, response, sessionKey));
+		return StringUtil.getFloat(getT(request, response, sessionKey, Float.class));
 	}
 
 	/**
 	 * getDouble	
 	 */
 	public double getDouble(HttpServletRequest request, HttpServletResponse response, String sessionKey) {
-		return StringUtil.getDouble(getObject(request, response, sessionKey));
+		return StringUtil.getDouble(getT(request, response, sessionKey, Double.class));
 	}
 
 	/**
 	 * getString	
 	 */
 	public String getString(HttpServletRequest request, HttpServletResponse response, String sessionKey) {
-		return StringUtil.getString(getObject(request, response, sessionKey));
+		return StringUtil.getString(getT(request, response, sessionKey, String.class));
 	}
 
 	/**
@@ -227,20 +230,23 @@ public class DistributedSession implements Session {
 	 * getObject
 	 */
 	public Object getObject(HttpServletRequest request, HttpServletResponse response, String sessionKey) {
-		return getT(request, response, sessionKey, Object.class);
+		return getT(request, response, sessionKey, DistributedSessionData.class);
 	}
 
 	/**
 	 * getT
 	 */
-	@SuppressWarnings("unchecked")
 	public <T> T getT(HttpServletRequest request, HttpServletResponse response, String sessionKey, Class<T> t) {
 		String distributedSessionKey = genDistributedSessionKey(request, response, sessionKey);
 		byte[] bytes = get(distributedSessionKey.getBytes());
 		if (bytes.length <= 0) {
 			return null;
 		}
-		return (T) SerialUtil.fromBytes(bytes, DistributedSessionData.class).getData();
+		DistributedSessionData distributedSessionData = SerialUtil.fromBytes(bytes, DistributedSessionData.class);
+		if (distributedSessionData == null) {
+			return null;
+		}
+		return (T) SerialUtil.fromBytes(distributedSessionData.getData(), t);
 	}
 
 	/**

@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -289,10 +290,15 @@ public abstract class AbstractJDBC {
 	public final <T> boolean update(DSuper t) {
 		// 生成sql update头
 		Class<?> clazz = t.getClass();
+		String table = classNameToTableName(clazz);
 		StringBuilder sql = new StringBuilder();
 		sql.append("update `");
-		sql.append(classNameToTableName(clazz));
+		sql.append(table);
 		sql.append("` set ");
+
+		//根据表名取出update要忽略的统计字段map
+		//HashMap<String, String> columnMap = CountKey.getColumnMap(table);
+
 		try {
 			// 统计有多少个字段
 			int count = 1;
@@ -304,6 +310,10 @@ public abstract class AbstractJDBC {
 				if ("id".equals(column)) {
 					continue;
 				}
+				//忽略的字段
+//				if (columnMap != null && !StringUtil.getString(columnMap.get(column)).isEmpty()) {
+//					continue;
+//				}
 
 				sql.append("`");
 				sql.append(column);
@@ -323,6 +333,10 @@ public abstract class AbstractJDBC {
 				if ("id".equals(e.getKey())) {
 					continue;
 				}
+				//忽略的字段
+//				if (columnMap != null && !StringUtil.getString(columnMap.get(fieldNameToColumnName(e.getKey()))).isEmpty()) {
+//					continue;
+//				}
 				args[count] = e.getValue().invoke(t);
 
 				count += 1;
@@ -352,6 +366,23 @@ public abstract class AbstractJDBC {
 		sql.append(") order by `id` desc");
 		return queryList(sql.toString(), clazz);
 	}
+
+	/**
+	 * 批量获取统计字段
+	 * @param idSet id集合
+	 * @param countKey 统计字段key枚举
+	 */
+//	public List<Map<String, Object>> multiGetCountColumn(Set<Long> idSet, CountKey countKey) {
+//		StringBuilder sql = new StringBuilder();
+//		sql.append("select `id`,`");
+//		sql.append(countKey.getColumn());
+//		sql.append("` from `");
+//		sql.append(countKey.getTable());
+//		sql.append("` where `id` in (");
+//		sql.append(Joiner.on(",").join(idSet));
+//		sql.append(") order by `id` desc");
+//		return queryList(sql.toString());
+//	}
 
 	/**
 	 * 插入数据,返回自增id
@@ -406,6 +437,8 @@ public abstract class AbstractJDBC {
 	 * @return -1 异常 
 	 */
 	public final <T> T save(T t) {
+		// 主键是否是id
+		boolean idIsPrimary = false;
 		// 生成sql insert头
 		Class<?> clazz = t.getClass();
 		StringBuilder sql = new StringBuilder();
@@ -422,6 +455,7 @@ public abstract class AbstractJDBC {
 			for (Entry<String, Method> e : methodMap.entrySet()) {
 				String column = fieldNameToColumnName(e.getKey());//程序字段->数据库字段(adminPhoneId->admin_phone_id)
 				if ("id".equals(column)) {
+					idIsPrimary = true;
 					continue;
 				}
 				sql.append("`");
@@ -453,6 +487,15 @@ public abstract class AbstractJDBC {
 
 				count += 1;
 			}
+			// 主键不是是id,是user_id,case_id等
+			if (!idIsPrimary) {
+				boolean success = update(sql.toString(), args);
+				if (!success) {
+					return null;
+				}
+				return t;
+			}
+			// 主键是id
 			long id = insert(sql.toString(), "id", args);
 			if (id <= 0) {
 				// 如果返回的id是非正数，证明插入错误，返回null对象

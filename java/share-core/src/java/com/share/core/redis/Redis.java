@@ -2361,7 +2361,7 @@ public class Redis {
 		 * 将key对应的value减去指定的值，只有value可以转为数字时该方法才可用
 		 * @param key
 		 * @param long number 要减去的值
-		 * @return long 减指定值后的值
+		 * @return long 减去指定值后的值
 		 * */
 		public long decrBy(String key, long number) {
 			Jedis jedis = null;
@@ -2379,8 +2379,8 @@ public class Redis {
 		/**
 		 * 将key对应的value加上指定的值，只有value可以转为数字时该方法才可用
 		 * @param key
-		 * @param long number 要减去的值
-		 * @return long 相加后的值
+		 * @param long number 要相加的值
+		 * @return long 相加定值后的值
 		 * */
 		public long incrBy(String key, long number) {
 			Jedis jedis = null;

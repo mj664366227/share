@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 public final class StringUtil {
 	private final static Logger logger = LoggerFactory.getLogger(StringUtil.class);
 	private static Map<String, String> urlEncodeEscape = new HashMap<>();
+	private final static Pattern filterEmojiPattern = Pattern.compile("");
 
 	static {
 		urlEncodeEscape.put("/", "$");
@@ -274,11 +276,18 @@ public final class StringUtil {
 	 * @param str
 	 * @return
 	 */
-	public final static String flitHTML(String str) {
-		if (str == null || str.isEmpty()) {
-			return "";
-		}
-		return str.replaceAll("<.+?>", "").trim();
+	public final static String filterHTML(String str) {
+		return getString(str).replaceAll("<.+?>", "").trim();
+	}
+
+	/**
+	 * 过滤所有emoji标请
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public final static String filterEmoji(String str) {
+		return filterEmojiPattern.matcher(getString(str)).replaceAll("");
 	}
 
 	/**

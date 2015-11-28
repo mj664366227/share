@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.share.core.exception.ClassInterfacesException;
 import com.share.core.session.LocalSession;
+import com.share.core.util.HttpServerUtil;
 import com.share.core.util.SpringUtil;
 import com.share.core.util.StringUtil;
 import com.share.core.util.Time;
@@ -37,27 +38,27 @@ public abstract class BaseFilter implements Filter {
 	/**
 	 * 本地session
 	 */
-	protected Session session;
+	protected static Session session;
 	/**
 	 * 采用的session类名
 	 */
-	private String sessionClassName = "";
+	protected static String sessionClassName = "";
 	/**
 	 * session path
 	 */
-	protected String sessionPath = "";
+	protected static String sessionPath = "";
 	/**
 	 * session domain
 	 */
-	protected String sessionDomain = "";
+	protected static String sessionDomain = "";
 	/**
 	 * 采用的session类
 	 */
-	private Class<?> sessionClass;
+	protected static Class<?> sessionClass;
 	/**
 	 * session过期时间(单位：秒)
 	 */
-	private int sessionExpire = 3600;
+	protected static int sessionExpire = 3600;
 
 	public void init(FilterConfig config) throws ServletException {
 		try {
@@ -77,9 +78,9 @@ public abstract class BaseFilter implements Filter {
 			}
 
 			// 初始化session失效时间
-			int sessionExpire = StringUtil.getInt(config.getInitParameter("sessionExpire"));
-			if (sessionExpire > 0) {
-				this.sessionExpire = sessionExpire;
+			int sessionExpireConfig = StringUtil.getInt(config.getInitParameter("sessionExpire"));
+			if (sessionExpireConfig > 0) {
+				sessionExpire = sessionExpireConfig;
 			}
 
 			// 初始化 session path

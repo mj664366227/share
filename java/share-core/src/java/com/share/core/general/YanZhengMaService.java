@@ -96,12 +96,12 @@ public class YanZhengMaService {
 		int length = numberStr.length();
 		for (int i = 0; i < length; i++) {
 			String Str = numberStr.substring(i, i + 1);
-			g.setFont(new Font("Atlantic Inline", Font.BOLD, RandomUtil.rand(35, 45)));
+			g.setFont(new Font("Atlantic Inline", Font.BOLD, RandomUtil.rand(35, 35)));
 			g.setColor(new Color(RandomUtil.rand(1, 255), RandomUtil.rand(1, 255), RandomUtil.rand(1, 255)));
 			if (i == 0) {
-				g.drawString(Str, RandomUtil.rand(5, 10), RandomUtil.rand(30, 40));
+				g.drawString(Str, RandomUtil.rand(8, 10), RandomUtil.rand(30, 35));
 			} else {
-				g.drawString(Str, i * 23, RandomUtil.rand(30, 40));
+				g.drawString(Str, i * 23, RandomUtil.rand(35, 35));
 			}
 		}
 
@@ -112,7 +112,7 @@ public class YanZhengMaService {
 		}
 
 		// 设置干扰点
-		for (int i = 0; i < 200; i++) {
+		for (int i = 0; i < 50; i++) {
 			g.drawOval(RandomUtil.rand(1, width), RandomUtil.rand(1, height), 1, 1);
 			g.setColor(new Color(RandomUtil.rand(1, 255), RandomUtil.rand(1, 255), RandomUtil.rand(1, 255)));
 		}

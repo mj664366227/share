@@ -1,20 +1,15 @@
 package com.share.core.util;
 
-import org.apache.commons.lang3.reflect.MethodUtils;
+import org.msgpack.MessagePack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtobufIOUtil;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
-import com.google.protobuf.GeneratedMessage;
-
 /**
- * Java 序列化工具类, 目前使用的序列化使用的Kryo
+ * 序列化工具类
  */
-@SuppressWarnings("unchecked")
 public class SerialUtil {
-	private static Logger logger = LoggerFactory.getLogger(SerialUtil.class);
+	private final static Logger logger = LoggerFactory.getLogger(SerialUtil.class);
+	private final static MessagePack pack = new MessagePack();
 
 	/**
 	 * 对象序列化成字节
@@ -22,13 +17,13 @@ public class SerialUtil {
 	 * @param object java对象
 	 * @return 序列化后的数组
 	 */
-	public static byte[] toBytes(Object object) {
-		LinkedBuffer buffer = LinkedBuffer.allocate(256);
+	public static <T> byte[] toBytes(T t) {
 		try {
-			return ProtobufIOUtil.toByteArray(object, (com.dyuproject.protostuff.Schema<Object>) RuntimeSchema.getSchema(object.getClass()), buffer);
-		} finally {
-			buffer.clear();
+			return pack.write(t);
+		} catch (Exception e) {
+			logger.error("", e);
 		}
+		return null;
 	}
 
 	/**
@@ -36,24 +31,16 @@ public class SerialUtil {
 	 *
 	 * @param bytes 已经被序列化的数组
 	 * @param klass 需要反序列化成的类型
-	 * @param <T>   不解释
 	 * @return 反序列化后的实例
 	 */
 	public static <T> T fromBytes(byte[] bytes, Class<T> klass) {
-		if (bytes == null) {
+		if (bytes == null || bytes.length <= 0) {
 			return null;
 		}
 		try {
-			if (GeneratedMessage.class.isAssignableFrom(klass)) {
-				T obj = (T) MethodUtils.invokeStaticMethod(klass, "parseFrom", bytes);
-				return obj;
-			}
-			T object = klass.newInstance();
-			ProtobufIOUtil.mergeFrom(bytes, object, RuntimeSchema.getSchema(klass));
-			return object;
+			return pack.read(bytes, klass);
 		} catch (Exception e) {
-			logger.error("byteStr:{}", new String(bytes));
-			logger.error("反序列化失败:{}", e);
+			logger.error("", e);
 		}
 		return null;
 	}

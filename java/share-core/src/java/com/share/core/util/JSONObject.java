@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -212,6 +213,15 @@ public final class JSONObject {
 	public HashSet<Object> getSet(String key) {
 		return decode(getString(key), new TypeToken<HashSet<Object>>() {
 		}.getType());
+	}
+
+	/**
+	 * 转成
+	 * @author ruan 
+	 * @return
+	 */
+	public Map<String, Object> toMap() {
+		return json;
 	}
 
 	/**

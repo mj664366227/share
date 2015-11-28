@@ -33,11 +33,7 @@ public class DistrictService {
 	/**
 	 * 城市map
 	 */
-	private Map<String, String> cityMap = new HashMap<>();
-	/**
-	 * 区县map
-	 */
-	private Map<String, String> areaMap = new HashMap<>();
+	private Map<Integer, Map<Integer, String>> cityMap = new HashMap<>();
 
 	/**
 	 * 私有构造函数()只有spring才可以实例化
@@ -55,9 +51,6 @@ public class DistrictService {
 
 		// 初始化城市
 		initCity();
-
-		// 初始化区县
-		initArea();
 	}
 
 	/**
@@ -94,26 +87,13 @@ public class DistrictService {
 		}
 		logger.warn("load city config: city.json");
 		for (HashMap<String, Object> data : cityList) {
-			cityMap.put(StringUtil.getInt(data.get("ProID")) + "," + StringUtil.getInt(data.get("CityID")), StringUtil.getString(data.get("name")));
-		}
-	}
-
-	/**
-	 * 初始化区县
-	 */
-	private void initArea() {
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("area.json");
-		if (inputStream == null) {
-			return;
-		}
-		ArrayList<HashMap<String, Object>> areaList = JSONObject.decode(FileSystem.read(inputStream), new TypeToken<ArrayList<HashMap<String, Object>>>() {
-		}.getType());
-		if (areaList == null || areaList.isEmpty()) {
-			return;
-		}
-		logger.warn("load area config: area.json");
-		for (HashMap<String, Object> data : areaList) {
-			areaMap.put(StringUtil.getInt(data.get("CityID")) + "," + StringUtil.getInt(data.get("Id")), StringUtil.getString(data.get("DisName")));
+			int provinceId = StringUtil.getInt(data.get("ProID"));
+			Map<Integer, String> cityMap = this.cityMap.get(provinceId);
+			if (cityMap == null) {
+				cityMap = new HashMap<>();
+				this.cityMap.put(provinceId, cityMap);
+			}
+			cityMap.put(StringUtil.getInt(data.get("CityID")), StringUtil.getString(data.get("name")));
 		}
 	}
 
@@ -133,17 +113,11 @@ public class DistrictService {
 	 * @return 成功可以获取城市，否则返回null
 	 */
 	public String getCity(int provinceId, int cityId) {
-		return cityMap.get(provinceId + "," + cityId);
-	}
-
-	/**
-	 * 获取区县
-	 * @param cityId 城市id
-	 * @param areaId 区县id
-	 * @return 成功可以获取区县，否则返回null
-	 */
-	public String getArea(int cityId, int areaId) {
-		return areaMap.get(cityId + "," + areaId);
+		Map<Integer, String> cityMap = getCityMap(provinceId);
+		if (cityMap == null) {
+			return null;
+		}
+		return cityMap.get(cityId);
 	}
 
 	/**
@@ -156,14 +130,15 @@ public class DistrictService {
 	/**
 	 * 获取城市map
 	 */
-	public Map<String, String> getCityMap() {
+	public Map<Integer, Map<Integer, String>> getCityMap() {
 		return cityMap;
 	}
 
 	/**
-	 * 获取区县map
+	 * 获取城市map
+	 * @param provinceId 省份id
 	 */
-	public Map<String, String> getAreaMap() {
-		return areaMap;
+	public Map<Integer, String> getCityMap(int provinceId) {
+		return cityMap.get(provinceId);
 	}
 }

@@ -1,17 +1,20 @@
 package com.share.core.session;
 
+import org.msgpack.annotation.Message;
+
 /**
  * 内部使用的数据结构
  * @author ruan
  */
+@Message
 public class DistributedSessionData {
-	private Object data;
+	private byte[] data;
 
-	public void setData(Object data) {
+	public void setData(byte[] data) {
 		this.data = data;
 	}
 
-	public Object getData() {
+	public byte[] getData() {
 		return data;
 	}
 }

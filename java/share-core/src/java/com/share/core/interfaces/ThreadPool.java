@@ -75,7 +75,7 @@ public abstract class ThreadPool {
 	 * 执行一个任务无超时时间
 	 * @param task 任务
 	 */
-	public void execute(AbstractTask task) {
+	public void execute(Runnable task) {
 		try {
 			executor.execute(task);
 		} catch (Exception e) {
@@ -90,7 +90,7 @@ public abstract class ThreadPool {
 	 * @param timeUnit 时间单位
 	 * @return 成功返回任务返回的对象，失败返回null
 	 */
-	public void execute(AbstractTask task, long timeout, TimeUnit timeUnit) {
+	public void execute(Runnable task, long timeout, TimeUnit timeUnit) {
 		Future<?> future = null;
 		try {
 			future = executor.submit(task, Object.class);

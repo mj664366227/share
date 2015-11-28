@@ -43,6 +43,10 @@ public final class Secret {
 	 */
 	private final static String systemKey = SystemUtil.getSystemKey();
 	/**
+	 * 系统字符集
+	 */
+	private final static String systemCharsetString = SystemUtil.getSystemCharsetString();
+	/**
 	 * 签名算法
 	 */
 	public final static String SIGNATURE_ALGORITHM = "MD5withRSA";
@@ -74,7 +78,7 @@ public final class Secret {
 	/**
 	 * AES加密位数
 	 */
-	private final static int AES_ENCRYPT_KEY_SIZE = 256;
+	private final static int AES_ENCRYPT_KEY_SIZE = 128;
 
 	private Secret() {
 	}
@@ -85,7 +89,7 @@ public final class Secret {
 	 */
 	public final static byte[] desEncrypt(String data) {
 		try {
-			return desEncrypt(data.getBytes());
+			return desEncrypt(data.getBytes(systemCharsetString));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -102,7 +106,7 @@ public final class Secret {
 			SecureRandom sr = new SecureRandom();
 
 			// 从原始密钥数据创建DESKeySpec对象
-			DESKeySpec dks = new DESKeySpec(systemKey.getBytes());
+			DESKeySpec dks = new DESKeySpec(systemKey.getBytes(systemCharsetString));
 
 			// 创建一个密钥工厂，然后用它把DESKeySpec转换成SecretKey对象
 			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
@@ -117,6 +121,27 @@ public final class Secret {
 			return null;
 		}
 	}
+	
+	/**
+	 * DES加密
+	 * @param bytes 待加密的内容
+	 */
+	public final static String desEncryptToString(byte[] bytes) {
+		return base64EncodeToString(desEncrypt(bytes));
+	}
+
+	/**
+	 * DES加密
+	 * @param content 待加密的内容
+	 */
+	public final static String desEncryptToString(String content) {
+		try {
+			return desEncryptToString(content.getBytes(systemCharsetString));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
 
 	/**
 	 * des解密
@@ -124,7 +149,7 @@ public final class Secret {
 	 */
 	public final static byte[] desDecrypt(String data) {
 		try {
-			return desDecrypt(data.getBytes());
+			return desDecrypt(data.getBytes(systemCharsetString));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -141,7 +166,7 @@ public final class Secret {
 			SecureRandom sr = new SecureRandom();
 
 			// 从原始密钥数据创建DESKeySpec对象
-			DESKeySpec dks = new DESKeySpec(systemKey.getBytes());
+			DESKeySpec dks = new DESKeySpec(systemKey.getBytes(systemCharsetString));
 
 			// 创建一个密钥工厂，然后用它把DESKeySpec转换成SecretKey对象
 			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
@@ -156,6 +181,34 @@ public final class Secret {
 			return null;
 		}
 	}
+	
+	/**
+	 * DES解密
+	 * @param encryptBytes 待解密的byte[]
+	 * @return 解密后的String
+	 */
+	public static String desDecryptToString(byte[] encryptBytes) {
+		try {
+			return new String(desDecrypt(encryptBytes));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+
+	/**
+	 * DES解密
+	 * @param encryptString 待解密的字符串
+	 * @return 解密后的String
+	 */
+	public static String desDecryptToString(String encryptString) {
+		try {
+			return new String(desDecrypt(encryptString));
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
 
 	/**
 	 * AES加密
@@ -165,7 +218,7 @@ public final class Secret {
 		try {
 			KeyGenerator kgen = KeyGenerator.getInstance("AES");
 			SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
-			secureRandom.setSeed(systemKey.getBytes());
+			secureRandom.setSeed(systemKey.getBytes(systemCharsetString));
 			kgen.init(AES_ENCRYPT_KEY_SIZE, secureRandom);
 			SecretKey secretKey = kgen.generateKey();
 			byte[] enCodeFormat = secretKey.getEncoded();
@@ -185,7 +238,7 @@ public final class Secret {
 	 */
 	public final static byte[] aesEncrypt(String content) {
 		try {
-			return aesEncrypt(content.getBytes());
+			return aesEncrypt(content.getBytes(systemCharsetString));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -206,7 +259,7 @@ public final class Secret {
 	 */
 	public final static String aesEncryptToString(String content) {
 		try {
-			return aesEncryptToString(content.getBytes());
+			return aesEncryptToString(content.getBytes(systemCharsetString));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -222,7 +275,7 @@ public final class Secret {
 		try {
 			KeyGenerator kgen = KeyGenerator.getInstance("AES");
 			SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
-			secureRandom.setSeed(systemKey.getBytes());
+			secureRandom.setSeed(systemKey.getBytes(systemCharsetString));
 			kgen.init(AES_ENCRYPT_KEY_SIZE, secureRandom);
 			SecretKey secretKey = kgen.generateKey();
 			byte[] enCodeFormat = secretKey.getEncoded();
@@ -243,7 +296,7 @@ public final class Secret {
 	 */
 	public static byte[] aesDecrypt(String encryptString) {
 		try {
-			return Secret.aesDecrypt(base64Decode(encryptString.getBytes()));
+			return Secret.aesDecrypt(base64Decode(encryptString.getBytes(systemCharsetString)));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -284,7 +337,7 @@ public final class Secret {
 	 */
 	public final static String md5(String string) {
 		try {
-			return byteArrayToHexString(MessageDigest.getInstance("MD5").digest(string.getBytes()));
+			return byteArrayToHexString(MessageDigest.getInstance("MD5").digest(string.getBytes(systemCharsetString)));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -297,7 +350,7 @@ public final class Secret {
 	 */
 	public final static String sha(String string) {
 		try {
-			return byteArrayToHexString(MessageDigest.getInstance("SHA").digest(string.getBytes()));
+			return byteArrayToHexString(MessageDigest.getInstance("SHA").digest(string.getBytes(systemCharsetString)));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -310,7 +363,7 @@ public final class Secret {
 	 */
 	public final static String base64EncodeToString(String str) {
 		try {
-			return base64Encoder.encodeToString(str.getBytes());
+			return base64Encoder.encodeToString(str.getBytes(systemCharsetString));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -331,7 +384,7 @@ public final class Secret {
 	 */
 	public final static byte[] base64Encode(String str) {
 		try {
-			return base64Encoder.encode(str.getBytes());
+			return base64Encoder.encode(str.getBytes(systemCharsetString));
 		} catch (Exception e) {
 			logger.error("", e);
 			return null;
@@ -405,7 +458,7 @@ public final class Secret {
 		try {
 			KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
 			SecureRandom secrand = new SecureRandom();
-			secrand.setSeed(SystemUtil.getSystemKey().getBytes()); // 初始化随机产生器
+			secrand.setSeed(SystemUtil.getSystemKey().getBytes(systemCharsetString)); // 初始化随机产生器
 			keyPairGen.initialize(MAX_DECRYPT_BLOCK, secrand);
 			KeyPair keyPair = keyPairGen.generateKeyPair();
 			RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();

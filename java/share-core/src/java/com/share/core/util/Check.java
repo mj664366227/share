@@ -77,4 +77,13 @@ public final class Check {
 	public final static boolean isEmail(String email) {
 		return email.matches("^[\\w\\.]+[@]\\w+([.][a-zA-Z]+)+$");
 	}
+	
+	/**
+	 * 验证是否是网站地址
+	 * @author ruan 
+	 * @param url
+	 */
+	public final static boolean isURL(String url) {
+		return url.matches("^(?i)(http(s)?://)?(\\w+\\.)?\\w+\\.(\\w+\\.)?\\w+/?(\\?)?.*$");
+	}
 }

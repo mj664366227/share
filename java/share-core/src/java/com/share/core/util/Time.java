@@ -38,7 +38,14 @@ public final class Time {
 	}
 
 	/**
-	 * 获取当天凌晨的时间戳
+	 * 获取今天凌晨的时间戳
+	 */
+	public static final int dayBreak() {
+		return dayBreak(date("yyyy-MM-dd"), "yyyy-MM-dd");
+	}
+
+	/**
+	 * 获取指定日期凌晨的时间戳
 	 * @param time 时间
 	 * @param format 时间格式
 	 * @param isMicrotime 是否显示毫秒
@@ -48,7 +55,7 @@ public final class Time {
 	}
 
 	/**
-	 * 获取当天凌晨的时间戳
+	 * 获取指定日期凌晨的时间戳
 	 * @param time 时间
 	 * @param format 时间格式
 	 */
@@ -99,6 +106,29 @@ public final class Time {
 	}
 
 	/**
+	 * 获取当前时间是星期几
+	 */
+	public static final String getDayOfWeekString() {
+		switch (getDayOfWeek()) {
+		case 0:
+			return "星期天";
+		case 1:
+			return "星期一";
+		case 2:
+			return "星期二";
+		case 3:
+			return "星期三";
+		case 4:
+			return "星期四";
+		case 5:
+			return "星期五";
+		case 6:
+			return "星期六";
+		}
+		return "";
+	}
+
+	/**
 	 * 获取输入的时间戳是星期几
 	 * @param timestamp 时间戳
 	 */
@@ -111,7 +141,7 @@ public final class Time {
 	 * 获取当前时间是今年的第几周
 	 */
 	public static final int getWeekOfYear() {
-		return calendar.get(Calendar.WEEK_OF_YEAR);
+		return getWeekOfYear(Time.now());
 	}
 
 	/**
@@ -121,6 +151,22 @@ public final class Time {
 	public static final int getWeekOfYear(int timestamp) {
 		calendar.setTimeInMillis((long) timestamp * 1000);
 		return calendar.get(Calendar.WEEK_OF_YEAR);
+	}
+
+	/**
+	 * 获取当前时间是今年的第几个月
+	 */
+	public static final int getMonthOfYear() {
+		return getMonthOfYear(Time.now());
+	}
+
+	/**
+	 * 获取当前时间是今年的第几个月
+	 * @param timestamp 时间戳
+	 */
+	public static final int getMonthOfYear(int timestamp) {
+		calendar.setTimeInMillis((long) timestamp * 1000);
+		return calendar.get(Calendar.MONTH) + 1;
 	}
 
 	/**

@@ -12,4 +12,11 @@ public abstract class DSuper {
 	public String toString() {
 		return JSONObject.encode(this);
 	}
+
+	/**
+	 * toJSON方法
+	 */
+	public JSONObject toJSON() {
+		return JSONObject.decode(JSONObject.encode(this));
+	}
 }
