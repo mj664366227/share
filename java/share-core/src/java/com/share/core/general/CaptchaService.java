@@ -26,11 +26,11 @@ import com.share.core.util.StringUtil;
  * @author ruan
  */
 @Component
-public class YanZhengMaService {
+public class CaptchaService {
 	/**
 	 * logger
 	 */
-	private final static Logger logger = LoggerFactory.getLogger(YanZhengMaService.class);
+	private final static Logger logger = LoggerFactory.getLogger(CaptchaService.class);
 	/**
 	 * 随机字符串数组
 	 */

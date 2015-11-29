@@ -19,7 +19,7 @@ public final class URL {
 	/**
 	 * 验证码
 	 */
-	public final static String yzm = "yzm";
+	public final static String captcha = "captcha";
 	/**
 	 * 左边
 	 */

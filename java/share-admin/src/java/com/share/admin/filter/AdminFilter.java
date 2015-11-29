@@ -27,7 +27,7 @@ public class AdminFilter extends BaseFilter {
 	static {
 		urlWhiteList.add("/");
 		urlWhiteList.add(URL.userlogin);
-		urlWhiteList.add(URL.yzm);
+		urlWhiteList.add(URL.captcha);
 		urlWhiteList.add(".css");
 		urlWhiteList.add(".js");
 		urlWhiteList.add(".ico");

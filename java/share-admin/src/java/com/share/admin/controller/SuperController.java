@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.share.admin.common.SessionKey;
 import com.share.admin.common.URL;
 import com.share.core.annotation.processor.MenuProcessor;
-import com.share.core.general.YanZhengMaService;
+import com.share.core.general.CaptchaService;
 import com.share.core.session.LocalSession;
 import com.share.core.util.JSONObject;
 import com.share.core.util.Secret;
@@ -26,7 +26,7 @@ public class SuperController {
 	@Autowired
 	private LocalSession session;
 	@Autowired
-	private YanZhengMaService yanZhengMaService;
+	private CaptchaService yanZhengMaService;
 
 	/**
 	 * 登录
@@ -46,8 +46,8 @@ public class SuperController {
 	/**
 	 * 输出验证码
 	 */
-	@RequestMapping(value = URL.yzm)
-	public void yzm(JSONObject parameters, HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = URL.captcha)
+	public void captcha(JSONObject parameters, HttpServletRequest request, HttpServletResponse response) {
 		yanZhengMaService.getRandomStringImg(100, 40, 4, request, response);
 	}
 

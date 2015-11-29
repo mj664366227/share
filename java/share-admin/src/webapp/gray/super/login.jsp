@@ -25,9 +25,9 @@
                 <br>
                 <br>
                 <div class="col-lg-7">
-                  <input class="form-control" placeholder="验证码" name="yzm" type="yzm">
+                  <input class="form-control" placeholder="验证码" name="captcha" type="captcha">
                 </div>
-                <div class="col-lg-4"><img src="yzm" onClick="this.src='yzm?'+Math.random();" style="cursor:pointer;" title="点击图片刷新验证码"> </div>
+                <div class="col-lg-4"><img src="captcha" onClick="this.src='captcha?'+Math.random();" style="cursor:pointer;" title="点击图片刷新验证码"> </div>
                 <br>
                 <br>
                 <br>
