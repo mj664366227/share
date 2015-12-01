@@ -63,7 +63,7 @@ public abstract class AbstractJDBC {
 		if (one != 1) {
 			throw new MysqlConnectException("can not connect to mysql!");
 		}
-		update("set names utf8mb4");
+		update("set names utf8");
 	}
 
 	/**

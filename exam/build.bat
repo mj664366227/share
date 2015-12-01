@@ -6,4 +6,4 @@ for /f "tokens=*" %%a in ('dir /b') do (
    echo %%a | findstr "\-" && del /s /q %cd%\%%a\.classpath && del /s /q %cd%\%%a\.project && rd /s /q %cd%\%%a\.settings && rd /s /q %cd%\%%a\bin || cd %cd%
 )
 
-gradle clean eclipse
+gradle clean eclipse 
