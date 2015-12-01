@@ -57,19 +57,9 @@ subprojects {
 		}
 	}
 }
-project(':exam-core') {
+project(':exam') {
 	dependencies{ 
 	    compile fileTree( dir: "lib", include: '*.jar' )
-		compile 'com.google.zxing:core:3.2.1'
-		compile 'com.google.zxing:javase:3.2.1'
-		compile 'com.google.zxing:zxing-parent:3.2.1'
-		compile 'org.apache.sirona:sirona-core:0.2-incubating'
-		compile 'org.apache.sirona:sirona-web:0.2-incubating'
-		compile 'org.apache.sirona:sirona-jdbc:0.2-incubating'
-		compile 'org.apache.sirona:sirona-aop:0.2-incubating'
-		compile 'org.apache.sirona:sirona-server:0.2-incubating'
-		compile 'org.apache.sirona:sirona-spring:0.2-incubating'
-		compile 'org.apache.sirona:sirona-reporting:0.2-incubating'
 		compile 'javax.servlet:javax.servlet-api:3.1.0'
 	    compile 'aopalliance:aopalliance:1.0'
 	    compile 'net.sf.ezmorph:ezmorph:1.0.6'
@@ -143,27 +133,4 @@ project(':exam-core') {
 		compile 'org.springframework:spring-web:4.2.1.RELEASE'
 		compile 'org.springframework:spring-webmvc:4.2.1.RELEASE'
     }
-}
-project(':exam-dao') {
-	dependencies{
-	   compile project(':exam-core')
-	   compile fileTree( dir: "lib", include: '*.jar' )
-	}
-}
-project(':exam-service') {
-	dependencies{
-	   compile project(':exam-core')
-	   compile project(':exam-dao')
-	   compile fileTree( dir: "lib", include: '*.jar' )
-	}
-}
-
-project(':exam-mobile') {
-	dependencies{
-	   compile project(':exam-core')
-	   compile project(':exam-dao')
-	   compile project(':exam-service')
-	   compile fileTree( dir: "lib", include: '*.jar' )
-	}
-	task deploy(dependsOn: [copyLib, copyWebapp])
 }
