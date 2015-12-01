@@ -5,7 +5,7 @@
 	version="4.1">
 	<!-- 定义servlet -->
 	<servlet>
-		<servlet-name>gu-mobile</servlet-name>
+		<servlet-name>exam</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
@@ -16,7 +16,7 @@
 	</servlet>
 	<!-- 定义servlet要拦截的 -->
 	<servlet-mapping>
-		<servlet-name>gu-mobile</servlet-name>
+		<servlet-name>exam</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 	<!-- 用默认servlet过滤网页资源文件 -->
@@ -26,14 +26,14 @@
 		<url-pattern>*.js</url-pattern>
 		<url-pattern>*.ico</url-pattern>
 		<url-pattern>*.map</url-pattern>
+		<url-pattern>*.gif</url-pattern>
 		<url-pattern>*.eot</url-pattern>
 		<url-pattern>*.jpg</url-pattern>
-		<url-pattern>*.jpeg</url-pattern>
 		<url-pattern>*.otf</url-pattern>
 		<url-pattern>*.svg</url-pattern>
 		<url-pattern>*.ttf</url-pattern>
 		<url-pattern>*.woff</url-pattern>
-		<url-pattern>*.html</url-pattern>
+		<url-pattern>*.woff2</url-pattern>
 		<url-pattern>*.png</url-pattern>
 	</servlet-mapping>
 	<!-- 定义编码过滤器 -->
@@ -52,13 +52,13 @@
 	</filter-mapping>
 	<!-- 定义过滤器要拦截的东西 -->
 	<filter>
-		<filter-name>gu-mobile</filter-name>
-		<filter-class>com.exam.mobile.filter.MobileFilter</filter-class>
+		<filter-name>exam</filter-name>
+		<filter-class>com.exam.filter.ExamFilter</filter-class>
 		<async-supported>true</async-supported>
 	</filter>
 	<!-- 定义过滤器要拦截的东西 -->
 	<filter-mapping>
-		<filter-name>gu-mobile</filter-name>
+		<filter-name>exam</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 </web-app>

@@ -30,7 +30,7 @@
 		<!-- 超时时间，单位毫秒 -->
 		<property name="connectTimeout" value="10000" />
 	</bean>
-	
+
 	<!-- 视图配置 -->
 	<bean class="com.exam.core.interfaces.JSPResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />

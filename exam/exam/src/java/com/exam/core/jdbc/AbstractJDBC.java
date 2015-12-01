@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,8 +26,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.exam.core.annotation.processor.PojoProcessor;
 import com.exam.core.exception.MysqlConnectException;
-import com.exam.core.interfaces.DSuper;
-import com.exam.core.redis.CountKey;
 import com.exam.core.util.StringUtil;
 import com.exam.core.util.SystemUtil;
 import com.google.common.base.Joiner;
@@ -285,75 +282,6 @@ public abstract class AbstractJDBC {
 	}
 
 	/**
-	 * 更新一条数据
-	 * @param t pojo对象(pojo对象的名和表名是对应的)
-	 */
-	public final <T> boolean update(DSuper t) {
-		// 生成sql update头
-		Class<?> clazz = t.getClass();
-		String table = classNameToTableName(clazz);
-		StringBuilder sql = new StringBuilder();
-		sql.append("update `");
-		sql.append(table);
-		sql.append("` set ");
-
-		//根据表名取出update要忽略的统计字段map
-		HashMap<String, String> columnMap = CountKey.getColumnMap(table);
-
-		try {
-			// 统计有多少个字段
-			int count = 1;
-
-			// 组成参数列表
-			Map<String, Method> methodMap = pojoProcessor.getGetMethodMapByClass(clazz);
-			for (Entry<String, Method> e : methodMap.entrySet()) {
-				String column = fieldNameToColumnName(e.getKey());//程序字段->数据库字段(adminPhoneId->admin_phone_id)
-				if ("id".equals(column)) {
-					continue;
-				}
-				//忽略的字段
-				if (columnMap != null && !StringUtil.getString(columnMap.get(column)).isEmpty()) {
-					continue;
-				}
-
-				sql.append("`");
-				sql.append(column);
-				sql.append("`=?,");
-
-				count += 1;
-			}
-
-			int len = sql.length();
-			sql.delete(len - 1, len);
-			sql.append(" where id=?");
-
-			// 传入参数
-			Object[] args = new Object[count];
-			count = 0;
-			for (Entry<String, Method> e : methodMap.entrySet()) {
-				if ("id".equals(e.getKey())) {
-					continue;
-				}
-				//忽略的字段
-				if (columnMap != null && !StringUtil.getString(columnMap.get(fieldNameToColumnName(e.getKey()))).isEmpty()) {
-					continue;
-				}
-				args[count] = e.getValue().invoke(t);
-
-				count += 1;
-			}
-
-			// 把id也set进去
-			args[args.length - 1] = methodMap.get("id").invoke(t);
-			return update(sql.toString(), args);
-		} catch (Exception e) {
-			logger.error("", e);
-		}
-
-		return true;
-	}
-
-	/**
 	 * 批量获取T
 	 * @param idSet id集合
 	 * @param clazz 实体类
@@ -366,23 +294,6 @@ public abstract class AbstractJDBC {
 		sql.append(Joiner.on(",").join(idSet));
 		sql.append(") order by `id` desc");
 		return queryList(sql.toString(), clazz);
-	}
-
-	/**
-	 * 批量获取统计字段
-	 * @param idSet id集合
-	 * @param countKey 统计字段key枚举
-	 */
-	public List<Map<String, Object>> multiGetCountColumn(Set<Long> idSet, CountKey countKey) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("select `id`,`");
-		sql.append(countKey.getColumn());
-		sql.append("` from `");
-		sql.append(countKey.getTable());
-		sql.append("` where `id` in (");
-		sql.append(Joiner.on(",").join(idSet));
-		sql.append(") order by `id` desc");
-		return queryList(sql.toString());
 	}
 
 	/**
