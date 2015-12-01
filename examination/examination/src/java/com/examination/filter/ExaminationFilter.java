@@ -2,19 +2,21 @@ package com.examination.filter;
 
 import java.io.IOException;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.examination.core.interfaces.BaseFilter;
 import com.examination.core.util.StringUtil;
 import com.examination.core.util.Time;
 
-public class ExaminationFilter extends BaseFilter {
+public class ExaminationFilter implements Filter {
 	/**
 	 * logger
 	 */
@@ -24,15 +26,16 @@ public class ExaminationFilter extends BaseFilter {
 	 */
 	private final static int systemStartTime = Time.now();
 
-	@Override
-	public boolean doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-		String url = StringUtil.getString(request.getRequestURI());
-		request.setAttribute("version", systemStartTime);
-		logger.info(url);
-		return true;
+	public void destroy() {
 	}
 
-	@Override
-	public void destroy() {
+	public void init(FilterConfig filterConfig) throws ServletException {
+	}
+
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest req = (HttpServletRequest) request;
+		String url = StringUtil.getString(req.getRequestURI());
+		request.setAttribute("version", systemStartTime);
+		logger.info(url);
 	}
 }

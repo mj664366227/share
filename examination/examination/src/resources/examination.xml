@@ -19,8 +19,22 @@
 	<aop:aspectj-autoproxy />
 	<context:annotation-config />
 
+	<!-- 自定义参数转换器 -->
+	<mvc:annotation-driven>
+		<mvc:argument-resolvers>
+			<bean class="com.examination.core.converter.JSONConverter" />
+		</mvc:argument-resolvers>
+	</mvc:annotation-driven>
+
+	<!-- 视图配置 -->
+	<bean class="com.examination.core.interfaces.JSPResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/default/" /><!-- 这里定义皮肤的名字 -->
+		<property name="suffix" value=".jsp" />
+	</bean>
+
 	<!--扫描注解 -->
-	<context:component-scan base-package="com.share" />
+	<context:component-scan base-package="com.examination" />
 
 	<!-- 加载properties文件 -->
 	<context:property-placeholder location="classpath:config.properties" />

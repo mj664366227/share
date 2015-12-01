@@ -32,6 +32,7 @@ public class SpringUtil implements ApplicationContextAware {
 	 * @param clazz bean的类
 	 */
 	public final static <T> T getBean(Class<T> clazz) {
+		System.err.println(applicationContext.getBeanDefinitionNames());
 		return applicationContext.getBean(clazz);
 	}
 }
