@@ -1,0 +1,1 @@
+include 'exam-dao','exam-service','exam-mobile','exam-core'
