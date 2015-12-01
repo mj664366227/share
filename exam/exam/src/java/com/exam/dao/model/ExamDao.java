@@ -19,14 +19,14 @@ public class ExamDao {
 
 	/**
 	 * 添加一道科目1的判断题
-	 * @param rid 问题id
+	 * @param baid 问题id
 	 * @param question 问题内容
 	 * @param image 图片
 	 * @param answer 答案(true-对，false-错)
 	 */
-	private void addExam1_2(int rid, String question, String image, boolean answer) {
+	private void addExam1_2(long baid, String question, String image, boolean answer) {
 		String sql = "REPLACE INTO `exam1_2`(`id`,`question`,`image`,`answer`) VALUES (?,?,?,?)";
-		db.update(sql, rid, question, image, answer ? 1 : 0);
+		db.update(sql, baid, question, image, answer ? 1 : 0);
 		logger.warn("新增一道科目1的判断题：{}\t答案：{}", question, answer ? "对" : "错");
 	}
 
@@ -46,7 +46,7 @@ public class ExamDao {
 			if (t == 1) {
 				// 科目1判断题
 				boolean answer = s.substring(s.indexOf("v=") + 3, s.indexOf("v=") + 4).trim().equals("对");
-				int rid = StringUtil.getInt(s.substring(s.indexOf("rid='") + 5, s.indexOf("'>")));
+				long baid = StringUtil.getLong(s.substring(s.indexOf("baid='") + 6, s.indexOf("' rid='")));
 				String question = s.substring(s.indexOf("<h3>") + 4, s.indexOf("</h3>")).trim();
 				String image = "";
 				if (s.indexOf("<dl>") > -1) {
@@ -55,7 +55,7 @@ public class ExamDao {
 					image = image.replaceAll("'/>", "");
 					image = "http://ww3.sinaimg.cn/mw240/" + image;
 				}
-				addExam1_2(rid, question, image, answer);
+				addExam1_2(baid, question, image, answer);
 			} else {
 				// 科目1单选题
 			}
