@@ -14,7 +14,7 @@ if [ ! $nginx_version ] || [ ! $nginx_install_path ]; then
 	exit
 fi
 
-yum -y install gcc libc6-dev gcc-c++ pcre-devel perl-devel nscd perl-ExtUtils-Embed geoip-database python-devel gd-devel libgeoip-dev make libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev
+yum -y install gcc libc6-dev gcc-c++ pcre-devel perl-devel nscd ImageMagick ImageMagick-devel perl-ExtUtils-Embed geoip-database python-devel gd-devel libgeoip-dev make libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev
 
 #建立临时安装目录
 echo 'preparing working path...'

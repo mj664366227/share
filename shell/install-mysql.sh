@@ -111,10 +111,12 @@ rm -rf /etc/my.cnf
 echo "[client]
 port = 3306
 socket = "$mysql_install_path"/mysql/data/mysql.sock
+character-set-server=utf8
 
 [mysqld]
 port = 3306
 socket = "$mysql_install_path"/mysql/data/mysql.sock
+character-set-server=utf8
 skip-grant-tables
 skip-name-resolve
 skip-external-locking
