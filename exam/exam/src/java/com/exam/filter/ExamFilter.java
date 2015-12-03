@@ -29,7 +29,7 @@ public class ExamFilter extends BaseFilter {
 	@Override
 	protected boolean doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 		String url = StringUtil.getString(request.getRequestURI());
-		logger.warn(url);
+		logger.info(url);
 		if ("/".equals(url)) {
 			response.sendRedirect("/index");
 			return false;
