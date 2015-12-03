@@ -1,5 +1,6 @@
 package com.exam.dao;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Component;
 import com.exam.core.client.HttpClient;
 import com.exam.core.jdbc.DbService;
 import com.exam.core.util.StringUtil;
+import com.exam.dao.model.DAnswer;
 import com.exam.dao.model.DJudge;
+import com.exam.dao.model.DSelect;
 
 @Component
 public class ExamDao {
@@ -27,6 +30,26 @@ public class ExamDao {
 	 * 科目一判断题缓存
 	 */
 	private Map<Long, DJudge> exam1_2 = new ConcurrentHashMap<Long, DJudge>();
+	/**
+	 * 科目一选择题缓存
+	 */
+	private Map<Long, DSelect> exam1_4 = new ConcurrentHashMap<Long, DSelect>();
+	/**
+	 * 科目四判断题缓存
+	 */
+	private Map<Long, DJudge> exam4_2 = new ConcurrentHashMap<Long, DJudge>();
+	/**
+	 * 科目四单选题缓存
+	 */
+	private Map<Long, DSelect> exam4_4 = new ConcurrentHashMap<Long, DSelect>();
+	/**
+	 * 科目四多选题缓存
+	 */
+	private Map<Long, DSelect> exam4_4_4 = new ConcurrentHashMap<Long, DSelect>();
+	/**
+	 * 答案缓存
+	 */
+	private Map<Long, DAnswer> answer = new ConcurrentHashMap<Long, DAnswer>();
 
 	/**
 	 * 初始化
@@ -42,6 +65,15 @@ public class ExamDao {
 
 		//初始化科目四判断题
 		initExam4_2();
+
+		//初始化科目四单选题
+		initExam4_4();
+
+		//初始化科目四多选题
+		initExam4_4_4();
+
+		//初始化答案
+		initAnswer();
 	}
 
 	/**
@@ -62,10 +94,11 @@ public class ExamDao {
 	 */
 	private void initExam1_4() {
 		String sql = "SELECT * FROM `exam1_4` order by `id` asc";
-		for (DJudge judge : db.queryList(sql, DJudge.class)) {
-			exam1_2.put(judge.getId(), judge);
+		for (Map<String, Object> data : db.queryList(sql)) {
+			DSelect select = map2DSelect(data);
+			exam1_4.put(select.getId(), select);
 		}
-		logger.warn("初始化科目一判断题完成！");
+		logger.warn("初始化科目一选择题完成！");
 	}
 
 	/**
@@ -75,9 +108,177 @@ public class ExamDao {
 	private void initExam4_2() {
 		String sql = "SELECT * FROM `exam4_2` order by `id` asc";
 		for (DJudge judge : db.queryList(sql, DJudge.class)) {
-			exam1_2.put(judge.getId(), judge);
+			exam4_2.put(judge.getId(), judge);
 		}
 		logger.warn("初始化科目四判断题完成！");
+	}
+
+	/**
+	 * 初始化科目四单选题
+	 * @author ruan
+	 */
+	private void initExam4_4() {
+		String sql = "SELECT * FROM `exam4_4` order by `id` asc";
+		for (Map<String, Object> data : db.queryList(sql)) {
+			DSelect select = map2DSelect(data);
+			exam4_4.put(select.getId(), select);
+		}
+		logger.warn("初始化科目四单选题完成！");
+	}
+
+	/**
+	 * 初始化科目四多选题
+	 * @author ruan
+	 */
+	private void initExam4_4_4() {
+		String sql = "SELECT * FROM `exam4_4_4` order by `id` asc";
+		for (Map<String, Object> data : db.queryList(sql)) {
+			DSelect select = map2DSelect(data);
+			exam4_4_4.put(select.getId(), select);
+		}
+		logger.warn("初始化科目四多选题完成！");
+	}
+
+	/**
+	 * 初始化答案
+	 * @author ruan
+	 */
+	private void initAnswer() {
+		String sql = "SELECT * FROM `answer` order by `baid` asc";
+		for (DAnswer answer : db.queryList(sql, DAnswer.class)) {
+			this.answer.put(answer.getBaid(), answer);
+		}
+		logger.warn("初始化答案完成！");
+	}
+
+	/**
+	 * map转成DSelect
+	 * @author ruan 
+	 * @param data
+	 */
+	private DSelect map2DSelect(Map<String, Object> data) {
+		DSelect select = new DSelect();
+		select.setId(StringUtil.getLong(data.get("id")));
+		select.setQuestion(StringUtil.getString(data.get("question")));
+		select.setImage(StringUtil.getString(data.get("image")));
+		select.setFlashurl(StringUtil.getString(data.get("flashurl")));
+		select.setA(StringUtil.getString(data.get("a")));
+		select.setB(StringUtil.getString(data.get("b")));
+		select.setC(StringUtil.getString(data.get("c")));
+		select.setD(StringUtil.getString(data.get("d")));
+		select.setAnswer(StringUtil.getString(data.get("answer")));
+		return select;
+	}
+
+	/**
+	 * 获取科目一判断题
+	 * @author ruan 
+	 * @param id
+	 */
+	public DJudge getExam1_2(long id) {
+		DJudge judge = exam1_2.get(id);
+		if (judge == null) {
+			String sql = "SELECT * FROM `exam1_2` where `id`=?";
+			judge = db.queryT(sql, DJudge.class, id);
+			if (judge == null) {
+				return null;
+			}
+			exam1_2.put(judge.getId(), judge);
+		}
+		return judge;
+	}
+
+	/**
+	 * 获取科目一选择题
+	 * @author ruan 
+	 * @param id
+	 */
+	public DSelect getExam1_4(long id) {
+		DSelect select = exam1_4.get(id);
+		if (select == null) {
+			String sql = "SELECT * FROM `exam1_4` where `id`=?";
+			List<Map<String, Object>> list = db.queryList(sql, id);
+			if (list == null || list.isEmpty()) {
+				return null;
+			}
+			select = map2DSelect(list.get(0));
+			exam1_4.put(select.getId(), select);
+		}
+		return select;
+	}
+
+	/**
+	 * 获取科目四判断题
+	 * @author ruan 
+	 * @param id
+	 */
+	public DJudge getExam4_2(long id) {
+		DJudge judge = exam4_2.get(id);
+		if (judge == null) {
+			String sql = "SELECT * FROM `exam4_2` where `id`=?";
+			judge = db.queryT(sql, DJudge.class, id);
+			if (judge == null) {
+				return null;
+			}
+			exam4_2.put(judge.getId(), judge);
+		}
+		return judge;
+	}
+
+	/**
+	 * 获取科目四单选题
+	 * @author ruan 
+	 * @param id
+	 */
+	public DSelect getExam4_4(long id) {
+		DSelect select = exam4_4.get(id);
+		if (select == null) {
+			String sql = "SELECT * FROM `exam4_4` where `id`=?";
+			List<Map<String, Object>> list = db.queryList(sql, id);
+			if (list == null || list.isEmpty()) {
+				return null;
+			}
+			select = map2DSelect(list.get(0));
+			exam4_4.put(select.getId(), select);
+		}
+		return select;
+	}
+
+	/**
+	 * 获取科目四多选题
+	 * @author ruan 
+	 * @param id
+	 */
+	public DSelect getExam4_4_4(long id) {
+		DSelect select = exam4_4_4.get(id);
+		if (select == null) {
+			String sql = "SELECT * FROM `exam4_4_4` where `id`=?";
+			List<Map<String, Object>> list = db.queryList(sql, id);
+			if (list == null || list.isEmpty()) {
+				return null;
+			}
+			select = map2DSelect(list.get(0));
+			exam4_4_4.put(select.getId(), select);
+		}
+		return select;
+	}
+
+	/**
+	 * 获取答案
+	 * @author ruan 
+	 * @param id
+	 */
+	public DAnswer getAnswer(long id) {
+		DAnswer answer = this.answer.get(id);
+		if (answer == null) {
+			String sql = "SELECT * FROM `answer` where `baid`=?";
+			answer = db.queryT(sql, DAnswer.class, id);
+			if (answer == null) {
+				return null;
+			}
+			this.answer.put(answer.getBaid(), answer);
+		}
+		return answer;
 	}
 
 	/**
@@ -88,6 +289,9 @@ public class ExamDao {
 	 * @param answer 答案(true-对，false-错)
 	 */
 	private void addExam1_2(long baid, String question, String image, boolean answer) {
+		if (getExam1_2(baid) != null) {
+			return;
+		}
 		String sql = "REPLACE INTO `exam1_2`(`id`,`question`,`image`,`answer`) VALUES (?,?,?,?)";
 		db.update(sql, baid, question, image, answer ? 1 : 0);
 		logger.warn("新增一道科目1的判断题：{}\t答案：{}", question, answer ? "对" : "错");
@@ -107,6 +311,9 @@ public class ExamDao {
 	 * @param d D选项
 	 */
 	private void addExam1_4(long baid, String question, String image, String answer, String a, String b, String c, String d) {
+		if (getExam1_4(baid) != null) {
+			return;
+		}
 		String sql = "REPLACE INTO `exam1_4`(`id`,`question`,`a`,`b`,`c`,`d`,`image`,`answer`) VALUES (?,?,?,?,?,?,?,?)";
 		db.update(sql, baid, question, a, b, c, b, image, answer);
 		logger.warn("新增一道科目1的选择题：{}\t答案：{}", question, answer);
@@ -121,6 +328,9 @@ public class ExamDao {
 	 * @param answer 答案(true-对，false-错)
 	 */
 	private void addExam4_2(long baid, String question, String image, boolean answer) {
+		if (getExam4_2(baid) != null) {
+			return;
+		}
 		String sql = "REPLACE INTO `exam4_2`(`id`,`question`,`image`,`answer`) VALUES (?,?,?,?)";
 		db.update(sql, baid, question, image, answer ? 1 : 0);
 		logger.warn("新增一道科目4的判断题：{}\t答案：{}", question, answer ? "对" : "错");
@@ -141,6 +351,9 @@ public class ExamDao {
 	 * @param d D选项
 	 */
 	private void addExam4_4(long baid, String question, String image, String flashurl, String answer, String a, String b, String c, String d) {
+		if (getExam4_4(baid) != null) {
+			return;
+		}
 		String sql = "REPLACE INTO `exam4_4`(`id`,`question`,`a`,`b`,`c`,`d`,`image`,`flashurl`,`answer`) VALUES (?,?,?,?,?,?,?,?,?)";
 		db.update(sql, baid, question, a, b, c, b, image, flashurl, answer);
 		logger.warn("新增一道科目4的单选题：{}\t答案：{}", question, answer);
@@ -160,6 +373,9 @@ public class ExamDao {
 	 * @param d D选项
 	 */
 	private void addExam4_4_4(long baid, String question, String image, String answer, String a, String b, String c, String d) {
+		if (getExam4_4_4(baid) != null) {
+			return;
+		}
 		String sql = "REPLACE INTO `exam4_4_4`(`id`,`question`,`a`,`b`,`c`,`d`,`image`,`answer`) VALUES (?,?,?,?,?,?,?,?)";
 		db.update(sql, baid, question, a, b, c, b, image, answer);
 		logger.warn("新增一道科目4的多选题：{}\t答案：{}", question, answer);
@@ -211,7 +427,6 @@ public class ExamDao {
 				}
 				addExam1_2(baid, question, image, answer);
 			} else if (t == 2) {
-
 				// 科目1单选题
 				String answer = StringUtil.filterHTML(s.substring(s.indexOf("v=") + 3, s.indexOf("v=") + 4));
 				long baid = StringUtil.getLong(s.substring(s.indexOf("baid='") + 6, s.indexOf("' rid='")));

@@ -14,11 +14,10 @@ public class CaseController {
 	private final static Logger logger = LoggerFactory.getLogger(CaseController.class);
 
 	/**
-	 * 下载app
+	 * index
 	 */
 	@RequestMapping(value = "/index")
-	public ModelAndView downApp() {
-		System.err.println(1111111111);
-		return new ModelAndView("case/downApp");
+	public ModelAndView index() {
+		return new ModelAndView("index");
 	}
 }

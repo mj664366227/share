@@ -7,10 +7,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.exam.core.interfaces.BaseFilter;
 import com.exam.core.util.FileSystem;
+import com.exam.core.util.StringUtil;
+import com.exam.dao.ExamDao;
 
 public class ExamFilter extends BaseFilter {
+	private final static Logger logger = LoggerFactory.getLogger(ExamFilter.class);
 	/**
 	 * 项目名
 	 */
@@ -22,7 +28,13 @@ public class ExamFilter extends BaseFilter {
 
 	@Override
 	protected boolean doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+		String url = StringUtil.getString(request.getRequestURI());
+		logger.warn(url);
+		if ("/".equals(url)) {
+			response.sendRedirect("/index");
+			return false;
+		}
 		request.setAttribute("skin", "/" + projectName + "/" + getSkin());
-		return true; 
+		return true;
 	}
 }

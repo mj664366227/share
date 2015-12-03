@@ -91,7 +91,7 @@ mysql='mysql-5.7.9'
 if [ ! -d $install_path/$mysql ]; then
 	if [ ! -f $base_path/$mysql.tar.gz ]; then
 		echo $mysql'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$mysql.tar.gz http://cdn.mysql.com/get/Downloads/MySQL-5.7/$mysql.tar.gz || exit
+		wget -O $base_path/$mysql.tar.gz http://dev.mysql.com/get/Downloads/MySQL-5.7/$mysql.tar.gz || exit
 		echo 'download '$mysql' finished...'
 	fi
 	tar zxvf $base_path/$mysql.tar.gz -C $install_path || exit
