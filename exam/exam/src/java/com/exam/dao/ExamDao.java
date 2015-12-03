@@ -1,4 +1,9 @@
-package com.exam.dao.model;
+package com.exam.dao;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.exam.core.client.HttpClient;
 import com.exam.core.jdbc.DbService;
 import com.exam.core.util.StringUtil;
+import com.exam.dao.model.DJudge;
 
 @Component
 public class ExamDao {
@@ -16,6 +22,63 @@ public class ExamDao {
 	private DbService db;
 	@Autowired
 	private HttpClient httpClient;
+
+	/**
+	 * 科目一判断题缓存
+	 */
+	private Map<Long, DJudge> exam1_2 = new ConcurrentHashMap<Long, DJudge>();
+
+	/**
+	 * 初始化
+	 * @author ruan
+	 */
+	@PostConstruct
+	public void init() {
+		//初始化科目一判断题
+		initExam1_2();
+
+		//初始化科目一选择题
+		initExam1_4();
+
+		//初始化科目四判断题
+		initExam4_2();
+	}
+
+	/**
+	 * 初始化科目一判断题
+	 * @author ruan
+	 */
+	private void initExam1_2() {
+		String sql = "SELECT * FROM `exam1_2` order by `id` asc";
+		for (DJudge judge : db.queryList(sql, DJudge.class)) {
+			exam1_2.put(judge.getId(), judge);
+		}
+		logger.warn("初始化科目一判断题完成！");
+	}
+
+	/**
+	 * 初始化科目一选择题
+	 * @author ruan
+	 */
+	private void initExam1_4() {
+		String sql = "SELECT * FROM `exam1_4` order by `id` asc";
+		for (DJudge judge : db.queryList(sql, DJudge.class)) {
+			exam1_2.put(judge.getId(), judge);
+		}
+		logger.warn("初始化科目一判断题完成！");
+	}
+
+	/**
+	 * 初始化科目四判断题
+	 * @author ruan
+	 */
+	private void initExam4_2() {
+		String sql = "SELECT * FROM `exam4_2` order by `id` asc";
+		for (DJudge judge : db.queryList(sql, DJudge.class)) {
+			exam1_2.put(judge.getId(), judge);
+		}
+		logger.warn("初始化科目四判断题完成！");
+	}
 
 	/**
 	 * 添加一道科目一的判断题

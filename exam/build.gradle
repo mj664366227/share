@@ -63,7 +63,6 @@ project(':exam') {
 		compile 'javax.servlet:javax.servlet-api:3.1.0'
 		compile 'com.alibaba:druid:1.0.15'
 		compile 'com.google.code.gson:gson:2.5'
-		compile 'com.google.guava:guava:18.0'
 		compile 'org.apache.httpcomponents:httpclient:4.5'
 		compile 'org.eclipse.jetty:jetty-http:9.3.0.M1'
 		compile 'org.eclipse.jetty:jetty-server:9.3.0.M1'
