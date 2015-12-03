@@ -65,6 +65,45 @@ public class ExamDao {
 	}
 
 	/**
+	 * 添加一道科目4的单选题
+	 * @author ruan 
+	 * @param baid 题目id
+	 * @param question 问题内容
+	 * @param image 图片
+	 * @param flashurl 动画
+	 * @param answer 答案
+	 * @param a A选项
+	 * @param b B选项
+	 * @param c C选项
+	 * @param d D选项
+	 */
+	private void addExam4_4(long baid, String question, String image, String flashurl, String answer, String a, String b, String c, String d) {
+		String sql = "REPLACE INTO `exam4_4`(`id`,`question`,`a`,`b`,`c`,`d`,`image`,`flashurl`,`answer`) VALUES (?,?,?,?,?,?,?,?,?)";
+		db.update(sql, baid, question, a, b, c, b, image, flashurl, answer);
+		logger.warn("新增一道科目4的单选题：{}\t答案：{}", question, answer);
+		addQuestionAnswer(baid);
+	}
+
+	/**
+	 * 添加一道科目1的选择题
+	 * @author ruan 
+	 * @param baid 题目id
+	 * @param question 问题内容
+	 * @param image 图片
+	 * @param answer 答案
+	 * @param a A选项
+	 * @param b B选项
+	 * @param c C选项
+	 * @param d D选项
+	 */
+	private void addExam4_4_4(long baid, String question, String image, String answer, String a, String b, String c, String d) {
+		String sql = "REPLACE INTO `exam4_4_4`(`id`,`question`,`a`,`b`,`c`,`d`,`image`,`answer`) VALUES (?,?,?,?,?,?,?,?)";
+		db.update(sql, baid, question, a, b, c, b, image, answer);
+		logger.warn("新增一道科目4的多选题：{}\t答案：{}", question, answer);
+		addQuestionAnswer(baid);
+	}
+
+	/**
 	 * 添加一条题目的答案
 	 * @author ruan  
 	 * @param baid 题目id
@@ -108,7 +147,8 @@ public class ExamDao {
 					image = "http://ww3.sinaimg.cn/mw240/" + image;
 				}
 				addExam1_2(baid, question, image, answer);
-			} else {
+			} else if (t == 2) {
+
 				// 科目1单选题
 				String answer = StringUtil.filterHTML(s.substring(s.indexOf("v=") + 3, s.indexOf("v=") + 4));
 				long baid = StringUtil.getLong(s.substring(s.indexOf("baid='") + 6, s.indexOf("' rid='")));
@@ -173,8 +213,82 @@ public class ExamDao {
 					image = "http://ww3.sinaimg.cn/mw240/" + image;
 				}
 				addExam4_2(baid, question, image, answer);
-			} else {
+			} else if (t == 2) {
 				// 科目4单选题
+				String answer = StringUtil.filterHTML(s.substring(s.indexOf("v=") + 3, s.indexOf("v=") + 4));
+				long baid = StringUtil.getLong(s.substring(s.indexOf("baid='") + 6, s.indexOf("' rid='")));
+				String question = s.substring(s.indexOf("<h3>") + 4, s.indexOf("</h3>")).trim();
+				String image = "";
+				if (s.indexOf("<dl>") > -1) {
+					image = s.substring(s.indexOf("<dl>") + 4, s.indexOf("</dl>")).trim();
+					image = image.replaceAll("<img lazysrc='", "");
+					image = image.replaceAll("'/>", "");
+					image = "http://ww3.sinaimg.cn/mw240/" + image;
+				}
+
+				String flashurl = "";
+				if (s.indexOf("flashurl") > -1) {
+					s = StringUtil.getString(s.substring(s.indexOf("flashurl") + 10));
+					flashurl = StringUtil.getString(s.substring(0, s.indexOf("hidden_flashplayer") - 6));
+				}
+
+				// 4个选项
+				String item = arr[i].trim();
+				item = item.substring(item.indexOf("<ul class='i'>")).trim();
+				String[] itemArr = item.split("<font></font>");
+				String a = "", b = "", c = "", d = "";
+				for (int j = 1; j < itemArr.length; j++) {
+					switch (j) {
+					case 1:
+						a = StringUtil.filterHTML(itemArr[j]);
+						break;
+					case 2:
+						b = StringUtil.filterHTML(itemArr[j]);
+						break;
+					case 3:
+						c = StringUtil.filterHTML(itemArr[j]);
+						break;
+					case 4:
+						d = StringUtil.filterHTML(itemArr[j]);
+						break;
+					}
+				}
+				addExam4_4(baid, question, image, flashurl, answer, a, b, c, d);
+			} else if (t == 3) {
+				// 科目4多选题
+				s = arr[i].trim();
+				String answer = StringUtil.filterHTML(s.substring(s.indexOf("v=") + 3, s.indexOf("v=") + 10)).replaceAll("[^A-D]+", "");
+				long baid = StringUtil.getLong(s.substring(s.indexOf("baid='") + 6, s.indexOf("' rid='")));
+				String question = s.substring(s.indexOf("<h3>") + 4, s.indexOf("</h3>")).trim();
+				String image = "";
+				if (s.indexOf("<dl>") > -1) {
+					image = s.substring(s.indexOf("<dl>") + 4, s.indexOf("</dl>")).trim();
+					image = image.replaceAll("<img lazysrc='", "");
+					image = image.replaceAll("'/>", "");
+					image = "http://ww3.sinaimg.cn/mw240/" + image;
+				}
+
+				// 4个选项
+				s = s.substring(s.indexOf("<ul class='i'>")).trim();
+				String[] itemArr = s.split("<font></font>");
+				String a = "", b = "", c = "", d = "";
+				for (int j = 1; j < itemArr.length; j++) {
+					switch (j) {
+					case 1:
+						a = StringUtil.filterHTML(itemArr[j]);
+						break;
+					case 2:
+						b = StringUtil.filterHTML(itemArr[j]);
+						break;
+					case 3:
+						c = StringUtil.filterHTML(itemArr[j]);
+						break;
+					case 4:
+						d = StringUtil.filterHTML(itemArr[j]);
+						break;
+					}
+				}
+				addExam4_4_4(baid, question, image, answer, a, b, c, d);
 			}
 		}
 	}
