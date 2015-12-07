@@ -1,5 +1,6 @@
 package com.exam.dao;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.exam.core.client.HttpClient;
 import com.exam.core.jdbc.DbService;
+import com.exam.core.util.RandomUtil;
 import com.exam.core.util.StringUtil;
 import com.exam.dao.model.DAnswer;
 import com.exam.dao.model.DJudge;
@@ -168,6 +170,32 @@ public class ExamDao {
 		select.setD(StringUtil.getString(data.get("d")));
 		select.setAnswer(StringUtil.getString(data.get("answer")));
 		return select;
+	}
+
+	/**
+	 * 获取一套科目一的题目
+	 * @author ruan 
+	 * @return
+	 */
+	public Map<Long, Object> getExam1() {
+		Map<Long, Object> examMap = new LinkedHashMap<>(100);
+		Object[] keySet = exam1_2.keySet().toArray();
+		int random = RandomUtil.rand(0, keySet.length - 1);
+		// 40道判断题
+		while (examMap.size() < 40) {
+			DJudge judge = exam1_2.get(keySet[random]);
+			examMap.put(judge.getId(), judge);
+			random = RandomUtil.rand(0, keySet.length - 1);
+		}
+
+		// 60道单选题
+		keySet = exam1_4.keySet().toArray();
+		while (examMap.size() < 100) {
+			DSelect select = exam1_4.get(keySet[random]);
+			examMap.put(select.getId(), select);
+			random = RandomUtil.rand(0, keySet.length - 1);
+		}
+		return examMap;
 	}
 
 	/**
