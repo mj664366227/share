@@ -2,16 +2,15 @@ package com.exam.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller
-public class CaseController {
+@org.springframework.stereotype.Controller
+public class Controller {
 	/**
 	 * logger
 	 */
-	private final static Logger logger = LoggerFactory.getLogger(CaseController.class);
+	private final static Logger logger = LoggerFactory.getLogger(Controller.class);
 
 	/**
 	 * index

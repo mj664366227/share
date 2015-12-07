@@ -1,5 +1,4 @@
 <%@ page contentType="text/html; charset=utf-8" language="java" import="java.sql.*" errorPage="" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file="head.jsp" %>
 <div id='simple-container' class='simple-container'>
   <div class="jkbd-main-main erjiyemian" data-item="jkbd-main-main-container" data-simple-node-dom="jkbd-app-template-kaoshi-kaoshi">
