@@ -29,6 +29,14 @@ public class ExamDao {
 	private HttpClient httpClient;
 
 	/**
+	 * 科目一题目缓存
+	 */
+	private Map<String, Map<Long, Object>> exam1Map = new ConcurrentHashMap<>();
+	/**
+	 * 科目四题目缓存
+	 */
+	private Map<String, Map<Long, Object>> exam4Map = new ConcurrentHashMap<>();
+	/**
 	 * 科目一判断题缓存
 	 */
 	private Map<Long, DJudge> exam1_2 = new ConcurrentHashMap<Long, DJudge>();
@@ -177,23 +185,27 @@ public class ExamDao {
 	 * @author ruan 
 	 * @return
 	 */
-	public Map<Long, Object> getExam1() {
-		Map<Long, Object> examMap = new LinkedHashMap<>(100);
-		Object[] keySet = exam1_2.keySet().toArray();
-		int random = RandomUtil.rand(0, keySet.length - 1);
-		// 40道判断题
-		while (examMap.size() < 40) {
-			DJudge judge = exam1_2.get(keySet[random]);
-			examMap.put(judge.getId(), judge);
-			random = RandomUtil.rand(0, keySet.length - 1);
-		}
+	public Map<Long, Object> getExam1(String sessionId) {
+		Map<Long, Object> examMap = exam1Map.get(sessionId);
+		if (examMap == null) {
+			examMap = new LinkedHashMap<>(100);
+			Object[] keySet = exam1_2.keySet().toArray();
+			int random = RandomUtil.rand(0, keySet.length - 1);
+			// 40道判断题
+			while (examMap.size() < 40) {
+				DJudge judge = exam1_2.get(keySet[random]);
+				examMap.put(judge.getId(), judge);
+				random = RandomUtil.rand(0, keySet.length - 1);
+			}
 
-		// 60道单选题
-		keySet = exam1_4.keySet().toArray();
-		while (examMap.size() < 100) {
-			DSelect select = exam1_4.get(keySet[random]);
-			examMap.put(select.getId(), select);
-			random = RandomUtil.rand(0, keySet.length - 1);
+			// 60道单选题
+			keySet = exam1_4.keySet().toArray();
+			while (examMap.size() < 100) {
+				DSelect select = exam1_4.get(keySet[random]);
+				examMap.put(select.getId(), select);
+				random = RandomUtil.rand(0, keySet.length - 1);
+			}
+			exam1Map.put(sessionId, examMap);
 		}
 		return examMap;
 	}
