@@ -54,6 +54,7 @@ public class ExamController {
 		model.addObject("kemu", 1);
 		model.addObject("examMap", examMap);
 		model.addObject("time", 60 * 45);
+		model.addObject("pass", 90);
 		return model;
 	}
 
@@ -66,6 +67,7 @@ public class ExamController {
 		model.addObject("title", "科目四");
 		model.addObject("kemu", 4);
 		model.addObject("time", 60 * 30);
+		model.addObject("pass", 90);
 		return model;
 	}
 

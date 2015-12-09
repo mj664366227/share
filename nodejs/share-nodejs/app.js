@@ -1,4 +1,4 @@
-var core = require('./core/core');
+
 var filesystem = require('./core/util/filesystem');
 var httpServer = require('./core/server/httpServer');
 var demoController = require('./controller/demoController');
@@ -13,7 +13,7 @@ for ( var fun in requestMapping) {
 	console.log("requestMapping: " + fun);
 }
 
-core.init();
+//core.init();
 
 // httpServer.start(9999, requestMapping);
 

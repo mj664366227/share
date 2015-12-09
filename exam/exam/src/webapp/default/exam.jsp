@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file="head.jsp" %>
 <div class="hide" id="kemu">${kemu}</div>
+<div class="hide" id="pass">${pass}</div>
+<div class="hide" id="my-answer"></div>
 <div id='simple-container' class='simple-container'>
   <div class="jkbd-main-main erjiyemian" data-item="jkbd-main-main-container" data-simple-node-dom="jkbd-app-template-kaoshi-kaoshi">
     <div class="kaoshi-container" data-item="main-kaoshi-container">
@@ -60,7 +62,7 @@
                   <p>考试题数：100题</p>
                   <p>考试时间：<span>${time}</span></p>
                   <p>合格标准：满分100分</p>
-                  <p class="ll">90合格</p>
+                  <p class="ll">${pass}分合格</p>
                 </div>
               </fieldset>
             </div>
@@ -86,13 +88,13 @@
             </div>
           </div>
           <div class="info-middle clearfix">
-            <fieldset class="time-info float-l">
+            <fieldset class="time-info float-l" style="height:150px">
               <legend>剩余时间</legend>
               <span id="left-time">${time}</span>
             </fieldset>
-            <fieldset class="tip-container float-l">
+            <fieldset class="tip-container float-l" style="height:150px">
               <legend>提示信息</legend>
-              <div class="tip-content" data-item="tip-content"></div>
+              <div class="tip-content" data-item="tip-content" style=" padding:20px;width:95%; position:relative;left:-5px"></div>
             </fieldset>
             <div class="fun-btns clearfix float-l">
               <button type="button" class="jiaojuan option-btn float-r" data-item="jiaojuan">交卷</button>
