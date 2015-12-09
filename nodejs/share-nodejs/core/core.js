@@ -1,16 +1,4 @@
-exports.hello = function hello(name) { 
-	console.log('hello, '+ name); 
-} 
-
-var PI = Math.PI;
-exports.area = function (r) {
-    return PI * r * r;
+// 框架核心类，系统初始化
+exports.init = function () {
+	console.log(requestMapping);
 };
-exports.circumference = function (r) {
-    return 2 * PI * r;
-};
-
-exports.config = {
-	'a': 1,
-	'b': 2
-}
