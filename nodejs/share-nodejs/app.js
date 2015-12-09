@@ -21,9 +21,9 @@ var mysql = require("mysql");
 var pool = mysql.createPool(database.config);
 pool.getConnection(function(err, connection) {
 	connection.query('SELECT * FROM `user`', function(err, rows) {
+		connection.release();
 		for (var i = 0; i < rows.length; i++) {
 			// console.log(rows[i].nickname);
 		}
 	});
-	connection.release();
 });
