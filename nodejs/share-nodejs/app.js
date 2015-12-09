@@ -1,8 +1,5 @@
-var http = require("http");  
-http.createServer(function(request, response) {    
-    response.writeHead(200, {"Content-Type": "text/plain"});    
-    response.write("Hello World");    
-    response.end();  
-    console.log("Hello World");  
-}).listen(8888);  
-console.log("nodejs start listen 8888 port!");  
+var h = require('./core/core'); 
+h.hello('snandy');
+console.log(h.area(12));
+console.log(h.config);
+console.log(processor.cwd());
