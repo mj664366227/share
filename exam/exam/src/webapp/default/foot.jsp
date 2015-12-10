@@ -1,14 +1,12 @@
 <%@ page contentType="text/html; charset=utf-8" language="java" import="java.sql.*" errorPage="" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<script type="text/javascript" src="${skin}/js/jquery-2.1.4.min.js"></script>
-<script type="text/javascript" src="${skin}/js/js.js"></script>
 <script type="text/javascript">
 var kemuObj = document.getElementById('kemu');
 if(kemuObj){
 	var kemu = parseInt(kemuObj.innerHTML);
 }
-var judgeHTML = '<a class="answer-right" onClick="question(\''+kemu+'\',\'%baid%\',\'正确\')">正确</a> <a class="answer-wrong" onClick="question(\''+kemu+'\',\'%baid%\',\'错误\')">错误</a>';
-	var selectHTML = '<a class="answer-right" onClick="question(\''+kemu+'\',\'%baid%\',\'A\')">A</a> <a class="answer-wrong" onClick="question(\''+kemu+'\',\'%baid%\',\'B\')">B</a><a class="answer-right" onClick="question(\''+kemu+'\',\'%baid%\',\'C\')">C</a> <a class="answer-wrong" onClick="question(\''+kemu+'\',\'%baid%\',\'D\')">D</a>';
+var judgeHTML = '<a class="answer-right" onClick="question(\'%baid%\',\'正确\')">正确</a> <a class="answer-wrong" onClick="question(\'%baid%\',\'错误\')">错误</a>';
+	var selectHTML = '<a class="answer-right" onClick="question(\'%baid%\',\'A\')">A</a> <a class="answer-wrong" onClick="question(\'%baid%\',\'B\')">B</a><a class="answer-right" onClick="question(\'%baid%\',\'C\')">C</a> <a class="answer-wrong" onClick="question(\'%baid%\',\'D\')">D</a>';
 	var time = 0;
 	
 $(function(){
@@ -31,6 +29,10 @@ $(function(){
 	
 	second2time();
 	setInterval('second2time()',1000);
+	
+	$('#handIn').click(function(){
+		$('#my-answer').submit();
+	});
 })
 
 function showNextQuestion(){
@@ -69,9 +71,9 @@ function showNextQuestion(){
 	}
 }
 
-function question(kemu, baid, answer){
+function question(baid, answer){
 	$('#'+baid).css('background','#dfdfdf').css('cursor','pointer').addClass('hover');
-	$('#my-answer').append('<span id="'+baid+'" answer="'+answer+'"></span>');
+	$('#my-answer').prepend('<input type="hidden" name="'+baid+'" value="'+answer+'"/>');
 	showNextQuestion();
 }
 
@@ -100,11 +102,32 @@ function second2time(){
 }
 </script>
 <style>
-.sound,.sound-active{width:25px; height:25px; margin-top:5px}
-.sound{background:url(${skin}/image/icons.png) no-repeat -73px -88px;}
-.sound:hover{cursor:pointer;background:url(${skin}/image/icons.png) no-repeat -123px -88px;}
-.sound-active{background:url(${skin}/image/sound.gif) no-repeat -12px -11px;}
-.sound-play{display:none}
+.sound, .sound-active {
+	width: 25px;
+	height: 25px;
+	margin-top: 5px
+}
+.sound {
+	background: url(${skin}/image/icons.png) no-repeat -73px -88px;
+}
+.sound:hover {
+	cursor: pointer;
+	background: url(${skin}/image/icons.png) no-repeat -123px -88px;
+}
+.sound-active {
+	background: url(${skin}/image/sound.gif) no-repeat -12px -11px;
+}
+.sound-play {
+	display: none
+}
+.explain {
+	margin: 20px;
+	padding: 30px;
+	word-break: break-all;
+	text-align: left;
+	width: 590px;
+	background: #f7f7f7;
+}
 </style>
 </body>
 </html>

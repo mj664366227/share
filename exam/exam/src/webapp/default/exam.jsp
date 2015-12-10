@@ -3,7 +3,6 @@
 <%@include file="head.jsp" %>
 <div class="hide" id="kemu">${kemu}</div>
 <div class="hide" id="pass">${pass}</div>
-<div class="hide" id="my-answer"></div>
 <div id='simple-container' class='simple-container'>
   <div class="jkbd-main-main erjiyemian" data-item="jkbd-main-main-container" data-simple-node-dom="jkbd-app-template-kaoshi-kaoshi">
     <div class="kaoshi-container" data-item="main-kaoshi-container">
@@ -97,7 +96,11 @@
               <div class="tip-content" data-item="tip-content" style=" padding:20px;width:95%; position:relative;left:-5px"></div>
             </fieldset>
             <div class="fun-btns clearfix float-l">
-              <button type="button" class="jiaojuan option-btn float-r" data-item="jiaojuan">交卷</button>
+              <form id="my-answer" action="result" method="post">
+              	<input type="hidden" name="userId" value="${userId}"/>
+                <input type="hidden" name="from" value="exam${kemu}"/>
+                <button type="button" class="jiaojuan option-btn float-r" id="handIn">交卷</button>
+              </form>
             </div>
           </div>
           <div class="info-down">

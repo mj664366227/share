@@ -1,11 +1,14 @@
 package com.exam.dao;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +17,9 @@ import org.springframework.stereotype.Component;
 
 import com.exam.core.client.HttpClient;
 import com.exam.core.jdbc.DbService;
+import com.exam.core.util.FileSystem;
 import com.exam.core.util.RandomUtil;
+import com.exam.core.util.Secret;
 import com.exam.core.util.StringUtil;
 import com.exam.dao.model.DAnswer;
 import com.exam.dao.model.DJudge;
@@ -27,7 +32,14 @@ public class ExamDao {
 	private DbService db;
 	@Autowired
 	private HttpClient httpClient;
-
+	/**
+	 * 会话map
+	 */
+	private Map<String, String> sessionMap = new ConcurrentHashMap<>();
+	/**
+	 * 题目分析map
+	 */
+	private Map<String, Object> analysisMap = new ConcurrentHashMap<>();
 	/**
 	 * 科目一题目缓存
 	 */
@@ -208,6 +220,21 @@ public class ExamDao {
 			exam1Map.put(sessionId, examMap);
 		}
 		return examMap;
+	}
+
+	/**
+	 * 获取一套科目一的题目的答案
+	 */
+	public Map<Long, String> getExam1Answer(String sessionId) {
+		Map<Long, String> answerMap = new LinkedHashMap<>(100);
+		for (Entry<Long, Object> e : getExam1(sessionId).entrySet()) {
+			DAnswer answer = getAnswer(e.getKey());
+			if (answer == null) {
+				continue;
+			}
+			answerMap.put(answer.getBaid(), answer.getAnswer() + "," + answer.getExplain());
+		}
+		return answerMap;
 	}
 
 	/**
@@ -609,5 +636,46 @@ public class ExamDao {
 				addExam4_4_4(baid, question, image, answer, a, b, c, d);
 			}
 		}
+	}
+
+	/**
+	 * 获取一个会话
+	 * @param session
+	 * @return
+	 */
+	public String getSession(HttpSession session) {
+		String k = StringUtil.getString(session.getId());
+		String v = StringUtil.getString(sessionMap.get(k));
+		if (v.isEmpty()) {
+			v = Secret.md5(String.valueOf(System.nanoTime()) + k + FileSystem.getPropertyString("system.key"));
+			sessionMap.put(k, v);
+		}
+		return v;
+	}
+
+	/**
+	 * 删除会话
+	 * @param session
+	 */
+	public void removeSession(HttpSession session) {
+		sessionMap.remove(StringUtil.getString(session.getId()));
+	}
+
+	/**
+	 * 保存分析
+	 */
+	public void storeAnalysis(String sessionId, Map<String, Object> learnerAnswer, Map<Long, String> answerMap) {
+		Map<String, Object> tmp = new HashMap<>(2);
+		tmp.put("learnerAnswer", learnerAnswer);
+		tmp.put("answerMap", answerMap);
+		analysisMap.put(sessionId, tmp);
+	}
+
+	/**
+	 * 获取分析
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getAnalysis(String sessionId) {
+		return (Map<String, Object>) analysisMap.get(sessionId);
 	}
 }
