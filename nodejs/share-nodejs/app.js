@@ -1,12 +1,9 @@
 var http = require('http');
+var mysql = require('mysql');
+var log4js = require('log4js');
 var databaseConfig = require('./config/database');
 
-
-exports.upload1 = function() {}
-exports.upload2 = function() {}
-exports.upload3 = function() {}
-exports.upload4 = function() {}
-console.log(module);
+console.log(log4js);
 // http.createServer(function handler(req, res) {
 // res.writeHead(200, {
 // 'Content-Type' : 'text/plain'
