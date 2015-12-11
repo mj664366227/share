@@ -4,4 +4,4 @@ exports.config = {
 	"system.lang" : "zh-CN",
 	"system.charset" : "UTF-8",
 	"system.env" : "dev"
-}
+};
