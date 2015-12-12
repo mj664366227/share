@@ -14,4 +14,4 @@ for /f "tokens=*" %%a in ('dir /b') do (
 
 
 cd %cd%
-java -Xverify:none -server -Xms512m -Xmx3g -Dfile.encoding=utf8 -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCApplicationConcurrentTime -XX:+PrintHeapAtGC -XX:ParallelGCThreads=4 -XX:CompileThreshold=1 -XX:+UseParallelGC -XX:+AggressiveOpts -XX:+UseBiasedLocking -XX:+UseFastAccessorMethods -XX:+DoEscapeAnalysis -Xloggc:%cd%\log\gc.log -Dproject=exam -classpath %classpath% com.exam.start.StartExam
+%cd%\java\bin\java.exe -Xverify:none -server -Dfile.encoding=utf8 -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCApplicationConcurrentTime -XX:+PrintHeapAtGC -XX:ParallelGCThreads=4 -XX:CompileThreshold=1 -XX:+UseParallelGC -XX:+AggressiveOpts -XX:+UseBiasedLocking -XX:+UseFastAccessorMethods -XX:+DoEscapeAnalysis -Xloggc:%cd%\log\gc.log -Dproject=exam -classpath %classpath% com.exam.start.StartExam
