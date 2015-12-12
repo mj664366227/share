@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.exam.core.interfaces.BaseFilter;
 import com.exam.core.util.FileSystem;
 import com.exam.core.util.StringUtil;
-import com.exam.dao.ExamDao;
 
 public class ExamFilter extends BaseFilter {
 	private final static Logger logger = LoggerFactory.getLogger(ExamFilter.class);
@@ -33,7 +32,9 @@ public class ExamFilter extends BaseFilter {
 			response.sendRedirect("/index");
 			return false;
 		}
-		request.setAttribute("skin", "/" + projectName + "/" + getSkin());
+		if (url.indexOf(".") <= -1) {
+			logger.info(url);
+		}
 		return true;
 	}
 }

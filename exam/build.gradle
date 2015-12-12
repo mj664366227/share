@@ -13,6 +13,12 @@ subprojects {
 	apply plugin: 'eclipse'
 	apply plugin: 'idea'
     apply plugin: 'cobertura'
+	
+	// 过滤不打包的文件
+	jar.exclude '*.properties'
+	jar.exclude '*.conf'
+	jar.exclude '*.sql'
+	jar.exclude '*.xml'
 
     test {
         ignoreFailures = true

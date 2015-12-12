@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
@@ -72,6 +74,10 @@ public class ExamDao {
 	 * 答案缓存
 	 */
 	private Map<Long, DAnswer> answer = new ConcurrentHashMap<Long, DAnswer>();
+	/**
+	 * 线程池
+	 */
+	private ExecutorService executor = Executors.newFixedThreadPool(2);
 
 	/**
 	 * 初始化
@@ -96,6 +102,30 @@ public class ExamDao {
 
 		//初始化答案
 		initAnswer();
+
+		// 自动爬题目
+		autoGetExam();
+	}
+
+	/**
+	 * 自动爬题目
+	 */
+	public void autoGetExam() {
+		for (int i = 0; i < 2; i++) {
+			executor.execute(new Runnable() {
+				public void run() {
+					while (true) {
+						addExam1();
+						addExam4();
+						try {
+							Thread.sleep(10000);
+						} catch (Exception e) {
+							logger.error("", e);
+						}
+					}
+				}
+			});
+		}
 	}
 
 	/**
@@ -524,6 +554,7 @@ public class ExamDao {
 	 * 添加一套科目一的题目
 	 */
 	public void addExam1() {
+		logger.warn("try to get exam1 from jxedt");
 		String str = httpClient.getString("http://kaoshi.jxedt.com/guangzhou/");
 		str = str.substring(str.indexOf("<div class=\"itout\">") + 20).trim();
 		str = str.substring(0, str.indexOf("<script")).trim();
@@ -589,6 +620,7 @@ public class ExamDao {
 	 * 添加一套科目四的题目
 	 */
 	public void addExam4() {
+		logger.warn("try to get exam4 from jxedt");
 		String str = httpClient.getString("http://km4.jxedt.com/guangzhou/");
 		str = str.substring(str.indexOf("<div class=\"itout\">") + 20).trim();
 		str = str.substring(0, str.indexOf("<script")).trim();
