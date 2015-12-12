@@ -22,4 +22,4 @@ exports.config = {
 		dateFileLog : 'info',
 		console : 'info'
 	}
-}
+};

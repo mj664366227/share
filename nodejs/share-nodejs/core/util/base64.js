@@ -1,5 +1,4 @@
 // base64加密解密
-
 var base64encodechars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 var base64decodechars = new Array(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 		-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -139,14 +138,14 @@ function utf8to16(str) {
 		}
 	}
 	return out;
-}
+};
 
 // 加密
 exports.encode = function(string) {
 	return base64encode(utf16to8(string));
-}
+};
 
 // 解密
 exports.decode = function(string) {
 	return utf8to16(base64decode(string));
-}
+};
