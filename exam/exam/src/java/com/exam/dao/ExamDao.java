@@ -213,11 +213,49 @@ public class ExamDao {
 			// 60道单选题
 			keySet = exam1_4.keySet().toArray();
 			while (examMap.size() < 100) {
+				random = RandomUtil.rand(0, keySet.length - 1);
 				DSelect select = exam1_4.get(keySet[random]);
 				examMap.put(select.getId(), select);
-				random = RandomUtil.rand(0, keySet.length - 1);
 			}
 			exam1Map.put(sessionId, examMap);
+		}
+		return examMap;
+	}
+
+	/**
+	 * 获取一套科目四的题目
+	 * @author ruan 
+	 * @return
+	 */
+	public Map<Long, Object> getExam4(String sessionId) {
+		Map<Long, Object> examMap = exam4Map.get(sessionId);
+		if (examMap == null) {
+			examMap = new LinkedHashMap<>(100);
+			Object[] keySet = exam4_2.keySet().toArray();
+			int random = RandomUtil.rand(0, keySet.length - 1);
+			// 22道判断题
+			while (examMap.size() < 22) {
+				DJudge judge = exam4_2.get(keySet[random]);
+				examMap.put(judge.getId(), judge);
+				random = RandomUtil.rand(0, keySet.length - 1);
+			}
+
+			// 23道单选题
+			keySet = exam4_4.keySet().toArray();
+			while (examMap.size() < 45) {
+				random = RandomUtil.rand(0, keySet.length - 1);
+				DSelect select = exam4_4.get(keySet[random]);
+				examMap.put(select.getId(), select);
+			}
+
+			// 5道多选题
+			keySet = exam4_4_4.keySet().toArray();
+			while (examMap.size() < 50) {
+				random = RandomUtil.rand(0, keySet.length - 1);
+				DSelect select = exam4_4_4.get(keySet[random]);
+				examMap.put(select.getId(), select);
+			}
+			exam4Map.put(sessionId, examMap);
 		}
 		return examMap;
 	}
@@ -228,6 +266,21 @@ public class ExamDao {
 	public Map<Long, String> getExam1Answer(String sessionId) {
 		Map<Long, String> answerMap = new LinkedHashMap<>(100);
 		for (Entry<Long, Object> e : getExam1(sessionId).entrySet()) {
+			DAnswer answer = getAnswer(e.getKey());
+			if (answer == null) {
+				continue;
+			}
+			answerMap.put(answer.getBaid(), answer.getAnswer() + "," + answer.getExplain());
+		}
+		return answerMap;
+	}
+
+	/**
+	 * 获取一套科目四的题目的答案
+	 */
+	public Map<Long, String> getExam4Answer(String sessionId) {
+		Map<Long, String> answerMap = new LinkedHashMap<>(100);
+		for (Entry<Long, Object> e : getExam4(sessionId).entrySet()) {
 			DAnswer answer = getAnswer(e.getKey());
 			if (answer == null) {
 				continue;

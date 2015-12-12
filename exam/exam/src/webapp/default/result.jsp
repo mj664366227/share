@@ -16,6 +16,6 @@
   </h1>
   <br>
   <br>
-  <c:if test="${score!=100}"><a href="explain?userId=${userId}" style="text-decoration:underline;color:#F90409; font-size:30px">看看我错的题目</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</c:if>
+  <c:if test="${score!=100}"><a href="explain?userId=${userId}&from=${from}" style="text-decoration:underline;color:#F90409; font-size:30px">看看我错的题目</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</c:if>
   <a href="${from}" style="text-decoration:underline;color:#F90409; font-size:30px">再做一次</a> </div>
 <%@include file="foot.jsp" %>

@@ -12,12 +12,15 @@
     <div class="explain">${i}&nbsp;.&nbsp;${exam.value.question}<br>
       <br>
       <br>
-      <c:if test="${not empty exam.value.image}"><img src="${exam.value.image}" width="150" height="150"/><br>
+      <c:if test="${not empty exam.value.image}"><img src="${exam.value.image}" width="200" height="150"/><br>
         <br>
       </c:if>
       您的答案：${learnerAnswer.get(fn:trim(exam.key))}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;正确答案：${answerMap.get(exam.key).split(',')[0]}
       <c:set var="i" value="${i+1}"/>
       <br>
+      <br>
+      <c:if test="${learnerAnswer.get(fn:trim(exam.key))!=answerMap.get(exam.key).split(',')[0]}"><font color="red">答题错误</font> </c:if>
+      <c:if test="${learnerAnswer.get(fn:trim(exam.key))==answerMap.get(exam.key).split(',')[0]}"><font color="#39FB00">答题正确</font> </c:if>
       <br>
       <br>
       答案解析：<br>

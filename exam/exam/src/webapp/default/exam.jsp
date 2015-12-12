@@ -78,7 +78,7 @@
                   <div class="result-container " data-item="result-container">
                     <div class="result-info float-l" data-item="result-tip"></div>
                     <div class="options-container float-l " data-item="options-container" id="options-container">
-                      <label>请选择：</label>
+                      <label id="please-select">请选择：</label>
                       <span></span> </div>
                   </div>
                 </div>
