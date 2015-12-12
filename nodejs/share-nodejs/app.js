@@ -6,9 +6,9 @@ var logutil = require('./core/util/logutil');
 var logger = logutil.getLogger(module.filename);
 var databaseConfig = require('./config/database');
 
-
-logger.info('空间的花费感到很孤独可恢复供货价倒挂');
-
+while (true) {
+	logger.info('空间的花费感到很孤独可恢复供货价倒挂');
+}
 
 // http.createServer(function handler(req, res) {
 // res.writeHead(200, {

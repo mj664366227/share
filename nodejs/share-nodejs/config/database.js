@@ -5,4 +5,4 @@ exports.config = {
 	"user" : "root",
 	"password" : "root",
 	"database" : "gu"
-}
+};
