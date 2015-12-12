@@ -118,7 +118,7 @@ public class ExamDao {
 						addExam1();
 						addExam4();
 						try {
-							Thread.sleep(10000);
+							Thread.sleep(3600 * 1000);
 						} catch (Exception e) {
 							logger.error("", e);
 						}
