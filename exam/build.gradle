@@ -84,4 +84,5 @@ project(':exam') {
 		compile 'org.springframework:spring-web:4.2.3.RELEASE'
 		compile 'org.springframework:spring-webmvc:4.2.3.RELEASE'
     }
+	task deploy(dependsOn: [copyLib, copyWebapp])
 }
