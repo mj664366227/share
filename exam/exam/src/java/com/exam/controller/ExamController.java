@@ -1,5 +1,6 @@
 package com.exam.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.exam.core.util.FileSystem;
 import com.exam.core.util.HttpServerUtil;
 import com.exam.core.util.JSONObject;
+import com.exam.core.util.Secret;
 import com.exam.core.util.StringUtil;
 import com.exam.dao.ExamDao;
 import com.exam.dao.model.DAnswer;
@@ -24,6 +27,26 @@ import com.exam.dao.model.DAnswer;
 public class ExamController {
 	@Autowired
 	private ExamDao examDao;
+
+	/**
+	 * login
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = "/login")
+	public ModelAndView login(JSONObject data, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		ModelAndView model = new ModelAndView("login");
+		String password = data.getString("password");
+		if (request.getMethod().equals(RequestMethod.POST.toString())) {
+			if (!password.equals(FileSystem.getPropertyString("password"))) {
+				model.addObject("tips", "密码错误");
+				return model;
+			}
+			session.setAttribute("login", Secret.md5(FileSystem.getPropertyString("password") + FileSystem.getPropertyString("system.key")));
+			response.sendRedirect("/index");
+		}
+
+		return model;
+	}
 
 	/**
 	 * index

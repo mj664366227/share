@@ -9,6 +9,7 @@ var judgeHTML = '<a class="answer-right" onClick="question(\'%baid%\',\'正确\'
 var selectHTML = '<a class="answer-right" onClick="question(\'%baid%\',\'A\')">A</a> <a class="answer-wrong" onClick="question(\'%baid%\',\'B\')">B</a><a class="answer-right" onClick="question(\'%baid%\',\'C\')">C</a> <a class="answer-wrong" onClick="question(\'%baid%\',\'D\')">D</a>';
 var multiSelectHTML = '<a class="answer-right multiSelect" onClick="ding(this)">A</a> <a class="answer-wrong multiSelect" onClick="ding(this)">B</a><a class="answer-right multiSelect" onClick="ding(this)">C</a> <a class="answer-wrong multiSelect" onClick="ding(this)">D</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;此题目为多项选择：<button style="background:#32b16c;border:0;width:100px;height:35px;margin-top:3px;outline:none;border-radius:5px;color:#fff;font-size:16px;" type="button" onClick="question(\'%baid%\',getMultiSelectAnswer())">确定</button>';
 var time = 0;
+var tmp = 0;
 var status = false;
 
 $(function(){
@@ -33,12 +34,15 @@ $(function(){
 	setInterval('second2time()',1000);
 	
 	$('#handIn').click(function(){
+		if(!(kemu == 1 && tmp >= 99) && !(kemu == 4 && tmp >= 49)){
+			alert('您有题目没做完，不能交卷！');
+			return false;
+		}
 		$('#my-answer').submit();
 	});
 })
 
 function showNextQuestion(){
-	var tmp = 0;
 	$('#datika-container ul li').each(function(index, e) {
         var has = $(e).attr('style');
 		var id = $(e).attr('id');
@@ -136,6 +140,11 @@ function soundPlayTips(){
 
 function second2time(){
 	time -= 1;
+	if(time <= 0) {
+		alert('考试时间到！系统强制交卷！');
+		$('#my-answer').submit();
+		return false;
+	}
 	var minute = parseInt(time/60);
 	var second = parseInt(time%60);
 	second = second < 10 ? '0'+second : second;
@@ -147,6 +156,10 @@ function second2time(){
 	}
 	$('#left-time').html(html);
 }
+
+document.oncontextmenu = function(){
+	return false; 
+} 
 </script>
 <style>
 .sound, .sound-active,.sound-tips {
