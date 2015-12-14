@@ -8,12 +8,13 @@ exports.config = {
 			pattern : '%d{yyyy-MM-dd hh:mm:ss} [%-4p] %c - %m'
 		}
 	}, {// 文件输出
-		type : 'dateFile',
+		type : 'file',
 		filename : 'log/log.log',
+		pattern : "_yyyy-MM-dd",
 		maxLogSize : 10000000
 	} ],
+	replaceConsole : true,
 	levels : {
-		dateFile : 'info',
-		console : 'info'
+		"[all]" : 'info'
 	}
 };
