@@ -76,12 +76,12 @@ if [ ! -d $php_install_path/zlib ]; then
 fi
 
 # 安装python 
-python='Python-3.4.0'
+python='Python-3.5.1'
 if [ ! -d $php_install_path/python ]; then
 	echo 'installing '$python' ...'
 	if [ ! -f $base_path/$python.tgz ]; then
 		echo $python'.tgz is not exists, system will going to download it...'
-		wget -O $base_path/$python.tgz --no-check-certificate http://www.python.org/ftp/python/3.4.0/$python.tgz || exit
+		wget -O $base_path/$python.tgz --no-check-certificate https://www.python.org/ftp/python/3.5.1/$python.tgz || exit
 		echo 'download '$python' finished...'
 	fi
 	tar xvf $base_path/$python.tgz -C $install_path || exit
@@ -108,7 +108,7 @@ if [ ! -d $nginx_install_path/libxml2 ]; then
 fi
 
 # 安装OpenSSL
-openssl='openssl-1.0.2d'
+openssl='openssl-1.0.2e'
 if [ ! -d $php_install_path/openssl ]; then
 	echo 'installing '$openssl' ...'
 	if [ ! -f $base_path/$openssl.tar.gz ]; then
@@ -124,7 +124,7 @@ if [ ! -d $php_install_path/openssl ]; then
 fi
 
 # 安装pcre
-pcre='pcre-8.37'
+pcre='pcre-8.38'
 if [ ! -d $php_install_path/pcre ]; then
 	echo 'installing '$pcre' ...'
 	if [ ! -f $base_path/$pcre.tar.gz ]; then
