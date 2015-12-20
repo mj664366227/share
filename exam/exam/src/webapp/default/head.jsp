@@ -7,4 +7,5 @@
 <link rel="stylesheet" href="${skin}/css/css.css">
 <script type="text/javascript" src="${skin}/js/jquery-2.1.4.min.js"></script>
 </head>
-<body onCopy="event.returnValue=false;" onselectstart="return false">
+<!--<body onCopy="event.returnValue=false;" onselectstart="return false">-->
+<body>

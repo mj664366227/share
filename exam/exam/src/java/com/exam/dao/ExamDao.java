@@ -465,7 +465,7 @@ public class ExamDao {
 			return;
 		}
 		String sql = "REPLACE INTO `exam1_4`(`id`,`question`,`a`,`b`,`c`,`d`,`image`,`answer`) VALUES (?,?,?,?,?,?,?,?)";
-		db.update(sql, baid, question, a, b, c, b, image, answer);
+		db.update(sql, baid, question, a, b, c, d, image, answer);
 		logger.warn("新增一道科目1的选择题：{}\t答案：{}", question, answer);
 		addQuestionAnswer(baid);
 	}
@@ -505,7 +505,7 @@ public class ExamDao {
 			return;
 		}
 		String sql = "REPLACE INTO `exam4_4`(`id`,`question`,`a`,`b`,`c`,`d`,`image`,`flashurl`,`answer`) VALUES (?,?,?,?,?,?,?,?,?)";
-		db.update(sql, baid, question, a, b, c, b, image, flashurl, answer);
+		db.update(sql, baid, question, a, b, c, d, image, flashurl, answer);
 		logger.warn("新增一道科目4的单选题：{}\t答案：{}", question, answer);
 		addQuestionAnswer(baid);
 	}
@@ -527,7 +527,7 @@ public class ExamDao {
 			return;
 		}
 		String sql = "REPLACE INTO `exam4_4_4`(`id`,`question`,`a`,`b`,`c`,`d`,`image`,`answer`) VALUES (?,?,?,?,?,?,?,?)";
-		db.update(sql, baid, question, a, b, c, b, image, answer);
+		db.update(sql, baid, question, a, b, c, d, image, answer);
 		logger.warn("新增一道科目4的多选题：{}\t答案：{}", question, answer);
 		addQuestionAnswer(baid);
 	}

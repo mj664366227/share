@@ -10,6 +10,8 @@ var selectHTML = '<a class="answer-right" onClick="question(\'%baid%\',\'A\')">A
 var multiSelectHTML = '<a class="answer-right multiSelect" onClick="ding(this)">A</a> <a class="answer-wrong multiSelect" onClick="ding(this)">B</a><a class="answer-right multiSelect" onClick="ding(this)">C</a> <a class="answer-wrong multiSelect" onClick="ding(this)">D</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;此题目为多项选择：<button style="background:#32b16c;border:0;width:100px;height:35px;margin-top:3px;outline:none;border-radius:5px;color:#fff;font-size:16px;" type="button" onClick="question(\'%baid%\',getMultiSelectAnswer())">确定</button>';
 var time = 0;
 var tmp = 0;
+var last = 1; 
+var _do = 0;
 var status = false;
 
 $(function(){
@@ -42,19 +44,19 @@ $(function(){
 	});
 })
 
-function showNextQuestion(){
-	$('#datika-container ul li').each(function(index, e) {
-        var has = $(e).attr('style');
-		var id = $(e).attr('id');
-		var number = $(e).attr('number');
-		if (typeof(has) == 'undefined') { 
-			$.post('exam'+kemu,{id:id},function(data){
+function showQuestion(id,number){
+	$.post('exam'+kemu,{id:id},function(data){
 				if(!data) {
 					return false;
 				}
-				$('.timu-p').html(number+'.&nbsp;'+data.question+'<a href="javascript:void(0)" onClick="soundPlay();"><div class="sound" title="点击可以听到语音提示" content="'+data.question+'"></div></a><div class="sound-play"></div>');
+				$('.timu-p').html(number+'.&nbsp;'+data.question+'<br><br><a href="javascript:void(0)" onClick="soundPlay();"><div class="sound" title="点击可以听到语音提示" content="'+data.question+'"></div></a><div class="sound-play"></div>');
+				if(data.a){
+					var hhhh = data.a+'<br>'+data.b+'<br>'+data.c+'<br>'+data.d+'<br>';
+					$('#daan').html(hhhh);
+				}
 				$.post('getanswer',{id:id}, function(data){
-					$('.tip-content').html(data.explain.toString().trim()+'&nbsp;<a href="javascript:void(0)" onClick="soundPlayTips();"><div class="sound-tips" title="点击可以听到语音提示" content="'+data.explain.toString().trim()+'"></div></a><div class="sound-play-tips"></div>');
+					$('.tip-content').html(data.explain.toString().trim()+'<br>答案：<font color="red">'+data.answer+'</font><br>&nbsp;<a href="javascript:void(0)" onClick="soundPlayTips();"><div class="sound-tips" title="点击可以听到语音提示" content="'+data.explain.toString().trim()+'"></div></a><div class="sound-play-tips"></div>');
+
 				});
 				if(kemu == 1){
 					if(number <= 40){
@@ -80,11 +82,22 @@ function showNextQuestion(){
 					$('#media-container').html(html);
 				}
 			});
-			return false;
+}
+
+function showNextQuestion(){
+	$('#datika-container ul li').each(function(index, e) {
+        var has = $(e).attr('style');
+		var id = $(e).attr('id');
+		var number = $(e).attr('number');
+		if(last <= number) {
+			if (typeof(has) == 'undefined') {
+				showQuestion(id,number);
+				return false;
+			}
 		}
 		tmp = index;
     });
-	if((kemu == 1 && tmp >= 99) || (kemu == 4 && tmp >= 49)){
+	if((kemu == 1 && _do >= 100) || (kemu == 4 && _do >= 50)){
 		if(status){
 			$('.timu-p').html('<center><b><br><br><br>题目做完了，请交卷！</b></center>');
 			$('.tip-content').html('');
@@ -92,7 +105,7 @@ function showNextQuestion(){
 			$('#options-container span').html('');
 			$('#please-select').css('display','none');
 		}
-		status = true;s
+		status = true;
 		return false;
 	}
 }
@@ -119,6 +132,11 @@ function getMultiSelectAnswer(){
 function question(baid, answer){
 	$('#'+baid).css('background','#dfdfdf').css('cursor','pointer').addClass('hover');
 	$('#my-answer').prepend('<input type="hidden" name="'+baid+'" value="'+answer+'"/>');
+	last = parseInt($('#'+baid).attr('number'));
+	_do = _do + 1;
+	if(last >= 100){
+		last = 0;
+	}
 	showNextQuestion();
 }
 
@@ -131,7 +149,13 @@ function soundPlay(){
 	var html = '<video controls autoplay name="media"><source src="http://tts.baidu.com/text2audio?lan=zh&pid=101&ie=UTF-8&text='+content+'&spd=3" type="audio/mp3"></video>';
 	$('.sound-play').html(html);
 }
-
+function jump(obj){
+	jump = true;
+	obj = $(obj);
+	var number = obj.attr('number');
+	var id = obj.attr('id');
+	showQuestion(id,number);
+}
 function soundPlayTips(){
 	var content = $('.sound-tips').attr('content').trim();
 	var html = '<video controls autoplay name="media-tips"><source src="http://tts.baidu.com/text2audio?lan=zh&pid=101&ie=UTF-8&text='+content+'&spd=3" type="audio/mp3"></video>';
@@ -158,14 +182,14 @@ function second2time(){
 }
 
 document.oncontextmenu = function(){
-	return false; 
+	return true; 
 } 
 </script>
 <style>
 .sound, .sound-active,.sound-tips {
 	width: 25px;
 	height: 25px;
-	margin-top: 5px
+	margin-top: -10px
 }
 .sound,.sound-tips {
 	background: url(${skin}/image/icons.png) no-repeat -73px -88px;

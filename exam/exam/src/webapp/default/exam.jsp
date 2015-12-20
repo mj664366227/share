@@ -81,6 +81,7 @@
                       <label id="please-select">请选择：</label>
                       <span></span> </div>
                   </div>
+				  <div id="daan" style=" position:relative; top:-200px; font-size:16px; text-align:left"></div>
                 </div>
                 <div class="media-container float-l" data-item="media-container" id="media-container"></div>
               </fieldset>
@@ -110,7 +111,7 @@
                 <ul>
                   <c:set var="i" value="1"/>
                   <c:forEach items="${examMap}" var="exam">
-                    <li id="${exam.value.id}" number="${i}">${i}</li>
+                    <li id="${exam.value.id}" number="${i}" onClick="jump(this)">${i}</li>
                     <c:set var="i" value="${i+1}"/>
                   </c:forEach>
                 </ul>
