@@ -38,7 +38,7 @@ fi
 if [ ! -d $php_install_path/autoconf ]; then
 	autoconf='autoconf-2.69'
 	if [ ! -f $base_path/$autoconf.tar.gz ]; then
-		wget -O $base_path/$autoconf.tar.gz http://ftp.gnu.org/gnu/autoconf/$autoconf.tar.gz || exit
+		wget -O $base_path/$autoconf.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$autoconf.tar.gz || exit
 	fi
 	tar zxvf $base_path/$autoconf.tar.gz -C $install_path || exit
 	cd $install_path/$autoconf
@@ -50,7 +50,7 @@ fi
 if [ ! -d $php_install_path/libiconv ]; then
 	libiconv='libiconv-1.14'
 	if [ ! -f $base_path/$libiconv.tar.gz ]; then
-		wget -O $base_path/$libiconv.tar.gz http://ftp.gnu.org/pub/gnu/libiconv/$libiconv.tar.gz || exit
+		wget -O $base_path/$libiconv.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$libiconv.tar.gz || exit
 	fi
 	tar zxvf $base_path/$libiconv.tar.gz -C $install_path || exit
 	cd $install_path/$libiconv/srclib
@@ -81,7 +81,7 @@ if [ ! -d $php_install_path/python ]; then
 	echo 'installing '$python' ...'
 	if [ ! -f $base_path/$python.tgz ]; then
 		echo $python'.tgz is not exists, system will going to download it...'
-		wget -O $base_path/$python.tgz --no-check-certificate https://www.python.org/ftp/python/3.5.1/$python.tgz || exit
+		wget -O $base_path/$python.tgz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$python.tgz || exit
 		echo 'download '$python' finished...'
 	fi
 	tar xvf $base_path/$python.tgz -C $install_path || exit
@@ -97,7 +97,7 @@ if [ ! -d $nginx_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
 	if [ ! -f $base_path/$libxml.tar.gz ]; then
 		echo $libxml'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.tar.gz http://xmlsoft.org/sources/$libxml.tar.gz || exit
+		wget -O $base_path/$libxml.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$libxml.tar.gz || exit
 		echo 'download '$libxml' finished...'
 	fi
 	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
@@ -113,7 +113,7 @@ if [ ! -d $php_install_path/openssl ]; then
 	echo 'installing '$openssl' ...'
 	if [ ! -f $base_path/$openssl.tar.gz ]; then
 		echo $openssl'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$openssl.tar.gz http://www.openssl.org/source/$openssl.tar.gz || exit
+		wget -O $base_path/$openssl.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$openssl.tar.gz || exit
 		echo 'download '$openssl' finished...'
 	fi
 	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
@@ -129,7 +129,7 @@ if [ ! -d $php_install_path/pcre ]; then
 	echo 'installing '$pcre' ...'
 	if [ ! -f $base_path/$pcre.tar.gz ]; then
 		echo $pcre'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$pcre.tar.gz ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$pcre.tar.gz || exit
+		wget -O $base_path/$pcre.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$pcre.tar.gz || exit
 		echo 'download '$pcre' finished...'
 	fi
 	tar zxvf $base_path/$pcre.tar.gz -C $install_path || exit
@@ -145,7 +145,7 @@ if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then
 		echo $curl'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$curl.tar.gz http://curl.haxx.se/download/$curl.tar.gz || exit
+		wget -O $base_path/$curl.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$curl.tar.gz || exit
 		echo 'download '$curl' finished...'
 	fi
 	tar zxvf $base_path/$curl.tar.gz -C $install_path || exit
@@ -161,7 +161,7 @@ if [ ! -d $php_install_path/libmcrypt ]; then
 	echo 'installing libmcrypt-'$libmcrypt' ...'
 	if [ ! -f $base_path/libmcrypt-$libmcrypt.tar.gz ]; then
 		echo 'libmcrypt-'$libmcrypt'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/libmcrypt-$libmcrypt.tar.gz ftp://mcrypt.hellug.gr/pub/crypto/mcrypt/libmcrypt/libmcrypt-$libmcrypt.tar.gz || exit
+		wget -O $base_path/libmcrypt-$libmcrypt.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/libmcrypt-$libmcrypt.tar.gz || exit
 		echo 'download libmcrypt-'$libmcrypt' finished...'
 	fi
 	tar zxvf $base_path/libmcrypt-$libmcrypt.tar.gz -C $install_path || exit
@@ -177,7 +177,7 @@ if [ ! -d $php_install_path/bz2 ]; then
 	echo 'installing '$ncurses'...'
 	if [ ! -f $base_path/bzip2-$bz2.tar.gz ]; then
 	echo $ncurses'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/bzip2-$bz2.tar.gz http://www.bzip.org/$bz2/bzip2-$bz2.tar.gz || exit
+		wget -O $base_path/bzip2-$bz2.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/bzip2-$bz2.tar.gz || exit
 		echo 'download bzip2-'$bz2' finished...'
 	fi
 	tar zxvf $base_path/bzip2-$bz2.tar.gz -C $install_path || exit
@@ -190,7 +190,7 @@ fi
 if [ ! -d $php_install_path/libpng ]; then
 	libpng='1.6.19'
 	if [ ! -f $base_path/libpng-$libpng.tar.gz ]; then
-		wget -O $base_path/libpng-$libpng.tar.gz http://jaist.dl.sourceforge.net/project/libpng/libpng16/$libpng/libpng-$libpng.tar.gz || exit
+		wget -O $base_path/libpng-$libpng.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/libpng-$libpng.tar.gz || exit
 	fi
 	tar zxvf $base_path/libpng-$libpng.tar.gz -C $install_path || exit
 	cd $install_path/libpng-$libpng
@@ -200,7 +200,7 @@ fi
 # jpeg
 if [ ! -d $php_install_path/jpeg ]; then
 	if [ ! -f $base_path/jpegsrc.tar.gz ]; then
-		wget -O $base_path/jpegsrc.tar.gz http://www.ijg.org/files/jpegsrc.v9a.tar.gz || exit
+		wget -O $base_path/jpegsrc.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/jpegsrc.v9a.tar.gz || exit
 	fi
 	tar zxvf $base_path/jpegsrc.tar.gz -C $install_path || exit
 	cd $install_path/jpeg-9a
@@ -211,7 +211,7 @@ fi
 if [ ! -d $php_install_path/freetype ]; then
 	freetype='freetype-2.6.1'
 	if [ ! -f $base_path/$freetype.tar.gz ]; then
-		wget -O $base_path/$freetype.tar.gz http://download.savannah.gnu.org/releases/freetype/$freetype.tar.gz || exit
+		wget -O $base_path/$freetype.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$freetype.tar.gz || exit
 	fi
 	rm -rf $install_path/$freetype
 	tar zxvf $base_path/$freetype.tar.gz -C $install_path || exit
@@ -223,7 +223,7 @@ fi
 echo 'installing php-'$php_version'...'
 if [ ! -f $base_path/php-$php_version.tar.gz ]; then
 	echo 'php-'$php_version'.tar.gz is not exists, system will going to download it...'
-	wget -O $base_path/php-$php_version.tar.gz http://cn2.php.net/distributions/php-$php_version.tar.gz || exit
+	wget -O $base_path/php-$php_version.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/php-$php_version.tar.gz || exit
 	echo 'download php-'$php_version' finished...'
 fi
 rm -rf $install_path/php-$php_version
