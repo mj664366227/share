@@ -32,8 +32,8 @@ $(function(){
 	
 	showNextQuestion();
 	
-	second2time();
-	setInterval('second2time()',1000);
+	//second2time();
+	//setInterval('second2time()',1000);
 	
 	$('#handIn').click(function(){
 		if(!(kemu == 1 && tmp >= 99) && !(kemu == 4 && tmp >= 49)){
@@ -150,7 +150,6 @@ function soundPlay(){
 	$('.sound-play').html(html);
 }
 function jump(obj){
-	jump = true;
 	obj = $(obj);
 	var number = obj.attr('number');
 	var id = obj.attr('id');
@@ -174,15 +173,15 @@ function second2time(){
 	second = second < 10 ? '0'+second : second;
 	var html;
 	if(minute < 5){
-		html = '<font color="red">'+minute+':'+second+'</font>';
+		html = '<font color="red">'+minute+'分'+second+'秒</font>';
 	} else {
-		html = minute+':'+second;
+		html = minute+'分'+second+'秒';
 	}
 	$('#left-time').html(html);
 }
 
 document.oncontextmenu = function(){
-	return true; 
+	return false; 
 } 
 </script>
 <style>
