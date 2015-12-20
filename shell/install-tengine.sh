@@ -41,7 +41,7 @@ if [ ! -d $install_path/$pcre ]; then
 	echo 'installing '$pcre' ...'
 	if [ ! -f $base_path/$pcre.tar.gz ]; then
 		echo $pcre'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$pcre.tar.gz ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$pcre.tar.gz || exit
+		wget -O $base_path/$pcre.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$pcre.tar.gz || exit
 		echo 'download '$pcre' finished...'
 	fi
 	tar zxvf $base_path/$pcre.tar.gz -C $install_path || exit
@@ -52,7 +52,7 @@ openssl='openssl-1.0.2e'
 echo 'installing '$openssl' ...'
 if [ ! -f $base_path/$openssl.tar.gz ]; then
 	echo $openssl'.tar.gz is not exists, system will going to download it...'
-	wget -O $base_path/$openssl.tar.gz http://www.openssl.org/source/$openssl.tar.gz || exit
+	wget -O $base_path/$openssl.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$openssl.tar.gz || exit
 	echo 'download '$openssl' finished...'
 fi
 tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
@@ -63,7 +63,7 @@ if [ ! -d $install_path/$libatomic ]; then
 	echo 'installing '$libatomic' ...'
 	if [ ! -f $base_path/$libatomic.tar.gz ]; then
 		echo $libatomic'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libatomic.tar.gz http://www.hpl.hp.com/research/linux/atomic_ops/download/$libatomic.tar.gz || exit
+		wget -O $base_path/$libatomic.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$libatomic.tar.gz || exit
 		echo 'download '$libatomic' finished...'
 	fi
 	tar zxvf $base_path/$libatomic.tar.gz -C $install_path || exit
@@ -74,7 +74,7 @@ jemalloc='jemalloc-4.0.4'
 echo 'installing '$jemalloc' ...'
 if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
 	echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
-	wget -O $base_path/$jemalloc.tar.bz2 http://www.canonware.com/download/jemalloc/$jemalloc.tar.bz2 || exit
+	wget -O $base_path/$jemalloc.tar.bz2 https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$jemalloc.tar.bz2 || exit
 	echo 'download '$jemalloc' finished...'
 fi
 tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
@@ -86,7 +86,7 @@ echo 'installing '$tengine' ...'
 if [ ! -d $tengine_install_path/tengine ]; then
 	if [ ! -f $base_path/$tengine.tar.gz ]; then
 		echo $tengine'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$tengine.tar.gz http://tengine.taobao.org/download/$tengine.tar.gz || exit
+		wget -O $base_path/$tengine.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$tengine.tar.gz || exit
 		echo 'download '$tengine' finished...'
 	fi
 	tar zxvf $base_path/$tengine.tar.gz -C $install_path || exit

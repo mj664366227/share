@@ -25,7 +25,7 @@ cd $install_path
 
 datadumper='Data-Dumper-2.154'
 if [ ! -f $base_path/$m4.tar.gz ]; then
-	wget -O $base_path/$datadumper.tar.gz http://www.cpan.org/modules/by-module/Data/$datadumper.tar.gz || exit
+	wget -O $base_path/$datadumper.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$datadumper.tar.gz || exit
 fi
 tar xvzf $base_path/$datadumper.tar.gz -C $install_path || exit
 cd $install_path/$datadumper
@@ -36,7 +36,7 @@ make install
 if [ ! -d $php_install_path/m4 ]; then
 	m4='m4-1.4.17'
 	if [ ! -f $base_path/$m4.tar.gz ]; then
-		wget -O $base_path/$m4.tar.gz http://ftp.gnu.org/gnu/m4/$m4.tar.gz || exit
+		wget -O $base_path/$m4.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$m4.tar.gz || exit
 	fi
 	tar zxvf $base_path/$m4.tar.gz -C $install_path || exit
 	cd $install_path/$m4
@@ -47,7 +47,7 @@ fi
 if [ ! -d $git_install_path/autoconf ]; then
 	autoconf='autoconf-2.69'
 	if [ ! -f $base_path/$autoconf.tar.gz ]; then
-		wget -O $base_path/$autoconf.tar.gz http://ftp.gnu.org/gnu/autoconf/$autoconf.tar.gz || exit
+		wget -O $base_path/$autoconf.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$autoconf.tar.gz || exit
 	fi
 	tar zxvf $base_path/$autoconf.tar.gz -C $install_path || exit
 	cd $install_path/$autoconf
