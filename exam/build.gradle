@@ -4,7 +4,7 @@ buildscript {
 			maven { url "http://127.0.0.1:8081/nexus/content/repositories/central/" }
         }
         dependencies {
-            classpath "net.saliman:gradle-cobertura-plugin:2.2.8"
+            classpath "net.saliman:gradle-cobertura-plugin:2.3.0"
         }
 }
 
@@ -77,13 +77,13 @@ project(':exam') {
 		compile 'mysql:mysql-connector-java:5.1.36'
 		compile 'net.sf.supercsv:super-csv:2.3.1'
 		compile 'javax.servlet:jstl:1.2'
-		compile 'org.springframework:spring-beans:4.2.3.RELEASE'
-		compile 'org.springframework:spring-core:4.2.3.RELEASE'
-		compile 'org.springframework:spring-expression:4.2.3.RELEASE'
-		compile 'org.springframework:spring-test:4.2.3.RELEASE'
-		compile 'org.springframework:spring-jdbc:4.2.3.RELEASE'
-		compile 'org.springframework:spring-web:4.2.3.RELEASE'
-		compile 'org.springframework:spring-webmvc:4.2.3.RELEASE'
+		compile 'org.springframework:spring-beans:4.2.4.RELEASE'
+		compile 'org.springframework:spring-core:4.2.4.RELEASE'
+		compile 'org.springframework:spring-expression:4.2.4.RELEASE'
+		compile 'org.springframework:spring-test:4.2.4.RELEASE'
+		compile 'org.springframework:spring-jdbc:4.2.4.RELEASE'
+		compile 'org.springframework:spring-web:4.2.4.RELEASE'
+		compile 'org.springframework:spring-webmvc:4.2.4.RELEASE'
     }
 	task deploy(dependsOn: [copyLib, copyWebapp])
 }
