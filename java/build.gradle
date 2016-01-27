@@ -142,7 +142,7 @@ project(':share-core') {
 		compile 'com.codahale.metrics:metrics-servlets:3.0.2'
 		compile 'org.mongodb:mongo-java-driver:3.1.1'
 		compile 'org.msgpack:msgpack:0.6.12'
-		compile 'mysql:mysql-connector-java:5.1.37'
+		compile 'mysql:mysql-connector-java:5.1.38'
 		compile 'io.netty:netty:3.10.3.Final'
 		compile 'io.netty:netty-all:5.0.0.Alpha2'
 		compile 'net.sf.supercsv:super-csv:2.4.0'
