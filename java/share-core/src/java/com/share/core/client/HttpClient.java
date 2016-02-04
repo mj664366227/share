@@ -1,5 +1,7 @@
 package com.share.core.client;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
@@ -9,7 +11,6 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,6 +19,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -30,8 +32,11 @@ import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -49,10 +54,6 @@ import com.share.core.util.SystemUtil;
  * @author ruan
  */
 public final class HttpClient {
-	/**
-	 * 空map
-	 */
-	private final static Map<String, Object> nullMap = new HashMap<String, Object>(0);
 	/**
 	 * logger
 	 */
@@ -157,9 +158,9 @@ public final class HttpClient {
 				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, sslProtocols, null, new DefaultHostnameVerifier());
 				socketFactoryRegistry.register("https", sslsf);
 			} else {
-				SSLContext sslcontext = SSLContext.getInstance("SSL");
+				SSLContext sslcontext = SSLContext.getInstance("TLS");
 				sslcontext.init(null, new TrustManager[] { new TrustAllSSLCert() }, new SecureRandom());
-				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, new DefaultHostnameVerifier());
+				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext, new NoopHostnameVerifier());
 				socketFactoryRegistry.register("https", sslsf);
 			}
 
@@ -247,12 +248,11 @@ public final class HttpClient {
 	 * @param url
 	 */
 	public String getString(String url) {
-		logger.warn("request url: {}", url);
 		HttpGet get = new HttpGet(url);
 		try {
 			HttpResponse httpResponse = client.execute(get);
-			return EntityUtils.toString(httpResponse.getEntity(), charset).trim();
-		} catch (IOException e) {
+			return StringUtil.getString(EntityUtils.toString(httpResponse.getEntity(), charset));
+		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
 			get.releaseConnection();
@@ -270,7 +270,7 @@ public final class HttpClient {
 		try {
 			HttpResponse httpResponse = client.execute(get);
 			return EntityUtils.toByteArray(httpResponse.getEntity());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
 			get.releaseConnection();
@@ -293,8 +293,8 @@ public final class HttpClient {
 				sb.append(URLEncoder.encode(StringUtil.getString(e.getValue()), SystemUtil.getSystemCharsetString()));
 				sb.append("&");
 			}
-		} catch (Exception e1) {
-			logger.error("", e1);
+		} catch (Exception e) {
+			logger.error("", e);
 			return "";
 		}
 		int len = sb.length();
@@ -309,7 +309,29 @@ public final class HttpClient {
 	 * @return 字符串
 	 */
 	public String post(String url) {
-		return post(url, nullMap);
+		return post(url, null, null);
+	}
+
+	/**
+	 * 发送post请求
+	 * @author ruan 
+	 * @param url
+	 * @param data 字符串数据
+	 */
+	public String post(String url, String data) {
+		HttpPost httppost = new HttpPost(url);
+		try {
+			if (data != null && !data.isEmpty()) {
+				httppost.setEntity(new StringEntity(data, charset));
+			}
+			HttpResponse response = client.execute(httppost);
+			return EntityUtils.toString(response.getEntity(), charset);
+		} catch (Exception e) {
+			logger.error("", e);
+		} finally {
+			httppost.releaseConnection();
+		}
+		return null;
 	}
 
 	/**
@@ -320,8 +342,25 @@ public final class HttpClient {
 	 * @return 字符串
 	 */
 	public String post(String url, Map<String, Object> data) {
+		return post(url, data, null);
+	}
+
+	/**
+	 * 发送post请求
+	 * @author ruan
+	 * @param url
+	 * @param data
+	 * @param header 
+	 * @return 字符串
+	 */
+	public String post(String url, Map<String, Object> data, Map<String, Object> header) {
 		HttpPost httppost = new HttpPost(url);
 		try {
+			if (header != null && !header.isEmpty()) {
+				for (Entry<String, Object> e : header.entrySet()) {
+					httppost.setHeader(e.getKey(), StringUtil.getString(e.getValue()));
+				}
+			}
 			if (data != null && !data.isEmpty()) {
 				List<NameValuePair> valuePairList = new ArrayList<NameValuePair>();
 				for (Entry<String, Object> e : data.entrySet()) {
@@ -330,8 +369,62 @@ public final class HttpClient {
 				httppost.setEntity(new UrlEncodedFormEntity(valuePairList, charset));
 			}
 			HttpResponse response = client.execute(httppost);
-			return EntityUtils.toString(response.getEntity(), charset);
-		} catch (IOException e) {
+			return StringUtil.getString(EntityUtils.toString(response.getEntity(), charset));
+		} catch (Exception e) {
+			logger.error("", e);
+		} finally {
+			httppost.releaseConnection();
+		}
+		return null;
+	}
+
+	/**
+	 * 发送post请求(没有做urlencode的)
+	 * @author ruan
+	 * @param url
+	 * @return 字符串
+	 */
+	public String postNotUrlencode(String url) {
+		return postNotUrlencode(url, null, null);
+	}
+
+	/**
+	 * 发送post请求(没有做urlencode的)
+	 * @author ruan
+	 * @param url
+	 * @param data
+	 * @return 字符串
+	 */
+	public String postNotUrlencode(String url, Map<String, Object> data) {
+		return postNotUrlencode(url, data, null);
+	}
+
+	/**
+	 * 发送post请求(没有做urlencode的)
+	 * @author ruan
+	 * @param url
+	 * @param data
+	 * @param header 
+	 * @return 字符串
+	 */
+	public String postNotUrlencode(String url, Map<String, Object> data, Map<String, Object> header) {
+		HttpPost httppost = new HttpPost(url);
+		try {
+			if (header != null && !header.isEmpty()) {
+				for (Entry<String, Object> e : header.entrySet()) {
+					httppost.setHeader(e.getKey(), StringUtil.getString(e.getValue()));
+				}
+			}
+			if (data != null && !data.isEmpty()) {
+				List<NameValuePair> valuePairList = new ArrayList<NameValuePair>();
+				for (Entry<String, Object> e : data.entrySet()) {
+					valuePairList.add(new BasicNameValuePair(StringUtil.getString(e.getKey()), StringUtil.getString(e.getValue())));
+				}
+				httppost.setEntity(new UrlEncodedFormEntity(valuePairList, charset));
+			}
+			HttpResponse response = client.execute(httppost);
+			return StringUtil.getString(EntityUtils.toString(response.getEntity(), charset));
+		} catch (Exception e) {
 			logger.error("", e);
 		} finally {
 			httppost.releaseConnection();
@@ -359,6 +452,73 @@ public final class HttpClient {
 			httppost.releaseConnection();
 		}
 		return null;
+	}
+
+	/**
+	 * 上传文件
+	 * @param url 要上传的url
+	 * @param filepath 文件路径
+	 * @param filePartName 文件上传域的名
+	 */
+	public String uploadFile(String url, String filepath, String filePartName) {
+		return uploadFile(url, null, filepath, filePartName);
+	}
+
+	/**
+	 * 上传文件
+	 * @param url 要上传的url
+	 * @param data 附带参数
+	 * @param filepath 文件路径
+	 * @param filePartName 文件上传域的名
+	 */
+	public String uploadFile(String url, Map<String, Object> data, String filepath, String filePartName) {
+		HttpPost httpPost = new HttpPost(url);
+		try {
+			MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
+			multipartEntityBuilder.addBinaryBody("file", new File(filepath));
+			if (data != null && !data.isEmpty()) {
+				for (Entry<String, Object> e : data.entrySet()) {
+					multipartEntityBuilder.addTextBody(StringUtil.getString(e.getKey()), StringUtil.getString(e.getValue()));
+				}
+			}
+			httpPost.setEntity(multipartEntityBuilder.build());
+			HttpResponse response = client.execute(httpPost);
+			return StringUtil.getString(EntityUtils.toString(response.getEntity(), charset));
+		} catch (Exception e) {
+			logger.error("", e);
+		} finally {
+			httpPost.releaseConnection();
+		}
+		return null;
+	}
+
+	/**
+	 * 下载文件
+	 * @param url 文件的网络地址
+	 * @param filepath 文件的本地地址
+	 */
+	public void downloadFile(String url, String filepath) {
+		HttpGet httpget = new HttpGet(url);
+		try {
+			HttpResponse response = client.execute(httpget);
+			HttpEntity entity = response.getEntity();
+			InputStream is = entity.getContent();
+			File file = new File(filepath);
+			FileOutputStream fileout = new FileOutputStream(file);
+			byte[] buffer = new byte[1024];
+			int ch = 0;
+			while ((ch = is.read(buffer)) != -1) {
+				fileout.write(buffer, 0, ch);
+			}
+			is.close();
+			fileout.flush();
+			fileout.close();
+		} catch (Exception e) {
+			logger.error("", e);
+		} finally {
+			logger.warn("download file {} success ...", url);
+			httpget.releaseConnection();
+		}
 	}
 
 	/**
