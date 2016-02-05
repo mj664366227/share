@@ -48,7 +48,7 @@ if [ ! -d $install_path/$pcre ]; then
 fi
 
 #安装OpenSSL
-openssl='openssl-1.0.2e'
+openssl='openssl-1.0.2f'
 echo 'installing '$openssl' ...'
 if [ ! -f $base_path/$openssl.tar.gz ]; then
 	echo $openssl'.tar.gz is not exists, system will going to download it...'
