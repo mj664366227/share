@@ -188,7 +188,7 @@ fi
 # 安装GD库
 # # libpng
 if [ ! -d $php_install_path/libpng ]; then
-	libpng='1.6.19'
+	libpng='1.6.20'
 	if [ ! -f $base_path/libpng-$libpng.tar.gz ]; then
 		wget -O $base_path/libpng-$libpng.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/libpng-$libpng.tar.gz || exit
 	fi
@@ -209,7 +209,7 @@ if [ ! -d $php_install_path/jpeg ]; then
 fi
 # freetype
 if [ ! -d $php_install_path/freetype ]; then
-	freetype='freetype-2.6.1'
+	freetype='freetype-2.6.2'
 	if [ ! -f $base_path/$freetype.tar.gz ]; then
 		wget -O $base_path/$freetype.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$freetype.tar.gz || exit
 	fi
