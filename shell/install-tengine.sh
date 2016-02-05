@@ -1,5 +1,5 @@
 #linux nginx自动安装程序 
-#运行例子：sh install-tengine.sh 2.1.1 /usr/local
+#运行例子：sh install-tengine.sh 2.1.2 /usr/local
 ntpdate ntp.api.bz
  
 
@@ -11,7 +11,7 @@ tengine_version=$1
 tengine_install_path=$2
 if [ ! $tengine_version ] || [ ! $tengine_install_path ]; then
 	echo 'error command!!! you must input tengine version and install path...'
-	echo 'for example: sh install-tengine.sh 2.1.1 /usr/local'
+	echo 'for example: sh install-tengine.sh 2.1.2 /usr/local'
 	exit
 fi
 
