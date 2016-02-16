@@ -1,10 +1,9 @@
 package com.share.test.protocol;
 
-import io.netty.buffer.ByteBuf;
-
 import com.share.core.annotation.Protocol;
 import com.share.core.protocol.protocol.ProtocolRequest;
-import com.share.core.util.StringUtil;
+
+import io.netty.buffer.ByteBuf;
 
 @Protocol
 public class ReqDemo extends ProtocolRequest {

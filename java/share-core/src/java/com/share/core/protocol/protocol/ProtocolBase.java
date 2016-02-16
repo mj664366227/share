@@ -125,6 +125,8 @@ public abstract class ProtocolBase {
 					}
 				} else if (cla.equals(char.class)) {
 					string.put(field.getName(), field.getChar(this));
+				} else if (cla.equals(String.class)) {
+					string.put(field.getName(), field.get(this));
 				} else {
 					Object value = field.get(this);
 					if (value instanceof ProtocolBase) {
