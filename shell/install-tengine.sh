@@ -137,10 +137,11 @@ echo "user "$group" "$user";
 worker_processes "$worker_processes";
 worker_cpu_affinity auto;
 worker_rlimit_nofile "$ulimit";
-reuse_port on;
 
 events {
 	use epoll;
+	accept_mutex off;
+	reuse_port on;
 	worker_connections "$ulimit";
 }
 
@@ -182,12 +183,8 @@ http {
 	include "$tengine_install_path"/tengine/conf/web/*.conf;
 }
 
-tcp {   
-	charset utf-8;
-	default_type application/octet-stream;
-	access_log off;
-	error_log "$tengine_install_path"/tengine/logs/error.log crit;
-	server_tokens off;  
+tcp {
+	access_log off; 
 	so_keepalive on;
 	tcp_nodelay on;
 	
@@ -287,9 +284,10 @@ echo '
 
 #创建一个44444端口的配置文件(作为socket代理的demo)
 echo '
-upstream cluster {
-	server localhost:8890;   
-	server localhost:8891;    
+upstream cluster{
+	ip_hash;
+	server 127.0.0.1:8890;   
+	server 127.0.0.1:8891;    
 	check interval=3000 rise=2 fall=5 timeout=1000;   
 }   
 
