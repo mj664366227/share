@@ -100,8 +100,8 @@ if [ ! -d $tengine_install_path/tengine ]; then
 	fi
 	unzip -o -d $install_path $base_path/nginx-http-concat.zip || exit
 	mv $install_path/nginx-http-concat-master $install_path/nginx-http-concat
-	#cd $install_path/nginx-http-concat
-	#sed -i 's/x-javascript/javascript/' ngx_http_concat_module.c || exit
+	cd $install_path/nginx-http-concat
+	sed -i 's/x-javascript/javascript/' ngx_http_concat_module.c || exit
 	
 	#支持socket代理
 	cd $base_path
