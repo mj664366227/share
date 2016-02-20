@@ -91,17 +91,32 @@ if [ ! -d $tengine_install_path/tengine ]; then
 	fi
 	tar zxvf $base_path/$tengine.tar.gz -C $install_path || exit
 	
-	#加载外部模块
+	#支持合并js、css请求
 	cd $base_path
-	if [ ! -d $base_path/nginx-http-concat ]; then
-		git clone https://github.com/alibaba/nginx-http-concat.git
+	if [ ! -f $base_path/nginx-http-concat.zip ]; then
+		echo 'nginx-http-concat.zip is not exists, system will going to download it...'
+		wget -O $base_path/nginx-http-concat.zip https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/nginx-http-concat.zip || exit
+		echo 'download nginx-http-concat finished...'
 	fi
+	unzip -o -d $install_path $base_path/nginx-http-concat.zip || exit
+	mv $install_path/nginx-http-concat-master $install_path/nginx-http-concat
 	yes | cp -rf nginx-http-concat $install_path/nginx-http-concat
-	cd $install_path/nginx-http-concat
-	sed -i 's/x-javascript/javascript/' ngx_http_concat_module.c || exit
+	#cd $install_path/nginx-http-concat
+	#sed -i 's/x-javascript/javascript/' ngx_http_concat_module.c || exit
+	
+	#支持socket代理
+	cd $base_path
+	if [ ! -f $base_path/nginx_tcp_proxy_module.zip ]; then
+		echo 'nginx_tcp_proxy_module.zip is not exists, system will going to download it...'
+		wget -O $base_path/nginx-http-concat.zip https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/nginx_tcp_proxy_module.zip || exit
+		echo 'download nginx_tcp_proxy_module finished...'
+	fi
+	unzip -o -d $install_path $base_path/nginx_tcp_proxy_module.zip || exit
+	mv $install_path/nginx_tcp_proxy_module-master $install_path/nginx_tcp_proxy_module
+	yes | cp -rf nginx_tcp_proxy_module $install_path/nginx_tcp_proxy_module
 	
 	cd $install_path/$tengine
-	./configure --prefix=$tengine_install_path/tengine --with-http_concat_module --with-http_stub_status_module --with-http_image_filter_module --with-http_ssl_module --with-select_module --with-poll_module --with-file-aio --with-ipv6 --with-http_gzip_static_module --with-http_sub_module --with-http_ssl_module --with-pcre=$install_path/$pcre --with-zlib=$install_path/$zlib --with-openssl=$install_path/$openssl --with-md5=/usr/lib --with-sha1=/usr/lib --with-md5-asm --with-sha1-asm --with-mail --with-mail_ssl_module --with-http_spdy_module --with-http_realip_module --with-http_addition_module --with-http_dyups_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_reqstat_module=shared --with-http_mp4_module --with-http_gunzip_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_concat_module=shared --with-http_stub_status_module --with-jemalloc=$install_path/jemalloc --with-libatomic=$install_path/$libatomic --add-module=$install_path/nginx-http-concat && make && make install || exit
+	./configure --prefix=$tengine_install_path/tengine --with-http_concat_module --with-http_stub_status_module --with-http_image_filter_module --with-http_ssl_module --with-select_module --with-poll_module --with-file-aio --with-ipv6 --with-http_gzip_static_module --with-http_sub_module --with-http_ssl_module --with-pcre=$install_path/$pcre --with-zlib=$install_path/$zlib --with-openssl=$install_path/$openssl --with-md5=/usr/lib --with-sha1=/usr/lib --with-md5-asm --with-sha1-asm --with-mail --with-mail_ssl_module --with-http_spdy_module --with-http_realip_module --with-http_addition_module --with-http_dyups_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_reqstat_module=shared --with-http_mp4_module --with-http_gunzip_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_concat_module=shared --with-http_stub_status_module --with-jemalloc=$install_path/jemalloc --with-libatomic=$install_path/$libatomic --add-module=$install_path/nginx-http-concat --add-module=$install_path/nginx_tcp_proxy_module && make && make install || exit
 fi
 
 #添加nginx用户组
@@ -121,7 +136,9 @@ ulimit='65535' #单个进程最大打开文件数
 worker_processes=$(cat /proc/cpuinfo | grep name | cut -f3 -d: | uniq -c | cut -b 7) #查询cpu逻辑个数
 echo "user "$group" "$user";
 worker_processes "$worker_processes";
+worker_cpu_affinity auto;
 worker_rlimit_nofile "$ulimit";
+reuse_port on;
 
 events {
 	use epoll;
@@ -165,9 +182,23 @@ http {
 	   
 	include "$tengine_install_path"/tengine/conf/web/*.conf;
 }
+
+tcp {   
+	charset utf-8;
+	default_type application/octet-stream;
+	access_log off;
+	error_log "$tengine_install_path"/tengine/logs/error.log crit;
+	server_tokens off;  
+	so_keepalive on;
+	tcp_nodelay on;
+	
+	include "$tengine_install_path"/tengine/conf/socket/*.conf; 
+}
 " > $tengine_install_path/tengine/conf/nginx.conf || exit
 rm -rf $tengine_install_path/tengine/conf/web/
 mkdir $tengine_install_path/tengine/conf/web/
+rm -rf $tengine_install_path/tengine/conf/socket/
+mkdir $tengine_install_path/tengine/conf/socket/
 echo 'create nginx.conf finished...'
 
 #创建网站文件存放目录
@@ -241,19 +272,33 @@ echo '
 echo '
 #代理服务器
 #server {
-		#resolver 202.96.128.86; #一般是本服务器的DNS
-		#listen 8000; #代理服务器的端口
-		#location / {
-				#proxy_pass http://$host$request_uri;
-				#proxy_redirect off;
-				#proxy_set_header Host $host;
-				#proxy_set_header X-Real-IP $remote_addr;
-				#proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-				#allow all; #或者是限制某个网段的ip也可以  例如：192.168.1.0/24
-				#deny all;
-		#}
+	#resolver 202.96.128.86; #一般是本服务器的DNS
+	#listen 8000; #代理服务器的端口
+	#location / {
+		#proxy_pass http://$host$request_uri;
+		#proxy_redirect off;
+		#proxy_set_header Host $host;
+		#proxy_set_header X-Real-IP $remote_addr;
+		#proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		#allow all; #或者是限制某个网段的ip也可以  例如：192.168.1.0/24
+		#deny all;
+	#}
 #}
 ' > $tengine_install_path/tengine/conf/web/8000.conf
+
+#创建一个44444端口的配置文件(作为socket代理的demo)
+echo '
+upstream cluster {
+	server localhost:8890;   
+	server localhost:8891;    
+	check interval=3000 rise=2 fall=5 timeout=1000;   
+}   
+
+server {   
+	listen 44444;   
+	proxy_pass cluster;   
+}   
+' > $tengine_install_path/tengine/conf/socket/44444.conf
 
 
 #修改环境变量
