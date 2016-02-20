@@ -29,7 +29,7 @@ if [ ! -d $install_path/$zlib ]; then
 	echo 'installing '$zlib' ...'
 	if [ ! -f $base_path/$zlib.tar.gz ]; then
 		echo $zlib'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$zlib.tar.gz http://zlib.net/$zlib.tar.gz || exit
+		wget -O $base_path/$zlib.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$zlib.tar.gz || exit
 		echo 'download '$zlib' finished...'
 	fi
 	tar zxvf $base_path/$zlib.tar.gz -C $install_path || exit
