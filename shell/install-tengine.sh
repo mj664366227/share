@@ -201,7 +201,7 @@ echo 'create nginx.conf finished...'
 echo 'create www_root...'
 web_root='www'
 mv $tengine_install_path/tengine/html $tengine_install_path/tengine/$web_root
-echo "<?php phpinfo(); ?>" > $tengine_install_path/tengine/$web_root/phpinfo.php || exit
+echo "<?php phpinfo(); ?>" > $tengine_install_path/tengine/$web_root/i.php || exit
 
 #创建一个80端口的配置文件(作为demo)
 echo 'create a demo conf , 80.conf...'
