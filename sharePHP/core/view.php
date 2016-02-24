@@ -42,12 +42,13 @@ class view{
 		if(!$file_name){
 			$file_name = sharePHP::get_class().'/'.sharePHP::get_method();
 		}
-
+		
 		//寻找模板文件
 		self::$display = $file_name;
 		$path = self::dir().$file_name;
 		$file_name = $path.'.php';
 		if(!file_exists($file_name)){
+			echo 'can not find template '.$file_name;
 			return;
 		}
 
