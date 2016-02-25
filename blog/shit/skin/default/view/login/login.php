@@ -1,4 +1,5 @@
 <?php require view::dir().'head.php';?>
+<?php view::load_js('login');?>
 <div class="top-content">
   <div class="inner-bg">
     <div class="container">

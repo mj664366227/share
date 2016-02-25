@@ -25,7 +25,6 @@
 <?php view::load_js('xenon-custom');?>
 <?php view::load_js('jquery.validate.min');?>
 <?php view::load_js('jquery.backstretch.min');?>
-<?php view::load_js('login');?>
 <title><?php echo SYSTEM_TITLE?></title>
 </head>
 <body>
