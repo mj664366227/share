@@ -231,7 +231,7 @@
             <button type="submit" class="btn btn-link"> <i class="linecons-search"></i> </button>
           </form>
         </li>
-        <li class="dropdown user-profile"> <a href="#" data-toggle="dropdown"> <img src="assets/images/user-4.jpg" alt="user-image" class="img-circle img-inline userpic-32" width="28" /> <span>ruanzhijun<i class="fa-angle-down"></i> </span> </a>
+        <li class="dropdown user-profile"> <a href="#" data-toggle="dropdown"> <img src="assets/images/user-4.jpg" alt="user-image" class="img-circle img-inline userpic-32" width="28" /> <span>ruanzhijun&nbsp;<i class="fa-angle-down"></i> </span> </a>
           <ul class="dropdown-menu user-profile-menu list-unstyled">
             <li><a href="#"><i class="fa-wrench"></i>设置</a></li>
             <li class="last"><a href="#"><i class="fa-lock"></i>&nbsp;退出</a></li>
