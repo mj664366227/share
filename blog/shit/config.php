@@ -30,6 +30,9 @@ define('BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . str_replace('index.php', 
 // 定义皮肤
 define('SKIN', 'default');
 
+// cookie key
+define('COOKIE_KEY', 'ruanzhijun-blog');
+
 // 数据库配置
 define('DB_TYPE', 'Mysql');
 define('DB_HOST', '127.0.0.1');
