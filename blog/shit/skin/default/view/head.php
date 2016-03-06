@@ -1,8 +1,6 @@
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo CHARSET_HTML?>" />
 <?php view::load_short_icon();?>
-<?php view::keywords(SYSTEM_TITLE);?>
-<?php view::description(SYSTEM_TITLE);?>
 <?php view::load_css('font-awesome.min');?>
 <?php view::load_css('bootstrap.min');?>
 <?php view::load_css('xenon-core');?>
@@ -25,6 +23,8 @@
 <?php view::load_js('xenon-custom');?>
 <?php view::load_js('jquery.validate.min');?>
 <?php view::load_js('jquery.backstretch.min');?>
-<title><?php echo SYSTEM_TITLE?></title>
+<?php view::load_js('common');?>
+<title>我的博客管理后台</title>
 </head>
 <body>
+<div class="page-container">

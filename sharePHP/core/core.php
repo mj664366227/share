@@ -186,7 +186,7 @@ class sharePHP {
  * @return
  */
 function echo_($str = null, $is_need_die = false){
-	echo '<pre>';
+	echo '<pre style="text-align:left">';
 	print_r($str);
 	echo '</pre>';
 	if ($is_need_die === true){
@@ -201,7 +201,7 @@ function echo_($str = null, $is_need_die = false){
  * @return
  */
 function echo_dump($var = null, $is_need_die = false){
-	echo '<pre>';
+	echo '<pre style="text-align:left">';
 	var_dump($var);
 	echo '</pre>';
 	if ($is_need_die === true){
