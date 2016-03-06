@@ -1,7 +1,7 @@
 <?php require view::dir().'head.php';?>
 <?php require view::dir().'menu.php';?>
-
-<table class="table table-bordered table-hover table-model-2">
+<div id="showTime"></div><br>
+<table class="table table-bordered table-model-2">
   <tr>
     <td class="col-md-2">微信公众号邮箱</td>
     <td>ruanzhijun999@sina.com</td>

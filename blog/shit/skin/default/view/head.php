@@ -26,5 +26,8 @@
 <?php view::load_js('common');?>
 <title>我的博客管理后台</title>
 </head>
-<body>
+<body class="page-body">
 <div class="page-container">
+<script type="text/javascript">
+var time = parseInt('<?php echo $now;?>000');
+</script>
