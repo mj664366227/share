@@ -233,7 +233,7 @@ class shareMysql {
 	public function get_count() {
 		$this->sql = 'select FOUND_ROWS() as count';
 		$rs = $this->query();
-		return $rs[0]['count'];
+		return intval($rs[0]['count']);
 	}
 
 	/**

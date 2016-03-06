@@ -14,15 +14,30 @@
   </table>
 </form>
 <ul class="nav nav-tabs">
-<?php foreach($category as $c):?>
-<?php if($id==$c['id']){?>
-<li class="active"><?php echo $c['name']?>(<?php echo $c['contents']?>)</li>
-<?php }else{?>
-<li><a href="<?php echo url('cms','category', 'id='.$c['id']);?>" title="查看“<?php echo $c['name']?>”分类下所有文章"><?php echo $c['name']?>(<?php echo $c['contents']?>)</a></li>
-<?php } endforeach;?>
+  <?php foreach($category as $c):?>
+  <?php if($id==$c['id']){?>
+  <li class="active"><a><?php echo $c['name']?>(<?php echo $c['contents']?>)</a></li>
+  <?php }else{?>
+  <li><a href="<?php echo url('cms','category', 'id='.$c['id']);?>" title="查看“<?php echo $c['name']?>”分类下所有文章"><?php echo $c['name']?>(<?php echo $c['contents']?>)</a></li>
+  <?php } endforeach;?>
 </ul>
 <div class="tab-content">
-  <div id="pv_index" class="tab-pane fade<c:if test="${item=='pv_index'}"> in active</c:if>"></div>
-  <div id="uv_index" class="tab-pane fade<c:if test="${item=='uv_index'}"> in active</c:if>"></div>
+  <div class="tab-pane fade in active">
+    <table class="table mail-table">
+      <tr>
+        <th>文章标题</th>
+        <th width="150">发表时间</th>
+        <th width="100">操&nbsp;&nbsp;作</th>
+      </tr>
+      <?php foreach($content as $c):?>
+      <tr>
+        <td><a href="javascript:void(0)"><?php echo $c['title']?></a></td>
+        <td><?php echo date('Y-m-d H:i:s', $c['create_time'])?></td>
+        <td><a href="javascript:void(0)">删除</a></td>
+      </tr>
+      <?php endforeach;?>
+    </table>
+    <?php require view::dir().'page.php';?>
+  </div>
 </div>
 <?php require view::dir().'foot.php';?>
