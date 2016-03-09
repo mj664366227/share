@@ -3,6 +3,16 @@ $(function() {
 	
 	showTime(); 
 	setInterval('showTime()',1000);
+	
+	KindEditor.ready(function(K) {
+		var kindEditorConfig = {
+			width: '100%',
+			height: '600px',
+			allowFileManager: false,
+			items: ['HTML','preview','undo','redo','cut','copy','paste','plainpaste','wordpaste','Word','selectall','justifyleft','justifycenter','justifyright','justifyfull','insertorderedlist','insertunorderedlist','indent','outdent','subscript','superscript','formatblock','fontname','fontsize','forecolor','hilitecolor','bold','italic','underline','strikethrough','removeformat','image','media','table','hr','link','unlink','fullscreen','code','lineheight','clearhtml','HTML','pagebreak','quickformat','anchor']
+		}
+		window.editor = K.create('#editor', kindEditorConfig);
+	});
 });
 
 function showTime(){

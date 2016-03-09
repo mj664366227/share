@@ -13,7 +13,7 @@
     </tr>
   </table>
 </form>
-<ul class="nav nav-tabs">
+<ul class="nav nav-tabs" id="category">
   <?php foreach($category as $c):?>
   <?php if($id==$c['id']){?>
   <li class="active"><a><?php echo $c['name']?>(<?php echo $c['contents']?>)</a></li>
@@ -23,6 +23,7 @@
 </ul>
 <div class="tab-content">
   <div class="tab-pane fade in active">
+    <?php if(count($content) > 0):?>
     <table class="table mail-table">
       <tr>
         <th>文章标题</th>
@@ -37,6 +38,8 @@
       </tr>
       <?php endforeach;?>
     </table>
+    <?php else:echo '什么都没有...';?>
+    <?php endif;?>
     <?php require view::dir().'page.php';?>
   </div>
 </div>

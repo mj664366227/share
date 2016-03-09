@@ -23,6 +23,8 @@
 <?php view::load_js('xenon-custom');?>
 <?php view::load_js('jquery.validate.min');?>
 <?php view::load_js('jquery.backstretch.min');?>
+<?php view::load_js('kindeditor-all-min');?>
+<?php view::load_js('kindeditor-zh_CN');?>
 <?php view::load_js('common');?>
 <title>我的博客管理后台</title>
 </head>

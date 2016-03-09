@@ -20,18 +20,21 @@ class cmscontroller extends admincontroller {
 		if ($id <= 0) {
 			$id = $category[0]['id'];
 		}
-		view::assign('category', $category);
-		view::assign('id', $id);
 		$content = mcms::get_content_by_category($id, $page, $page_size);
+		$max = intval($content['max']);
+		view::assign('id', $id);
+		view::assign('category', $category);
 		view::assign('content', $content['list']);
 		view::assign('page', $page);
-		view::assign('max', $content['max']);
+		view::assign('max', $max);
 	}
 
 	/**
 	 * 发表文章
 	 */
 	public function pub() {
+		$category = mcms::get_category();
+		view::assign('category', $category);
 	}
 }
 ?>

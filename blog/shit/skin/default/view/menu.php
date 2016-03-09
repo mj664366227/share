@@ -5,7 +5,7 @@
     </header>
     <ul id="main-menu" class="main-menu">
       <li<?php if($action==='cms.category'){?> class="active"<?php }?>><a href="<?php echo url('cms','category')?>"><span class="title">文章分类</span></a></li>
-      <li<?php if($action==='cms.post'){?> class="active"<?php }?>><a href="<?php echo url('cms','post')?>"><span class="title">发表文章</span></a></li>
+      <li<?php if($action==='cms.pub'){?> class="active"<?php }?>><a href="<?php echo url('cms','pub')?>"><span class="title">发表文章</span></a></li>
       <li<?php if($action==='admin.setting'){?> class="active"<?php }?>><a href="<?php echo url('admin','setting')?>"><span class="title">设置</span></a></li>
     </ul>
   </div>
