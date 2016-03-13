@@ -209,7 +209,7 @@ if [ ! -d $php_install_path/jpeg ]; then
 fi
 # freetype
 if [ ! -d $php_install_path/freetype ]; then
-	freetype='freetype-2.6.2'
+	freetype='freetype-2.6.3'
 	if [ ! -f $base_path/$freetype.tar.gz ]; then
 		wget -O $base_path/$freetype.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$freetype.tar.gz || exit
 	fi
