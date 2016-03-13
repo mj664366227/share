@@ -16,7 +16,7 @@ nsq_install_path='/usr/local'
 nsq_version='nsq-0.3.7.linux-amd64.go1.6'
 rm -rf /usr/bin/nsq*
 if [ ! -f $base_path/nsq.tar.gz ]; then
-	wget -O $base_path/nsq.tar.gz https://s3.amazonaws.com/bitly-downloads/nsq/$nsq_version.tar.gz
+	wget -O $base_path/nsq.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$nsq_version.tar.gz
 fi
 
 tar zxvf $base_path/nsq.tar.gz -C $install_path || exit
