@@ -183,12 +183,11 @@ http {
 	include "$tengine_install_path"/tengine/conf/web/*.conf;
 }
 
-tcp {
-	access_log off; 
-	so_keepalive on;
-	tcp_nodelay on;
-	
-	include "$tengine_install_path"/tengine/conf/socket/*.conf; 
+#tcp {
+#	access_log off; 
+#	so_keepalive on;
+#	tcp_nodelay on;	
+#	include "$tengine_install_path"/tengine/conf/socket/*.conf; 
 }
 " > $tengine_install_path/tengine/conf/nginx.conf || exit
 rm -rf $tengine_install_path/tengine/conf/web/
