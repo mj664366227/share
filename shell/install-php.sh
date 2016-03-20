@@ -174,7 +174,7 @@ fi
 # 安装bz2
 if [ ! -d $php_install_path/bz2 ]; then
 	bz2='1.0.6'
-	echo 'installing '$bz2'...'
+	echo 'installing bz2-'$bz2'...'
 	if [ ! -f $base_path/bzip2-$bz2.tar.gz ]; then
 	echo $bz2'.tar.gz is not exists, system will going to download it...'
 		wget -O $base_path/bzip2-$bz2.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/bzip2-$bz2.tar.gz || exit
@@ -189,7 +189,7 @@ fi
 # 安装libzip
 if [ ! -d $php_install_path/libzip ]; then
 	libzip='0.6.1'
-	echo 'installing '$libzip'...'
+	echo 'installing libzip-'$libzip'...'
 	if [ ! -f $base_path/libzip-$libzip.tar.gz ]; then
 	echo 'libzip-'$libzip'.tar.gz is not exists, system will going to download it...'
 		wget -O $base_path/libzip-$libzip.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/libzip-$libzip.tar.gz || exit
@@ -198,13 +198,15 @@ if [ ! -d $php_install_path/libzip ]; then
 	tar zxvf $base_path/libzip-$libzip.tar.gz -C $install_path || exit
 	cd $install_path/libzip-$libzip
 	./configure --prefix=$php_install_path/libzip && make && make install || exit
+	yes|cp $php_install_path/libzip/bin/* /usr/bin/
+	echo 'libzip-'$libzip' install finished...'
 fi
 
 
 # 安装libxslt
 if [ ! -d $php_install_path/libxslt ]; then
 	libxslt='1.1.28'
-	echo 'installing '$libxslt'...'
+	echo 'installing libxslt-'$libxslt'...'
 	if [ ! -f $base_path/libxslt-$libxslt.tar.gz ]; then
 	echo 'libxslt-'$libxslt'.tar.gz is not exists, system will going to download it...'
 		wget -O $base_path/libxslt-$libxslt.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/libxslt-$libxslt.tar.gz || exit
@@ -213,6 +215,8 @@ if [ ! -d $php_install_path/libxslt ]; then
 	tar zxvf $base_path/libxslt-$libxslt.tar.gz -C $install_path || exit
 	cd $install_path/libxslt-$libxslt
 	./configure --with-libxml-prefix=$php_install_path/libxml2 --prefix=$php_install_path/libxslt && make && make install || exit
+	yes|cp $php_install_path/libxslt/bin/* /usr/bin/
+	echo 'libxslt-'$libxslt' install finished...'
 fi
 
 # 安装icu
@@ -226,6 +230,24 @@ if [ ! -d $php_install_path/icu ]; then
 	tar zxf $base_path/icu.tgz -C $install_path || exit
 	cd $install_path/icu/source
 	./configure --prefix=$php_install_path/icu && make && make install || exit
+	yes|cp $php_install_path/icu/bin/* /usr/bin/
+	echo 'icu install finished...'
+fi
+
+# 安装mm
+if [ ! -d $php_install_path/mm ]; then
+	mm='1.4.2'
+	echo 'installing mm-'$mm'...'
+	if [ ! -f $base_path/mm-$mm.tar.gz ]; then
+	echo 'libxslt-'$libxslt'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/mm-$mm.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/mm-$mm.tar.gz || exit
+		echo 'download mm-'$mm'.tar.gz finished...'
+	fi
+	tar zxvf $base_path/mm-$mm.tar.gz -C $install_path || exit
+	cd $install_path/mm-$mm
+	./configure --prefix=$php_install_path/mm && make && make install || exit
+	yes|cp $php_install_path/mm/bin/* /usr/bin/
+	echo 'mm-'$mm' install finished...'
 fi
 
 # 安装GD库
