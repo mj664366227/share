@@ -247,6 +247,9 @@ if [ ! -d $php_install_path/mm ]; then
 	cd $install_path/mm-$mm
 	./configure --prefix=$php_install_path/mm && make && make install || exit
 	yes|cp $php_install_path/mm/bin/* /usr/bin/
+	rm -rf /etc/ld.so.conf.d/local.conf || exit
+	echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf || exit
+	ldconfig -v
 	echo 'mm-'$mm' install finished...'
 fi
 
