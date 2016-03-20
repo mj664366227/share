@@ -1,5 +1,5 @@
 #linux php自动安装程序
-#运行例子：sh install-php.sh 7.0.3 /usr/local
+#运行例子：sh install-php.sh 7.0.4 /usr/local
  
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ php_version=$1
 php_install_path=$2 
 if [ ! $php_version ] || [ ! $php_install_path ]; then
 	echo 'error command!!! you must input php version and install path...'
-	echo 'for example: sh install-php.sh 7.0.3 /usr/local'
+	echo 'for example: sh install-php.sh 7.0.4 /usr/local'
 	exit
 fi
 
@@ -174,15 +174,45 @@ fi
 # 安装bz2
 if [ ! -d $php_install_path/bz2 ]; then
 	bz2='1.0.6'
-	echo 'installing '$ncurses'...'
+	echo 'installing '$bz2'...'
 	if [ ! -f $base_path/bzip2-$bz2.tar.gz ]; then
-	echo $ncurses'.tar.gz is not exists, system will going to download it...'
+	echo $bz2'.tar.gz is not exists, system will going to download it...'
 		wget -O $base_path/bzip2-$bz2.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/bzip2-$bz2.tar.gz || exit
 		echo 'download bzip2-'$bz2' finished...'
 	fi
 	tar zxvf $base_path/bzip2-$bz2.tar.gz -C $install_path || exit
 	cd $install_path/bzip2-$bz2
 	make -f Makefile-libbz2_so && make && make install || exit 
+fi
+
+
+# 安装libzip
+if [ ! -d $php_install_path/libzip ]; then
+	libzip='0.6.1'
+	echo 'installing '$libzip'...'
+	if [ ! -f $base_path/libzip-$libzip.tar.gz ]; then
+	echo 'libzip-'$libzip'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/libzip-$libzip.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/libzip-$libzip.tar.gz || exit
+		echo 'download libzip-'$libzip'.tar.gz finished...'
+	fi
+	tar zxvf $base_path/libzip-$libzip.tar.gz -C $install_path || exit
+	cd $install_path/libzip-$libzip
+	./configure --prefix=$php_install_path/libzip && make && make install || exit
+fi
+
+
+# 安装libxslt
+if [ ! -d $php_install_path/libxslt ]; then
+	libxslt='1.1.28'
+	echo 'installing '$libxslt'...'
+	if [ ! -f $base_path/libxslt-$libxslt.tar.gz ]; then
+	echo 'libxslt-'$libxslt'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/libxslt-$libxslt.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/libxslt-$libxslt.tar.gz || exit
+		echo 'download libxslt-'$libxslt'.tar.gz finished...'
+	fi
+	tar zxvf $base_path/libxslt-$libxslt.tar.gz -C $install_path || exit
+	cd $install_path/libxslt-$libxslt
+	./configure --with-libxml-prefix=$php_install_path/libxml2 --prefix=$php_install_path/libxslt && make && make install || exit
 fi
 
 # 安装GD库
@@ -232,11 +262,11 @@ cd $install_path/php-$php_version
 
 #如果安装了mysql，就把mysql扩展当作内核安装
 if [ -d $php_install_path/mysql ]; then
-	mysql_install='--with-mysql='$php_install_path'/mysql -with-mysqli='$php_install_path'/mysql/bin/mysql_config'
+	mysql_install='-with-mysqli='$php_install_path'/mysql/bin/mysql_config'
 fi
 
 
-./configure --prefix=$php_install_path/php --with-config-file-path=$php_install_path/php/etc --with-pcre-dir=$php_install_path/pcre --with-libxml-dir=$php_install_path/libxml2 --with-openssl-dir=$php_install_path/openssl --with-zlib-dir=$php_install_path/zlib $php_mysql_install_str --with-curl=$php_install_path/curl --with-curlwrappers --with-iconv-dir=$php_install_path/libiconv --with-mcrypt=$php_install_path/libmcrypt --with-jpeg-dir=$php_install_path/jpeg --with-png-dir=$php_install_path/libpng --with-freetype-dir=$php_install_path/freetype $mysql_install --enable-mysqlnd --with-mhash --with-snmp --with-xmlrpc --with-bz2 --with-openssl --enable-mbstring --enable-fpm --enable-zip --enable-sockets --enable-soap --enable-xml --enable-zend-signals --enable-wddx --enable-calendar --enable-mbstring --enable-bcmath --enable-ftp --enable-shmop --enable-gd-native-ttf --enable-exif --enable-sysvmsg --with-pic --enable-sysvsem --enable-sysvshm && make && make install || exit
+./configure --prefix=$php_install_path/php --with-config-file-path=$php_install_path/php/etc --with-pcre-dir=$php_install_path/pcre --with-libxml-dir=$php_install_path/libxml2 --with-openssl-dir=$php_install_path/openssl --with-zlib-dir=$php_install_path/zlib $php_mysql_install_str --with-curl=$php_install_path/curl --enable-libgcc --with-curlwrappers --with-iconv-dir=$php_install_path/libiconv --with-mcrypt=$php_install_path/libmcrypt --with-xsl=$php_install_path/libxslt --with-jpeg-dir=$php_install_path/jpeg --with-png-dir=$php_install_path/libpng --with-freetype-dir=$php_install_path/freetype $mysql_install --with-libzip=$php_install_path/libzip --enable-mysqlnd --with-mhash --with-snmp --with-xmlrpc --with-bz2 --with-openssl --enable-mbstring --enable-fpm --enable-zip --enable-sockets --enable-soap --enable-xml --enable-zend-signals --enable-wddx --enable-gd-jis-conv --enable-intl --enable-calendar --enable-mbstring --enable-bcmath --enable-ftp --enable-shmop --enable-gd-native-ttf --enable-exif --enable-dba --with-mm --enable-sysvmsg --with-pic --enable-sysvsem --enable-sysvshm && make && make install || exit
 echo 'php-'$php_version' install finshed...'
 
 # 新建php.ini 
@@ -245,7 +275,7 @@ cp $install_path/php-$php_version/php.ini-production $php_install_path/php/etc/p
 sed -i 's/expose_php = On/expose_php = Off/' $php_install_path/php/etc/php.ini || exit   #屏蔽php的版本
 sed -i 's/display_errors = Off/display_errors = On/' $php_install_path/php/etc/php.ini || exit   #让php显示报错
 sed -i 's/;date.timezone =/date.timezone = Asia\/Shanghai/' $php_install_path/php/etc/php.ini || exit #根据系统的时区设置php的时区
-#sed -i 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE/' $php_install_path/php/etc/php.ini || exit #修改报错等级
+sed -i 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE/' $php_install_path/php/etc/php.ini || exit #修改报错等级
 
 # 新建php-fpm.conf
 echo 'create php-fpm.conf...'
@@ -259,8 +289,9 @@ if [ ! $user_exists ]; then
 	/usr/sbin/groupadd -f $group
 	/usr/sbin/useradd -g $group $user
 fi
-sed -i 's/user = nobody/user = www/' $php_install_path/php/etc/php-fpm.conf || exit
-sed -i 's/group = nobody/group = www/' $php_install_path/php/etc/php-fpm.conf || exit
+mv $php_install_path/php/etc/php-fpm.d/www.conf.default $php_install_path/php/etc/php-fpm.d/www.conf
+sed -i 's/user = nobody/user = www/' $php_install_path/php/etc/php-fpm.d/www.conf || exit
+sed -i 's/group = nobody/group = www/' $php_install_path/php/etc/php-fpm.d/www.conf || exit
 
 #启动php-fpm
 yes|cp -rf $php_install_path/php/bin/* /usr/bin/
