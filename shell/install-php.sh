@@ -140,7 +140,7 @@ if [ ! -d $php_install_path/pcre ]; then
 fi
 
 # 安装curl
-curl='curl-7.46.0'
+curl='curl-7.47.1'
 if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then
@@ -215,6 +215,19 @@ if [ ! -d $php_install_path/libxslt ]; then
 	./configure --with-libxml-prefix=$php_install_path/libxml2 --prefix=$php_install_path/libxslt && make && make install || exit
 fi
 
+# 安装icu
+if [ ! -d $php_install_path/icu ]; then
+	echo 'installing icu...'
+	if [ ! -f $base_path/icu.tgz ]; then
+	echo 'icu.tgz is not exists, system will going to download it...'
+		wget -O $base_path/icu.tgz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/icu.tgz || exit
+		echo 'download icu.tgz finished...'
+	fi
+	tar zxf $base_path/icu.tgz -C $install_path || exit
+	cd $install_path/icu/source
+	./configure --prefix=$php_install_path/icu && make && make install || exit
+fi
+
 # 安装GD库
 # # libpng
 if [ ! -d $php_install_path/libpng ]; then
@@ -266,7 +279,7 @@ if [ -d $php_install_path/mysql ]; then
 fi
 
 
-./configure --prefix=$php_install_path/php --with-config-file-path=$php_install_path/php/etc --with-pcre-dir=$php_install_path/pcre --with-libxml-dir=$php_install_path/libxml2 --with-openssl-dir=$php_install_path/openssl --with-zlib-dir=$php_install_path/zlib $php_mysql_install_str --with-curl=$php_install_path/curl --enable-libgcc --with-curlwrappers --with-iconv-dir=$php_install_path/libiconv --with-mcrypt=$php_install_path/libmcrypt --with-xsl=$php_install_path/libxslt --with-jpeg-dir=$php_install_path/jpeg --with-png-dir=$php_install_path/libpng --with-freetype-dir=$php_install_path/freetype $mysql_install --with-libzip=$php_install_path/libzip --enable-mysqlnd --with-mhash --with-snmp --with-xmlrpc --with-bz2 --with-openssl --enable-mbstring --enable-fpm --enable-zip --enable-sockets --enable-soap --enable-xml --enable-zend-signals --enable-wddx --enable-gd-jis-conv --enable-intl --enable-calendar --enable-mbstring --enable-bcmath --enable-ftp --enable-shmop --enable-gd-native-ttf --enable-exif --enable-dba --with-mm --enable-sysvmsg --with-pic --enable-sysvsem --enable-sysvshm && make && make install || exit
+./configure --prefix=$php_install_path/php --with-config-file-path=$php_install_path/php/etc --with-pcre-dir=$php_install_path/pcre --with-libxml-dir=$php_install_path/libxml2 --with-openssl-dir=$php_install_path/openssl --with-zlib-dir=$php_install_path/zlib $php_mysql_install_str --with-curl=$php_install_path/curl --enable-libgcc --with-curlwrappers --with-iconv-dir=$php_install_path/libiconv --with-mcrypt=$php_install_path/libmcrypt --with-xsl=$php_install_path/libxslt --with-jpeg-dir=$php_install_path/jpeg --with-png-dir=$php_install_path/libpng --with-freetype-dir=$php_install_path/freetype $mysql_install --with-icu-dir=$php_install_path/icu --with-libzip=$php_install_path/libzip --enable-mysqlnd --with-mhash --with-snmp --with-xmlrpc --with-bz2 --with-openssl --enable-mbstring --enable-fpm --enable-zip --enable-sockets --enable-soap --enable-xml --enable-zend-signals --enable-wddx --enable-gd-jis-conv --enable-intl --enable-calendar --enable-mbstring --enable-bcmath --enable-ftp --enable-shmop --enable-gd-native-ttf --enable-exif --enable-dba --with-mm --enable-sysvmsg --with-pic --enable-sysvsem --enable-sysvshm && make && make install || exit
 echo 'php-'$php_version' install finshed...'
 
 # 新建php.ini 
