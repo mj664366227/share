@@ -186,26 +186,6 @@ if [ ! -d $php_install_path/bz2 ]; then
 fi
 
 
-# 安装libzip
-if [ ! -d $php_install_path/libzip ]; then
-	libzip='0.6.1'
-	echo 'installing libzip-'$libzip'...'
-	if [ ! -f $base_path/libzip-$libzip.tar.gz ]; then
-	echo 'libzip-'$libzip'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/libzip-$libzip.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/libzip-$libzip.tar.gz || exit
-		echo 'download libzip-'$libzip'.tar.gz finished...'
-	fi
-	tar zxvf $base_path/libzip-$libzip.tar.gz -C $install_path || exit
-	cd $install_path/libzip-$libzip
-	./configure --prefix=$php_install_path/libzip && make && make install || exit
-	yes|cp $php_install_path/libzip/bin/* /usr/bin/
-	rm -rf /etc/ld.so.conf.d/local.conf || exit
-	echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf || exit
-	ldconfig -v
-	echo 'libzip-'$libzip' install finished...'
-fi
-
-
 # 安装libxslt
 if [ ! -d $php_install_path/libxslt ]; then
 	libxslt='1.1.28'
@@ -304,7 +284,7 @@ if [ -d $php_install_path/mysql ]; then
 fi
 
 
-./configure --prefix=$php_install_path/php --with-config-file-path=$php_install_path/php/etc --with-pcre-dir=$php_install_path/pcre --with-libxml-dir=$php_install_path/libxml2 --with-openssl-dir=$php_install_path/openssl --with-zlib-dir=$php_install_path/zlib $php_mysql_install_str --with-curl=$php_install_path/curl --enable-libgcc --with-curlwrappers --with-iconv-dir=$php_install_path/libiconv --with-mcrypt=$php_install_path/libmcrypt --with-xsl=$php_install_path/libxslt --with-jpeg-dir=$php_install_path/jpeg --with-png-dir=$php_install_path/libpng --with-freetype-dir=$php_install_path/freetype $mysql_install --with-icu-dir=$php_install_path/icu --with-libzip=$php_install_path/libzip --enable-mysqlnd --with-mhash --with-snmp --with-xmlrpc --with-bz2 --with-openssl --enable-mbstring --enable-fpm --enable-zip --enable-sockets --enable-soap --enable-xml --enable-zend-signals --enable-wddx --enable-gd-jis-conv --enable-intl --enable-calendar --enable-mbstring --enable-bcmath --enable-ftp --enable-shmop --enable-gd-native-ttf --enable-exif --enable-dba --with-mm=$php_install_path/mm --enable-sysvmsg --with-pic --enable-sysvsem --enable-sysvshm && make && make install || exit
+./configure --prefix=$php_install_path/php --with-config-file-path=$php_install_path/php/etc --with-pcre-dir=$php_install_path/pcre --with-libxml-dir=$php_install_path/libxml2 --with-openssl-dir=$php_install_path/openssl --with-zlib-dir=$php_install_path/zlib $php_mysql_install_str --with-curl=$php_install_path/curl --enable-libgcc --with-curlwrappers --with-iconv-dir=$php_install_path/libiconv --with-mcrypt=$php_install_path/libmcrypt --with-xsl=$php_install_path/libxslt --with-jpeg-dir=$php_install_path/jpeg --with-png-dir=$php_install_path/libpng --with-freetype-dir=$php_install_path/freetype $mysql_install --with-icu-dir=$php_install_path/icu --enable-mysqlnd --with-mhash --with-snmp --with-xmlrpc --with-bz2 --with-openssl --enable-mbstring --enable-fpm --enable-zip --enable-sockets --enable-soap --enable-xml --enable-zend-signals --enable-wddx --enable-gd-jis-conv --enable-intl --enable-calendar --enable-mbstring --enable-bcmath --enable-ftp --enable-shmop --enable-gd-native-ttf --enable-exif --enable-dba --with-mm=$php_install_path/mm --enable-sysvmsg --with-pic --enable-sysvsem --enable-sysvshm && make && make install || exit
 echo 'php-'$php_version' install finshed...'
 
 # 新建php.ini 
