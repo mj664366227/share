@@ -280,7 +280,7 @@ cd $install_path/php-$php_version
 
 #如果安装了mysql，就把mysql扩展当作内核安装
 if [ -d $php_install_path/mysql ]; then
-	mysql_install='-with-mysqli='$php_install_path'/mysql/bin/mysql_config'
+	mysql_install='--with-pdo-mysql='$php_install_path'/mysql -with-mysqli='$php_install_path'/mysql/bin/mysql_config'
 fi
 
 
