@@ -1,4 +1,5 @@
-#linux nginx自动安装程序 
+#linux nodejs自动安装程序 
+#http://www.cnblogs.com/zzbo/p/4963137.html
 #运行例子：sh install-nodejs.sh 5.9.1 /usr/local
 ntpdate ntp.api.bz
  
