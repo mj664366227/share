@@ -22,18 +22,21 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-#更新c++编译器
-gcc='gcc-5.3.0'
-if [ ! -f $base_path/$gcc.tar.gz ]; then
-	echo $gcc'.tar.gz is not exists, system will going to download it...'
-	wget -O $base_path/$gcc.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$gcc.tar.gz || exit
-	echo 'download '$gcc' finished...'
+#获取c++编译器版本
+gcc_version=$(gcc --version | awk '{print $3}' | head -1);
+if [ $gcc_version != "5.3.0" ]; then
+	#更新c++编译器
+	gcc='gcc-5.3.0'
+	if [ ! -f $base_path/$gcc.tar.gz ]; then
+		echo $gcc'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/$gcc.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$gcc.tar.gz || exit
+		echo 'download '$gcc' finished...'
+	fi
+	tar zxvf $base_path/$gcc.tar.gz -C $install_path || exit
+	cd $install_path/$gcc
+	yum -y install gmp-devel mpfr-devel libmpc-devel
+	./configure --prefix=/usr --disable-multilib && make && make install || exit
 fi
-tar zxvf $base_path/$gcc.tar.gz -C $install_path || exit
-cd $install_path/$gcc
-yum -y install gmp-devel mpfr-devel libmpc-devel
-./configure --prefix=/usr --disable-multilib && make && make install || exit
-
 
 #安装nodejs
 rm -rf $nodejs_install_path/nodejs
@@ -45,6 +48,6 @@ if [ ! -f $base_path/node-v$nodejs_version.tar.gz ]; then
 fi
 tar zxvf $base_path/node-v$nodejs_version.tar.gz -C $install_path || exit
 cd $install_path/node-v$nodejs_version
-./configure --prefix=$nodejs_install_path/nodejs --gdb --with-dtrace --with-lttng --with-perfctr --with-etw --enable-asan --enable-static && make && make install || exit
+./configure --prefix=$nodejs_install_path/nodejs --enable-static && make && make install || exit
 yes|cp -rf $nodejs_install_path/nodejs/bin/* /usr/bin/
 
