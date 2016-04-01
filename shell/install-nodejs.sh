@@ -38,6 +38,21 @@ if [ $gcc_version != "5.3.0" ]; then
 	./configure --prefix=/usr --disable-multilib && make && make install || exit
 fi
 
+#获取make版本
+make_version=$(make -v | awk '{print $3}' | head -1);
+make='4.1'
+if [ $make_version != $make ]; then
+	if [ ! -f $base_path/make-$make.tar.gz ]; then
+		echo 'make-'$make'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/make-$make.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/make-$make.tar.gz || exit
+		echo 'download make-'$make' finished...'
+	fi
+	tar zxvf $base_path/make-$make.tar.gz -C $install_path || exit
+	cd $install_path/make-$make
+	./configure --prefix=$nodejs_install_path/make && make && make install || exit
+	yes|cp -rf $nodejs_install_path/make/bin/* /usr/bin/
+fi
+
 #安装nodejs
 rm -rf $nodejs_install_path/nodejs
 echo 'installing node-v'$nodejs_version' ...'
