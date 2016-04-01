@@ -3,7 +3,6 @@
 #运行例子：sh install-nodejs.sh 5.9.1 /usr/local
 ntpdate ntp.api.bz
  
-
 #定义本程序的当前目录
 base_path=$(pwd)
 
@@ -22,47 +21,16 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-#获取c++编译器版本
-gcc_version=$(gcc --version | awk '{print $3}' | head -1);
-if [ $gcc_version != "5.3.0" ]; then
-	#更新c++编译器
-	gcc='gcc-5.3.0'
-	if [ ! -f $base_path/$gcc.tar.gz ]; then
-		echo $gcc'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$gcc.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/$gcc.tar.gz || exit
-		echo 'download '$gcc' finished...'
-	fi
-	tar zxvf $base_path/$gcc.tar.gz -C $install_path || exit
-	cd $install_path/$gcc
-	yum -y install gmp-devel mpfr-devel libmpc-devel
-	./configure --prefix=/usr --disable-multilib && make && make install || exit
-fi
-
-#获取make版本
-make_version=$(make -v | awk '{print $3}' | head -1);
-make='4.1'
-if [ $make_version != $make ]; then
-	if [ ! -f $base_path/make-$make.tar.gz ]; then
-		echo 'make-'$make'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/make-$make.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/make-$make.tar.gz || exit
-		echo 'download make-'$make' finished...'
-	fi
-	tar zxvf $base_path/make-$make.tar.gz -C $install_path || exit
-	cd $install_path/make-$make
-	./configure --prefix=$nodejs_install_path/make && make && make install || exit
-	yes|cp -rf $nodejs_install_path/make/bin/* /usr/bin/
-fi
-
 #安装nodejs
 rm -rf $nodejs_install_path/nodejs
 echo 'installing node-v'$nodejs_version' ...'
-if [ ! -f $base_path/node-v$nodejs_version.tar.gz ]; then
-	echo 'node-v'$nodejs_version'.tar.gz is not exists, system will going to download it...'
-	wget -O $base_path/node-v$nodejs_version.tar.gz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/node-v$nodejs_version.tar.gz || exit
+if [ ! -f $base_path/node-v$nodejs_version-linux-x64.tar.xz ]; then
+	echo 'node-v'$nodejs_version'-linux-x64.tar.xz is not exists, system will going to download it...'
+	wget -O $base_path/node-v$nodejs_version-linux-x64.tar.xz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/node-v$nodejs_version-linux-x64.tar.xz || exit
 	echo 'download node-v'$nodejs_version' finished...'
 fi
-tar zxvf $base_path/node-v$nodejs_version.tar.gz -C $install_path || exit
-cd $install_path/node-v$nodejs_version
-./configure --prefix=$nodejs_install_path/nodejs --enable-static && make && make install || exit
+xz -d node-v$nodejs_version-linux-x64.tar.xz
+tar -xvf $base_path/node-v$nodejs_version-linux-x64.tar || exit
+mv node-v$nodejs_version-linux-x64 nodejs
+mv nodejs $nodejs_install_path/
 yes|cp -rf $nodejs_install_path/nodejs/bin/* /usr/bin/
-
