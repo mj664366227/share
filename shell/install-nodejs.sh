@@ -33,4 +33,5 @@ xz -d node-v$nodejs_version-linux-x64.tar.xz
 tar -xvf $base_path/node-v$nodejs_version-linux-x64.tar || exit
 mv node-v$nodejs_version-linux-x64 nodejs
 mv nodejs $nodejs_install_path/
-yes|cp -rf $nodejs_install_path/nodejs/bin/* /usr/bin/
+yes|cp -rf $nodejs_install_path/nodejs/bin/node /usr/bin/
+ln -s $nodejs_install_path/nodejs/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm
