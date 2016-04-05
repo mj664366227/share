@@ -35,3 +35,13 @@ mv node-v$nodejs_version-linux-x64 nodejs
 mv nodejs $nodejs_install_path/
 yes|cp -rf $nodejs_install_path/nodejs/bin/node /usr/bin/
 ln -s $nodejs_install_path/nodejs/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm
+
+#更新npm版本
+npm update npm -g
+npm -v
+
+#安装npm私服
+npm install -g sinopia
+npm install -g nrm
+sinopia -l 127.0.0.1:4873
+nrm use local
