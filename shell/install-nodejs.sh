@@ -44,4 +44,5 @@ npm -v
 npm install -g sinopia
 npm install -g nrm
 sinopia -l 127.0.0.1:4873
+nrm add local http://127.0.0.1:4873 
 nrm use local
