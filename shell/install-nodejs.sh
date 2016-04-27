@@ -41,10 +41,3 @@ ln -s $nodejs_install_path/nodejs/lib/node_modules/npm/bin/npm-cli.js /usr/bin/n
 #更新npm版本
 npm update npm -g
 npm -v
-
-#安装npm私服
-npm install -g sinopia
-npm install -g nrm
-sinopia -l 127.0.0.1:4873
-nrm add local http://127.0.0.1:4873 
-nrm use local
