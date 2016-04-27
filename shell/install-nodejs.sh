@@ -31,6 +31,8 @@ if [ ! -f $base_path/node-v$nodejs_version-linux-x64.tar.xz ]; then
 fi
 xz -d node-v$nodejs_version-linux-x64.tar.xz
 tar -xvf $base_path/node-v$nodejs_version-linux-x64.tar || exit
+rm -rf /usr/bin/node
+rm -rf /usr/bin/npm
 mv node-v$nodejs_version-linux-x64 nodejs
 mv nodejs $nodejs_install_path/
 yes|cp -rf $nodejs_install_path/nodejs/bin/node /usr/bin/
