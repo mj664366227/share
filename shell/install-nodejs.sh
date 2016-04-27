@@ -39,5 +39,6 @@ yes|cp -rf $nodejs_install_path/nodejs/bin/node /usr/bin/
 ln -s $nodejs_install_path/nodejs/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm
 
 #更新npm版本
-npm update npm -g
-npm -v
+npm update -g
+echo 'node version: '$(node -v)
+echo 'npm version: '$(npm -v)
