@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var captchapng = require('captchapng');
-var random = require('../node-core/framework/core/util/random');
+var random = require('../share-core/framework/core/util/random');
 
 app.get('/', function (req, res) {
 	var p = new captchapng(80, 30, random.rand(100000, 999999)); // width,height,numeric captcha

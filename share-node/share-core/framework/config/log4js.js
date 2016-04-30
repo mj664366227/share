@@ -1,9 +1,5 @@
 // log4js配置文件
 
-import filesystem from '../core/util/filesystem';
-let rootLogger = filesystem.loadProperties('log4j.properties');
-rootLogger = rootLogger['log4j.rootLogger'].toString().trim();
-rootLogger = rootLogger.split(',')[0].toString().trim().toLowerCase();
 module.exports = function (dir) {
 	return {
 		appenders: [{
@@ -19,7 +15,7 @@ module.exports = function (dir) {
 			pattern: ".yyyy-MM-dd"
 		}],
 		levels: {
-			"[all]": rootLogger
+			"[all]": 'info'
 		}
 	}
 };
