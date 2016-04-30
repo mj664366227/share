@@ -5,7 +5,7 @@ const UserBase = requireHttpBase("UserBase");
 const UserBaseListResponse = requireHttpRes("UserBaseListResponse");
 module.exports = {
 	/**
-	 * 查询用户 By 用户id
+	 * 查询用户 By 用户idddd
 	 * @param userId 用户id
 	 */
 	getUserById: async function (userId) {
