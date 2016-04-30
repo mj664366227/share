@@ -25,7 +25,11 @@ module.exports = ()=> {
 
 	// 全局错误监听
 	process.on('uncaughtException', function (err) {
-		logUtil.getLogger(module.filename).error(err);
+		if (filesystem.isWindows() || filesystem.isDarwin()) {
+			logUtil.getLogger('core\\global\\exception').error(err);
+		} else {
+			logUtil.getLogger('core/global/exception').error(err);
+		}
 	});
 
 	// 注入Service全局方法
