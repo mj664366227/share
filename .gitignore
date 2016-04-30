@@ -12,3 +12,4 @@ share-*.jar
 *~$*
 ES7Express
 ES7Express.git
+node_modules/
