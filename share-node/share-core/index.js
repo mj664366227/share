@@ -6,14 +6,26 @@ import filesystem from './core/util/filesystem';
  */
 module.exports = ()=> {
 	global._ = lodash;
+	global.Promise = require('bluebird');
 	global.CoreDir = __dirname;
-	console.log(AppDir);
 
-	// 注入util全局方法
+	// 加载配置文件(自动区分开发环境和生产环境)
+	global.config = require('./config/config');
+
+	// 自动注入util全局方法
 	let utilPath = __dirname + '/core/util/';
 	let utilFileList = filesystem.ls(utilPath);
+	global.logUtil = require(utilPath + 'logUtil.js');
 	utilFileList.forEach(function (item) {
-		global[item.substring(0, item.indexOf('.'))] = require(utilPath + item);
+		item = item.substring(0, item.indexOf('.'));
+		if (item !== 'logUtil') {
+			global[item.substring(0, item.indexOf('.'))] = require(utilPath + item + '.js');
+		}
+	});
+
+	// 全局错误监听
+	process.on('uncaughtException', function (err) {
+		logUtil.getLogger(module.filename).error(err);
 	});
 
 	// 注入Service全局方法

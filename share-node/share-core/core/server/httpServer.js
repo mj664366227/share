@@ -16,10 +16,10 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({
-	secret: properties["system.key"],
-	name: secret.sha1(properties["project.name"] + properties["system.key"] + 'captcha'),   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
+	secret: '1234',
+	name: 'ruanzhijun',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
 	cookie: {maxAge: 300000},  //设置maxAge是80000ms，即80s后session和相应的cookie失效过期
-	path: "/" + properties["project.name"].substring(3),
+	path: '/',
 	resave: false,
 	saveUninitialized: true
 }));
@@ -28,7 +28,7 @@ app.use(session({
 /**
  * 启动http服务器
  */
-module.exports.start = function (port, route) {
+module.exports.start = function (port) {
 	// 遍历路由，映射到具体方法
 	_.forEach(route, function (v_map, k_url) {
 		var func = async function (req, res) {
@@ -85,5 +85,5 @@ module.exports.start = function (port, route) {
 	// 屏蔽一些服务器参数
 	app.disable('x-powered-by');
 	app.disable('etag');
-	LOGGER.warn('http server %s start success, bind port %s ...', properties["project.name"], port);
+	LOGGER.warn('http server start success, bind port %s ...', port);
 };

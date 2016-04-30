@@ -4,8 +4,8 @@ import qiniu from "qiniu";
 let LOGGER = logUtil.getLogger(module.filename);
 
 // 七牛配置
-qiniu.conf.ACCESS_KEY = properties['qiniu.accesskey'];
-qiniu.conf.SECRET_KEY = properties['qiniu.secretkey'];
+qiniu.conf.ACCESS_KEY = '123';
+qiniu.conf.SECRET_KEY = '123';
 
 // 名空间配置
 global.bucketConfig = [];
