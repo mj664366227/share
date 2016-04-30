@@ -5,8 +5,9 @@ import compression from 'compression'
 import express from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser'
-import time from '../util/timeUtil';
+import bodyParser from 'body-parser';
+import fs from 'fs';
+import filesystem from '../util/filesystem';
 
 var app = express();
 
@@ -29,55 +30,93 @@ app.use(session({
  * 启动http服务器
  */
 module.exports.start = function (port) {
-	// 遍历路由，映射到具体方法
-	_.forEach(route, function (v_map, k_url) {
-		var func = async function (req, res) {
-			// 调用映射的方法处理并返回
-			var json = {};
-			json['time'] = time.now();
-
-			// 调用处理方法
-			try {
-				var t = time.nanoTime();
-				var param = _.merge(req.body, req.query);
-				param.ip = req.header("X-Real-IP");
-				LOGGER.info('%s\tparam: %s', k_url, JSON.stringify(param));
-				var data = await v_map.func(req, res, param);
-				t = showTime(time.nanoTime() - t);
-				var isNumber = _.isNumber(data);
-				if (isNumber || data) {
-					if (data.errorCode) {
-						json['status'] = parseInt(data.errorCode);
-						json['errorMsg'] = data.errorMessage.toString();
-					} else {
-						json['status'] = 0;
-						json['data'] = data;
+	var fileList = filesystem.ls(ControllerDir);
+	fileList.forEach(function (item) {
+		var file = ControllerDir + "/" + item;
+		var stats = fs.statSync(file);
+		if (!stats.isDirectory()) {
+			var controller = require(file);
+			_.forEach(controller, function (v_map, k_funcName) {
+				console.log(v_map);
+				console.log(k_funcName);
+				var funObj = v_map.func;
+				if (_.isFunction(funObj)) {
+					let url = v_map.url;
+					let method = v_map.method.toString().toLowerCase();
+					//检查url不能为空
+					if (!url) {
+						process.exit();
 					}
-				} else {
-					LOGGER.info('%s\texec: %s', k_url, t);
-					res.sendStatus(500);
+					if (urlMap[url] == url) {
+						process.exit();
+					}
+					// 如果是get方法，自动进入白名单
+					if (method === 'get') {
+						whiteList.push(url);
+					}
+					route[url] = v_map;
+					urlMap[url] = url;
+					LOGGER.info('request mapping url: [%s], method: [%s] on %s function %s()', url, method, file, k_funcName);
 				}
-			} catch (e) {
-				res.sendStatus(500);
-				LOGGER.error(e);
-				return;
-			}
-			LOGGER.warn('%s\texec: %s', k_url, t);
-			LOGGER.info('%s send data: %s', k_url, JSON.stringify(json));
-			res.json(json);
-		};
-		switch (v_map.method) {
-			case 'get':
-				app.get(k_url, func);
-				break;
-			case 'post':
-				app.post(k_url, func);
-				break;
-			default:
-				app.use(k_url, func);
-				break;
+			});
 		}
 	});
+
+
+
+
+
+
+
+	// 遍历路由，映射到具体方法
+	// _.forEach(route, function (v_map, k_url) {
+	// 	var func = async function (req, res) {
+	// 		// 调用映射的方法处理并返回
+	// 		var json = {};
+	// 		json['time'] = time.now();
+	//
+	// 		// 调用处理方法
+	// 		try {
+	// 			var t = time.nanoTime();
+	// 			var param = _.merge(req.body, req.query);
+	// 			param.ip = req.header("X-Real-IP");
+	// 			LOGGER.info('%s\tparam: %s', k_url, JSON.stringify(param));
+	// 			var data = await v_map.func(req, res, param);
+	// 			t = showTime(time.nanoTime() - t);
+	// 			var isNumber = _.isNumber(data);
+	// 			if (isNumber || data) {
+	// 				if (data.errorCode) {
+	// 					json['status'] = parseInt(data.errorCode);
+	// 					json['errorMsg'] = data.errorMessage.toString();
+	// 				} else {
+	// 					json['status'] = 0;
+	// 					json['data'] = data;
+	// 				}
+	// 			} else {
+	// 				LOGGER.info('%s\texec: %s', k_url, t);
+	// 				res.sendStatus(500);
+	// 			}
+	// 		} catch (e) {
+	// 			res.sendStatus(500);
+	// 			LOGGER.error(e);
+	// 			return;
+	// 		}
+	// 		LOGGER.warn('%s\texec: %s', k_url, t);
+	// 		LOGGER.info('%s send data: %s', k_url, JSON.stringify(json));
+	// 		res.json(json);
+	// 	};
+	// 	switch (v_map.method) {
+	// 		case 'get':
+	// 			app.get(k_url, func);
+	// 			break;
+	// 		case 'post':
+	// 			app.post(k_url, func);
+	// 			break;
+	// 		default:
+	// 			app.use(k_url, func);
+	// 			break;
+	// 	}
+	// });
 
 	// 启动http服务器，监听端口
 	app.listen(port);

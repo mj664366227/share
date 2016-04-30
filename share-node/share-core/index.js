@@ -10,7 +10,10 @@ module.exports = ()=> {
 	global.CoreDir = __dirname;
 
 	// 加载配置文件(自动区分开发环境和生产环境)
-	global.config = require('./config/config');
+	global.Config = require('./config/config');
+
+	// 约定，每个应用程序文件夹下的controller文件夹，就是项目控制器文件夹
+	global.ControllerDir = AppDir + '/controller';
 
 	// 自动注入util全局方法
 	let utilPath = __dirname + '/core/util/';

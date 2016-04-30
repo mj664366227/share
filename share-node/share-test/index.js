@@ -7,6 +7,6 @@ module.exports = (appDir)=> {
 	require('../share-dao/index')();
 	require('../share-service/index')();
 	require('../share-core/index')();
-	var httpServer = require('../share-core/core/server/httpServer');
-	httpServer.start(config.http.port);
+	var httpServer = require(CoreDir + '/core/server/httpServer');
+	httpServer.start(Config.http.port);
 };
