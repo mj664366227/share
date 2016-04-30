@@ -40,6 +40,26 @@ module.exports = {
 	 */
 	day2Second: function (day) {
 		return moment.duration(day, "day").asSeconds()
+	},
+	/**
+	 * 寻找最合适的单位来显示时间
+	 * @param time 时间
+	 */
+	showTime: function (time) {
+		var str = "";
+		if (time > 0 && time <= 1000) {
+			str = time + " ns";
+		} else if (time > 1000 && time <= 1000000) {
+			str = (time / 1000.0).toFixed(2) + " μs";
+		} else if (time > 1000000 && time <= 1000000000) {
+			str = (time / 1000000.0).toFixed(2) + " ms";
+		} else if (time > 1000000000 && time < 60000000000) {
+			str = (time / 1000000000.0).toFixed(2) + " s";
+		} else if (time >= 60000000000 && time < 3600000000000) {
+			str = (time / 60000000000).toFixed(2) + " min";
+		} else {
+			str = (time / 3600000000000).toFixed(2) + " h";
+		}
+		return str;
 	}
-
 };
