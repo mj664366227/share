@@ -8,6 +8,6 @@ module.exports = {
 	 * @param userId 用户id
 	 */
 	getUserById: async function (userId) {
-		return await guSlaveDbService.queryT("SELECT * FROM `user` WHERE `id`=?", DUser, userId);
+		return await new DUser();
 	}
 };

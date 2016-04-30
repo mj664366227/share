@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>vue-study</title>
+</head>
+<body>
+
+
+<div id="example">
+  a={{ a }}, b={{ b }}
+</div>
+
+</body>
+<script src="vue.min.js"></script>
+<script>
+var vm = new Vue({
+  el: '#example',
+  data: {
+    a: 1
+  },
+  computed: {
+    // 一个计算属性的 getter
+    b: function () {
+      // `this` 指向 vm 实例
+      return this.a + 1
+    }
+  }
+})
+</script>
+</html>
