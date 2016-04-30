@@ -1,5 +1,4 @@
 // log4js配置文件
-
 module.exports = function (dir) {
 	return {
 		appenders: [{

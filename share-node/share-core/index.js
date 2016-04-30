@@ -13,7 +13,7 @@ module.exports = ()=> {
 	global.Config = require('./config/config');
 
 	// 约定，每个应用程序文件夹下的controller文件夹，就是项目控制器文件夹
-	global.ControllerDir = AppDir + '/controller';
+	global.ControllerDir = AppDir + '/controller/';
 
 	// 自动注入util全局方法
 	let utilPath = __dirname + '/core/util/';
@@ -34,19 +34,4 @@ module.exports = ()=> {
 			logUtil.getLogger('core/global/exception').error(err);
 		}
 	});
-
-	// 注入Service全局方法
-	global.requireService = function (fileName) {
-		return require(Path.service + '/' + fileName);
-	};
-
-	// 注入Dao全局方法
-	global.requireDao = function (fileName) {
-		return require(Path.dao + '/' + fileName);
-	};
-
-	// 注入T全局方法
-	global.requireT = function (fileName) {
-		return require(Path.model + '/' + fileName);
-	};
 };

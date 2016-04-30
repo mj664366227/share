@@ -32,7 +32,7 @@ app.use(session({
 module.exports.start = function (port) {
 	var fileList = filesystem.ls(ControllerDir);
 	fileList.forEach(function (item) {
-		var file = ControllerDir + "/" + item;
+		var file = ControllerDir + item;
 		var stats = fs.statSync(file);
 		if (!stats.isDirectory()) {
 			var controller = require(file);
@@ -61,11 +61,6 @@ module.exports.start = function (port) {
 			});
 		}
 	});
-
-
-
-
-
 
 
 	// 遍历路由，映射到具体方法

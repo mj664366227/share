@@ -1,4 +1,4 @@
 // gu_admin库链接
-import config from '../../share-core/config/mysql';
-import mysql from '../../share-core/core/mysql/mysql';
+let config = require(CoreDir + '/config/mysql');
+let mysql = require(CoreDir + '/core/mysql/mysql');
 module.exports = mysql(config.share);
