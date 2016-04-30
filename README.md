@@ -2,7 +2,7 @@
 
 ---
 
-######使用每一种后端语言实现一个可立刻上手编程的框架。目前只实现了php、java、nodejs。
+######使用每一种后端语言实现一个可立刻上手编程的框架。目前只实现了[php](https://github.com/ruanzhijun/share/tree/master/sharePHP)、[java](https://github.com/ruanzhijun/share/tree/master/java)、[nodejs](https://github.com/ruanzhijun/share/tree/master/nodejs)。
 ######把常用的linux服务器软件的安装过程编辑成[shell脚本](https://github.com/ruanzhijun/share/tree/master/shell)，实现一键傻瓜式配置生产环境。
 
 ---
