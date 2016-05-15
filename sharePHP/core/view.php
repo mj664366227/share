@@ -15,6 +15,10 @@ class view {
 	 * 当前模板
 	 */
 	private static $display = null;
+	/**
+	 * 是否显示模板
+	 */
+	private static $show = true;
 
 	/**
 	 * 导入变量
@@ -43,10 +47,22 @@ class view {
 	}
 
 	/**
+	 * 是否显示模板
+	 * @param $show 默认true
+	 */
+	public static function show($show = true) {
+		self::$show = $show;
+	}
+
+	/**
 	 * 显示模板
 	 * @param $file_name 模板文件名(默认是类名/方法名)
 	 */
 	public static function display($file_name = '') {
+		if (self::$show === false) {
+			return;
+		}
+		
 		if (!$file_name) {
 			$file_name = sharePHP::get_class() . '/' . sharePHP::get_method();
 		}
