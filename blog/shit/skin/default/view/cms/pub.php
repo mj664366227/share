@@ -6,7 +6,7 @@
     <tr>
       <td width="150">选择文章类型</td>
       <td><div class="col-md-4">
-          <select name="category" class="form-control">
+          <select name="c" class="form-control">
             <option value="-1">=================</option>
             <?php foreach($category as $c):?>
             <option value="<?php echo $c['id'];?>"><?php echo $c['name'];?>(<?php echo $c['contents'];?>)</option>
@@ -15,8 +15,12 @@
         </div></td>
     </tr>
     <tr>
+      <td>文章题目</td>
+      <td><input type="text" name="title" id="title"/></td>
+    </tr>
+    <tr>
       <td>文章内容</td>
-      <td><textarea name="editor" id="editor"></textarea></td>
+      <td><textarea name="content" id="editor"></textarea></td>
     </tr>
     <tr>
       <td>&nbsp;</td>

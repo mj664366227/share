@@ -33,5 +33,7 @@ class mcms extends model {
 		$data['max'] = ceil(self::$db->get_count() / $page_size);
 		return $data;
 	}
+	
+	public static function add_content($name) {}
 }
 ?>

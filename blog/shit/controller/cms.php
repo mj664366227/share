@@ -34,6 +34,21 @@ class cmscontroller extends admincontroller {
 	 */
 	public function pub() {
 		$category = mcms::get_category();
+		
+		$c = $this->get_uint('id');
+		$content = $this->get_uint('content');
+		if ($c && $content) {
+			$is = false;
+			foreach ($category as $cat) {
+				if (intval($cat['id']) === $c) {
+					$is = true;
+				}
+			}
+			if ($is === false) {
+				return;
+			}
+		}
+		
 		view::assign('category', $category);
 	}
 }
