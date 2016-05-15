@@ -33,7 +33,26 @@ class mcms extends model {
 		$data['max'] = ceil(self::$db->get_count() / $page_size);
 		return $data;
 	}
-	
-	public static function add_content($name) {}
+
+	/**
+	 * 添加文章
+	 * @param $category 类型
+	 * @param $title 题目
+	 * @param $content 内容
+	 */
+	public static function add_content($category, $title, $content) {
+		$data['category_id'] = $category;
+		$data['title'] = $title;
+		$data['content'] = $content;
+		$data['pv'] = 0;
+		$data['create_time'] = time();
+		$id = intval(self::$db->insert('content', $data));
+		if (!$id) {
+			return;
+		}
+		
+		$sql = 'update `b_category` set `contents`=`contents`+1 where `id`=\'' . $category . '\'';
+		self::$db->query($sql);
+	}
 }
 ?>
