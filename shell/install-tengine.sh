@@ -48,7 +48,7 @@ if [ ! -d $install_path/$pcre ]; then
 fi
 
 #安装OpenSSL
-openssl='openssl-1.0.2g' 
+openssl='openssl-1.0.2h' 
 echo 'installing '$openssl' ...'
 if [ ! -f $base_path/$openssl.tar.gz ]; then
 	echo $openssl'.tar.gz is not exists, system will going to download it...'
@@ -70,7 +70,7 @@ if [ ! -d $install_path/$libatomic ]; then
 fi
 
 #安装jemalloc
-jemalloc='jemalloc-4.1.0'
+jemalloc='jemalloc-4.2.0'
 echo 'installing '$jemalloc' ...'
 if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
 	echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
