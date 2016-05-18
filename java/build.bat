@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 
 cd %cd%
 for /f "tokens=*" %%a in ('dir /b') do (
