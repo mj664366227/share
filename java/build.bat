@@ -1,5 +1,4 @@
 ﻿@echo off
-rd /s/q %cd%\.gradle\
 
 cd %cd%
 for /f "tokens=*" %%a in ('dir /b') do (
@@ -15,4 +14,4 @@ for /f "tokens=*" %%a in ('dir /b') do (
    echo %%a | findstr "\-" && rd /s /q %cd%\%%a\bin || cd %cd%
 )
 
-gradle clean eclipse
+gradle clean eclipse && rd /s/q %cd%\.gradle\
