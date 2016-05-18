@@ -129,7 +129,6 @@ project(':share-core') {
 		compile 'org.eclipse.jetty:apache-jstl:9.3.9.M1'
 		compile 'org.eclipse.jetty:apache-jsp:9.3.9.M1'
 		compile 'org.eclipse.jdt.core.compiler:ecj:4.5.1'
-		compile 'org.eclipse.jetty:jetty-jsp:9.3.9.M1'
 		compile 'log4j:log4j:1.2.17'
 		compile 'org.slf4j:slf4j-api:1.7.12'
 		compile 'org.slf4j:slf4j-log4j12:1.7.12'
