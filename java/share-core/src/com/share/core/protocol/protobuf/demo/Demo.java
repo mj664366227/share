@@ -8,10 +8,10 @@ public final class Demo {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
   }
-  public interface ReqDemoOrBuilder
-      extends com.google.protobuf.MessageLiteOrBuilder {
+  public interface ReqDemoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:com.share.core.protocol.protobuf.demo.ReqDemo)
+      com.google.protobuf.MessageLiteOrBuilder {
 
-    // optional sint32 protocol = 1;
     /**
      * <code>optional sint32 protocol = 1;</code>
      */
@@ -21,7 +21,6 @@ public final class Demo {
      */
     int getProtocol();
 
-    // optional sint32 id = 2;
     /**
      * <code>optional sint32 id = 2;</code>
      */
@@ -31,7 +30,6 @@ public final class Demo {
      */
     int getId();
 
-    // optional string name = 3;
     /**
      * <code>optional string name = 3;</code>
      */
@@ -46,7 +44,6 @@ public final class Demo {
     com.google.protobuf.ByteString
         getNameBytes();
 
-    // optional string email = 4;
     /**
      * <code>optional string email = 4;</code>
      */
@@ -65,14 +62,15 @@ public final class Demo {
    * Protobuf type {@code com.share.core.protocol.protobuf.demo.ReqDemo}
    */
   public static final class ReqDemo extends
-      com.google.protobuf.GeneratedMessageLite
-      implements ReqDemoOrBuilder {
+      com.google.protobuf.GeneratedMessageLite implements
+      // @@protoc_insertion_point(message_implements:com.share.core.protocol.protobuf.demo.ReqDemo)
+      ReqDemoOrBuilder {
     // Use ReqDemo.newBuilder() to construct.
     private ReqDemo(com.google.protobuf.GeneratedMessageLite.Builder builder) {
       super(builder);
-
+      this.unknownFields = builder.getUnknownFields();
     }
-    private ReqDemo(boolean noInit) {}
+    private ReqDemo(boolean noInit) { this.unknownFields = com.google.protobuf.ByteString.EMPTY;}
 
     private static final ReqDemo defaultInstance;
     public static ReqDemo getDefaultInstance() {
@@ -83,12 +81,18 @@ public final class Demo {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.ByteString unknownFields;
     private ReqDemo(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       initFields();
       int mutable_bitField0_ = 0;
+      com.google.protobuf.ByteString.Output unknownFieldsOutput =
+          com.google.protobuf.ByteString.newOutput();
+      com.google.protobuf.CodedOutputStream unknownFieldsCodedOutput =
+          com.google.protobuf.CodedOutputStream.newInstance(
+              unknownFieldsOutput);
       try {
         boolean done = false;
         while (!done) {
@@ -98,7 +102,7 @@ public final class Demo {
               done = true;
               break;
             default: {
-              if (!parseUnknownField(input,
+              if (!parseUnknownField(input, unknownFieldsCodedOutput,
                                      extensionRegistry, tag)) {
                 done = true;
               }
@@ -115,13 +119,15 @@ public final class Demo {
               break;
             }
             case 26: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
-              name_ = input.readBytes();
+              name_ = bs;
               break;
             }
             case 34: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
-              email_ = input.readBytes();
+              email_ = bs;
               break;
             }
           }
@@ -132,6 +138,13 @@ public final class Demo {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
+        try {
+          unknownFieldsCodedOutput.flush();
+        } catch (java.io.IOException e) {
+        // Should not happen
+        } finally {
+          unknownFields = unknownFieldsOutput.toByteString();
+        }
         makeExtensionsImmutable();
       }
     }
@@ -151,7 +164,6 @@ public final class Demo {
     }
 
     private int bitField0_;
-    // optional sint32 protocol = 1;
     public static final int PROTOCOL_FIELD_NUMBER = 1;
     private int protocol_;
     /**
@@ -167,7 +179,6 @@ public final class Demo {
       return protocol_;
     }
 
-    // optional sint32 id = 2;
     public static final int ID_FIELD_NUMBER = 2;
     private int id_;
     /**
@@ -183,7 +194,6 @@ public final class Demo {
       return id_;
     }
 
-    // optional string name = 3;
     public static final int NAME_FIELD_NUMBER = 3;
     private java.lang.Object name_;
     /**
@@ -226,7 +236,6 @@ public final class Demo {
       }
     }
 
-    // optional string email = 4;
     public static final int EMAIL_FIELD_NUMBER = 4;
     private java.lang.Object email_;
     /**
@@ -278,7 +287,8 @@ public final class Demo {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
@@ -299,6 +309,7 @@ public final class Demo {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBytes(4, getEmailBytes());
       }
+      output.writeRawBytes(unknownFields);
     }
 
     private int memoizedSerializedSize = -1;
@@ -323,6 +334,7 @@ public final class Demo {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(4, getEmailBytes());
       }
+      size += unknownFields.size();
       memoizedSerializedSize = size;
       return size;
     }
@@ -400,7 +412,9 @@ public final class Demo {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageLite.Builder<
           com.share.core.protocol.protobuf.demo.Demo.ReqDemo, Builder>
-        implements com.share.core.protocol.protobuf.demo.Demo.ReqDemoOrBuilder {
+        implements
+        // @@protoc_insertion_point(builder_implements:com.share.core.protocol.protobuf.demo.ReqDemo)
+        com.share.core.protocol.protobuf.demo.Demo.ReqDemoOrBuilder {
       // Construct using com.share.core.protocol.protobuf.demo.Demo.ReqDemo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
@@ -483,6 +497,8 @@ public final class Demo {
           email_ = other.email_;
           
         }
+        setUnknownFields(
+            getUnknownFields().concat(other.unknownFields));
         return this;
       }
 
@@ -509,7 +525,6 @@ public final class Demo {
       }
       private int bitField0_;
 
-      // optional sint32 protocol = 1;
       private int protocol_ ;
       /**
        * <code>optional sint32 protocol = 1;</code>
@@ -542,7 +557,6 @@ public final class Demo {
         return this;
       }
 
-      // optional sint32 id = 2;
       private int id_ ;
       /**
        * <code>optional sint32 id = 2;</code>
@@ -575,7 +589,6 @@ public final class Demo {
         return this;
       }
 
-      // optional string name = 3;
       private java.lang.Object name_ = "";
       /**
        * <code>optional string name = 3;</code>
@@ -589,9 +602,12 @@ public final class Demo {
       public java.lang.String getName() {
         java.lang.Object ref = name_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          name_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            name_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -649,7 +665,6 @@ public final class Demo {
         return this;
       }
 
-      // optional string email = 4;
       private java.lang.Object email_ = "";
       /**
        * <code>optional string email = 4;</code>
@@ -663,9 +678,12 @@ public final class Demo {
       public java.lang.String getEmail() {
         java.lang.Object ref = email_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          email_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            email_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;
@@ -734,10 +752,10 @@ public final class Demo {
     // @@protoc_insertion_point(class_scope:com.share.core.protocol.protobuf.demo.ReqDemo)
   }
 
-  public interface ResDemoOrBuilder
-      extends com.google.protobuf.MessageLiteOrBuilder {
+  public interface ResDemoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:com.share.core.protocol.protobuf.demo.ResDemo)
+      com.google.protobuf.MessageLiteOrBuilder {
 
-    // optional sint32 protocol = 1;
     /**
      * <code>optional sint32 protocol = 1;</code>
      */
@@ -747,7 +765,6 @@ public final class Demo {
      */
     int getProtocol();
 
-    // optional string email = 2;
     /**
      * <code>optional string email = 2;</code>
      */
@@ -766,14 +783,15 @@ public final class Demo {
    * Protobuf type {@code com.share.core.protocol.protobuf.demo.ResDemo}
    */
   public static final class ResDemo extends
-      com.google.protobuf.GeneratedMessageLite
-      implements ResDemoOrBuilder {
+      com.google.protobuf.GeneratedMessageLite implements
+      // @@protoc_insertion_point(message_implements:com.share.core.protocol.protobuf.demo.ResDemo)
+      ResDemoOrBuilder {
     // Use ResDemo.newBuilder() to construct.
     private ResDemo(com.google.protobuf.GeneratedMessageLite.Builder builder) {
       super(builder);
-
+      this.unknownFields = builder.getUnknownFields();
     }
-    private ResDemo(boolean noInit) {}
+    private ResDemo(boolean noInit) { this.unknownFields = com.google.protobuf.ByteString.EMPTY;}
 
     private static final ResDemo defaultInstance;
     public static ResDemo getDefaultInstance() {
@@ -784,12 +802,18 @@ public final class Demo {
       return defaultInstance;
     }
 
+    private final com.google.protobuf.ByteString unknownFields;
     private ResDemo(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       initFields();
       int mutable_bitField0_ = 0;
+      com.google.protobuf.ByteString.Output unknownFieldsOutput =
+          com.google.protobuf.ByteString.newOutput();
+      com.google.protobuf.CodedOutputStream unknownFieldsCodedOutput =
+          com.google.protobuf.CodedOutputStream.newInstance(
+              unknownFieldsOutput);
       try {
         boolean done = false;
         while (!done) {
@@ -799,7 +823,7 @@ public final class Demo {
               done = true;
               break;
             default: {
-              if (!parseUnknownField(input,
+              if (!parseUnknownField(input, unknownFieldsCodedOutput,
                                      extensionRegistry, tag)) {
                 done = true;
               }
@@ -811,8 +835,9 @@ public final class Demo {
               break;
             }
             case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
-              email_ = input.readBytes();
+              email_ = bs;
               break;
             }
           }
@@ -823,6 +848,13 @@ public final class Demo {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
+        try {
+          unknownFieldsCodedOutput.flush();
+        } catch (java.io.IOException e) {
+        // Should not happen
+        } finally {
+          unknownFields = unknownFieldsOutput.toByteString();
+        }
         makeExtensionsImmutable();
       }
     }
@@ -842,7 +874,6 @@ public final class Demo {
     }
 
     private int bitField0_;
-    // optional sint32 protocol = 1;
     public static final int PROTOCOL_FIELD_NUMBER = 1;
     private int protocol_;
     /**
@@ -858,7 +889,6 @@ public final class Demo {
       return protocol_;
     }
 
-    // optional string email = 2;
     public static final int EMAIL_FIELD_NUMBER = 2;
     private java.lang.Object email_;
     /**
@@ -908,7 +938,8 @@ public final class Demo {
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
@@ -923,6 +954,7 @@ public final class Demo {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getEmailBytes());
       }
+      output.writeRawBytes(unknownFields);
     }
 
     private int memoizedSerializedSize = -1;
@@ -939,6 +971,7 @@ public final class Demo {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, getEmailBytes());
       }
+      size += unknownFields.size();
       memoizedSerializedSize = size;
       return size;
     }
@@ -1016,7 +1049,9 @@ public final class Demo {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageLite.Builder<
           com.share.core.protocol.protobuf.demo.Demo.ResDemo, Builder>
-        implements com.share.core.protocol.protobuf.demo.Demo.ResDemoOrBuilder {
+        implements
+        // @@protoc_insertion_point(builder_implements:com.share.core.protocol.protobuf.demo.ResDemo)
+        com.share.core.protocol.protobuf.demo.Demo.ResDemoOrBuilder {
       // Construct using com.share.core.protocol.protobuf.demo.Demo.ResDemo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
@@ -1079,6 +1114,8 @@ public final class Demo {
           email_ = other.email_;
           
         }
+        setUnknownFields(
+            getUnknownFields().concat(other.unknownFields));
         return this;
       }
 
@@ -1105,7 +1142,6 @@ public final class Demo {
       }
       private int bitField0_;
 
-      // optional sint32 protocol = 1;
       private int protocol_ ;
       /**
        * <code>optional sint32 protocol = 1;</code>
@@ -1138,7 +1174,6 @@ public final class Demo {
         return this;
       }
 
-      // optional string email = 2;
       private java.lang.Object email_ = "";
       /**
        * <code>optional string email = 2;</code>
@@ -1152,9 +1187,12 @@ public final class Demo {
       public java.lang.String getEmail() {
         java.lang.Object ref = email_;
         if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          email_ = s;
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            email_ = s;
+          }
           return s;
         } else {
           return (java.lang.String) ref;

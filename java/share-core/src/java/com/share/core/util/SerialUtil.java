@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SerialUtil {
 	private final static Logger logger = LoggerFactory.getLogger(SerialUtil.class);
-	private final static MessagePack pack = new MessagePack();
+	//private final static MessagePack pack = new MessagePack();
 
 	/**
 	 * 对象序列化成字节

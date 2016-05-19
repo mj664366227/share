@@ -1,12 +1,10 @@
 package com.share.core.session;
 
-import org.msgpack.annotation.Message;
-
 /**
  * 内部使用的数据结构
  * @author ruan
  */
-@Message
+
 public class DistributedSessionData {
 	private byte[] data;
 
