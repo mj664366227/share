@@ -88,13 +88,6 @@
 		<!-- <property name="sslProtocols" value="TLSv1" /> -->
 	</bean>
 
-	<!-- nsq -->
-	<bean class="com.share.core.nsq.NsqService" init-method="init">
-		<!-- 定义扫描存在NsqCallback的包，可用逗号分割 -->
-		<property name="scanPackage" value="com.share.test.nsq" />
-		<!-- 线程池大小 -->
-		<property name="poolSize" value="1" />
-	</bean>
 
 	<!-- 视图配置 -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
