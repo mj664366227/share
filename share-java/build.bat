@@ -6,6 +6,9 @@ rd /s /q %cd%\share-core\src\java\com\share\core\protocol\protobuf
 
 cd %cd%
 for /f "tokens=*" %%a in ('dir /b') do (
+   echo %%a | findstr "\-" && del /s /q %cd%\%%a\.gitignore || cd %cd%
+)
+for /f "tokens=*" %%a in ('dir /b') do (
    echo %%a | findstr "\-" && del /s /q %cd%\%%a\.classpath || cd %cd%
 )
 for /f "tokens=*" %%a in ('dir /b') do (
