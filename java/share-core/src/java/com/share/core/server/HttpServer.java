@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -61,12 +63,23 @@ public class HttpServer extends AbstractServer {
 		String webappPath = getWebappPath();
 		WebAppContext webAppContext = new WebAppContext(webappPath + webXmlPath, "/");
 		webAppContext.setResourceBase(webappPath);
-		server.setHandler(webAppContext);
 
-		ServerConnector serverConnector = new ServerConnector(server);
+		// 不限制提交数据的大小，提交的key数量大小
+		webAppContext.setMaxFormContentSize(-1);
+		webAppContext.setMaxFormKeys(-1);
+		server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", -1);
+		server.setAttribute("org.eclipse.jetty.server.Request.maxFormKeys", -1);
+
+		// 设置返回数据为1M
+		HttpConfiguration httpConfig = new HttpConfiguration();
+		httpConfig.setResponseHeaderSize(1048576);
+
+		ServerConnector serverConnector = new ServerConnector(server, new HttpConnectionFactory(httpConfig));
 		serverConnector.setName(FileSystem.getProjectName());
 		serverConnector.setReuseAddress(true);
 		serverConnector.setPort(port);
+
+		server.setHandler(webAppContext);
 		server.addConnector(serverConnector);
 		server.setStopAtShutdown(true);
 	}
