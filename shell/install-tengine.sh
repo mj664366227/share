@@ -188,7 +188,7 @@ http {
 #	so_keepalive on;
 #	tcp_nodelay on;	
 #	include "$tengine_install_path"/tengine/conf/socket/*.conf; 
-}
+#}
 " > $tengine_install_path/tengine/conf/nginx.conf || exit
 rm -rf $tengine_install_path/tengine/conf/web/
 mkdir $tengine_install_path/tengine/conf/web/

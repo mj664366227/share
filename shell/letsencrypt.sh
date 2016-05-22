@@ -18,6 +18,8 @@ echo 'ACCOUNT_KEY="letsencrypt-account.key"' >> letsencrypt.conf
 echo 'DOMAIN_KEY="ruanzhijun.com.key"' >> letsencrypt.conf
 echo 'DOMAIN_DIR="/"' >> letsencrypt.conf
 echo 'DOMAINS="DNS:ruanzhijun.com"' >> letsencrypt.conf
+echo '#ECC=TRUE' >> letsencrypt.conf
+echo '#LIGHTTPD=TRUE' >> letsencrypt.conf
 
 # 生成证书
 ./letsencrypt.sh letsencrypt.conf
