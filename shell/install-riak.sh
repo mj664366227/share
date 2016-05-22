@@ -45,7 +45,7 @@ if [ ! -d $riak_install_path/riak ]; then
 	echo 'installing riak '$riak'...'
 	if [ ! -f $base_path/riak-$riak.tar.gz ]; then
 		echo 'riak-'$riak'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/riak-$riak.tar.gz http://s3.amazonaws.com/downloads.basho.com/riak/2.1/$riak/riak-$riak.tar.gz || exit
+		wget -O $base_path/riak-$riak.tar.gz http://o77dg0j7k.bkt.clouddn.com/riak-$riak.tar.gz || exit
 		echo 'download riak '$riak' finished...'
 	fi
 	tar zxvf $base_path/riak-$riak.tar.gz -C $install_path || exit

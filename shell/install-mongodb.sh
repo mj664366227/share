@@ -24,7 +24,7 @@ yum -y install libtool sed gcc gcc-c++ make net-snmp curl net-snmp-devel net-snm
 
 rm -rf $mongodb_install_path/mongodb
 
-wget -O $base_path/mongodb-$mongodb_version.tgz https://coding.net/u/ruanzhijun/p/server-install/git/raw/master/mongodb-linux-x86_64-$mongodb_version.tgz || exit
+wget -O $base_path/mongodb-$mongodb_version.tgz http://o77dg0j7k.bkt.clouddn.com/mongodb-linux-x86_64-$mongodb_version.tgz || exit
 mkdir -p $mongodb_install_path/mongodb/data
 $mongodb_install_path/mongodb/bin/mongod --port 27017 --dbpath $mongodb_install_path/mongodb/data --logpath $mongodb_install_path/mongodb/log.log --logappend &
 echo '' >> /etc/rc.d/rc.local
