@@ -259,8 +259,13 @@ echo '
 	#index index.html index.php;
 	
 	#ssl on;
-	#ssl_certificate security.crt;
-	#ssl_certificate_key security.key;
+	#ssl_certificate /xxxx/xxxx.crt;
+	#ssl_certificate_key /xxxx/xxxx.key;
+	#ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+	#ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+	#ssl_dhparam /xxxx/dhparam.pem;
+	#ssl_prefer_server_ciphers on;
+	#ssl_session_cache shared:SSL:10m;
 #}' > $tengine_install_path/tengine/conf/web/443.conf
 
 #安装代理服务器

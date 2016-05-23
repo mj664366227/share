@@ -23,3 +23,5 @@ echo '#LIGHTTPD=TRUE' >> letsencrypt.conf
 
 # 生成证书
 ./letsencrypt.sh letsencrypt.conf
+
+# https://www.ssllabs.com/ssltest
