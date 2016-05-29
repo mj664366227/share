@@ -1,30 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<title>vue-study</title>
-</head>
-<body>
+    <head>
+    <meta charset="utf-8">
+    <title>Vue Router Example</title>
+    <script src="vue.min.js"></script>
+    <script src="vue-router.min.js"></script>
+    <script src="vue-resource.min.js"></script>
 
-
-<div id="example">
-  a={{ a }}, b={{ b }}
-</div>
-
+    </head>
+    <body>
+<div id="app">
+      <h1>Hello App!</h1>
+      <p> 
+    <!-- use v-link directive for navigation. --> 
+    <a v-link="{ path: '/foo'}">Go to Foo</a> <a v-link="{ path: '/bar' }">Go to Bar</a></p>
+      <!-- use router-view element as route outlet -->
+      <router-view></router-view>
+    </div>
+<script src="example.js"></script>
 </body>
-<script src="vue.min.js"></script>
-<script>
-var vm = new Vue({
-  el: '#example',
-  data: {
-    a: 1
-  },
-  computed: {
-    // 一个计算属性的 getter
-    b: function () {
-      // `this` 指向 vm 实例
-      return this.a + 1
-    }
-  }
-})
-</script>
 </html>

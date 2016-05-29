@@ -25,7 +25,7 @@ define('MODE', 1);
 define('SITE_TITLE', 'share - tools');
 
 //导入框架核心文件
-require DOCUMENT_ROOT . '../sharePHP/core/core.php';
+require DOCUMENT_ROOT . '../share-php/core/core.php';
 
 //定义系统基础网址
 define('BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . str_replace('index.php', '', $_SERVER['SCRIPT_NAME']));
