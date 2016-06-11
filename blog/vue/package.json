@@ -6,12 +6,8 @@
     "dev": "webpack-dev-server --hot --inline",
     "build": "webpack -p"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Coffcer/vue-chat.git"
-  },
   "dependencies": {
-    "vue": "^1.0.10"
+    "vue": "1.0.24"
   },
   "devDependencies": {
     "autoprefixer-loader": "3.2.0",
@@ -28,14 +24,10 @@
     "less-loader": "2.2.3",
     "style-loader": "0.13.1",
     "url-loader": "0.5.7",
-    "vue-hot-reload-api": "1.2.2",
+    "vue-hot-reload-api": "2.0.0",
     "vue-loader": "8.5.2",
     "vue-style-loader": "1.0.0",
-    "vue-html-loader": "1.2.0",
+    "vue-html-loader": "1.2.2",
     "webpack": "1.13.1"
-  },
-  "keywords": [
-    "vue",
-    "webpack"
-  ]
+  }
 }
