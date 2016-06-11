@@ -1,5 +1,5 @@
 @echo off
 rd /s /q %cd%\node_modules
-npm install
-npm run build
-npm run dev
+del /s /q %cd%\dist\main.js
+del /s /q %cd%\dist\main.js.map
+npm install && npm run build && npm run dev
