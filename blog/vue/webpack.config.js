@@ -1,13 +1,15 @@
 var path = require('path');
+var webpack = require('webpack');
 
 module.exports = {
 	// 入口
-	entry: './src/main',
+	entry: {
+		'main': './src/main'
+	},
 	// 输出
 	output: {
 		path: path.join(__dirname, './dist'),
-		filename: '[name].js',
-		publicPath: '/dist/'
+		filename: 'main.js'
 	},
 	module: {
 		// 加载器
@@ -40,5 +42,4 @@ module.exports = {
 	},
 	// 开启source-map，webpack有多种source-map，在官网文档可以查到
 	devtool: '#source-map'
-}
-;
+};
