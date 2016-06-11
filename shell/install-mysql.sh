@@ -27,7 +27,7 @@ if [ ! -d $mysql_install_path/cmake ]; then
 	echo 'installing '$cmake'...'
 	if [ ! -f $base_path/$cmake.tar.gz ]; then
 		echo $cmake'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$cmake.tar.gz http://o77dg0j7k.bkt.clouddn.com/$cmake.tar.gz || exit
+		wget -O $base_path/$cmake.tar.gz http://install.ruanzhijun.cn/$cmake.tar.gz || exit
 		echo 'download '$cmake' finished...'
 	fi
 	tar zxvf $base_path/$cmake.tar.gz -C $install_path || exit
@@ -39,12 +39,12 @@ if [ ! -d $mysql_install_path/cmake ]; then
 fi
 
 #安装jemalloc
-jemalloc='jemalloc-4.2.0'
+jemalloc='jemalloc-4.2.1'
 if [ ! -d $mysql_install_path/jemalloc ]; then
 	echo 'installing '$jemalloc' ...'
 	if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
 		echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
-		wget -O $base_path/$jemalloc.tar.bz2 http://o77dg0j7k.bkt.clouddn.com/$jemalloc.tar.bz2 || exit
+		wget -O $base_path/$jemalloc.tar.bz2 http://install.ruanzhijun.cn/$jemalloc.tar.bz2 || exit
 		echo 'download '$jemalloc' finished...'
 	fi
 	tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
@@ -55,12 +55,12 @@ if [ ! -d $mysql_install_path/jemalloc ]; then
 fi
 
 #下载boost包
-boost='boost_1_59_0'
+boost='boost_1_61_0'
 if [ ! -d $install_path/$boost ]; then
 	echo 'installing '$boost' ...'
 	if [ ! -f $base_path/$boost.tar.gz ]; then
 		echo $boost'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$boost.tar.gz http://o77dg0j7k.bkt.clouddn.com/$boost.tar.gz || exit
+		wget -O $base_path/$boost.tar.gz http://install.ruanzhijun.cn/$boost.tar.gz || exit
 		echo 'download '$boost' finished...'
 	fi
 	tar zxvf $base_path/$boost.tar.gz -C $install_path || exit
@@ -87,11 +87,11 @@ chown mysql.mysql -R $mysql_data_path || exit
 
 #安装mysql
 echo 'installing mysql...'
-mysql='mysql-5.7.12'
+mysql='mysql-5.7.13'
 if [ ! -d $install_path/$mysql ]; then
 	if [ ! -f $base_path/$mysql.tar.gz ]; then
 		echo $mysql'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$mysql.tar.gz http://o77dg0j7k.bkt.clouddn.com/$mysql.tar.gz || exit
+		wget -O $base_path/$mysql.tar.gz http://install.ruanzhijun.cn/$mysql.tar.gz || exit
 		echo 'download '$mysql' finished...'
 	fi
 	tar zxvf $base_path/$mysql.tar.gz -C $install_path || exit

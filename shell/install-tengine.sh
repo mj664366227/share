@@ -29,7 +29,7 @@ if [ ! -d $install_path/$zlib ]; then
 	echo 'installing '$zlib' ...'
 	if [ ! -f $base_path/$zlib.tar.gz ]; then
 		echo $zlib'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$zlib.tar.gz http://o77dg0j7k.bkt.clouddn.com/$zlib.tar.gz || exit
+		wget -O $base_path/$zlib.tar.gz http://install.ruanzhijun.cn/$zlib.tar.gz || exit
 		echo 'download '$zlib' finished...'
 	fi
 	tar zxvf $base_path/$zlib.tar.gz -C $install_path || exit
@@ -41,7 +41,7 @@ if [ ! -d $install_path/$pcre ]; then
 	echo 'installing '$pcre' ...'
 	if [ ! -f $base_path/$pcre.tar.gz ]; then
 		echo $pcre'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$pcre.tar.gz http://o77dg0j7k.bkt.clouddn.com/$pcre.tar.gz || exit
+		wget -O $base_path/$pcre.tar.gz http://install.ruanzhijun.cn/$pcre.tar.gz || exit
 		echo 'download '$pcre' finished...'
 	fi
 	tar zxvf $base_path/$pcre.tar.gz -C $install_path || exit
@@ -52,7 +52,7 @@ openssl='openssl-1.0.2h'
 echo 'installing '$openssl' ...'
 if [ ! -f $base_path/$openssl.tar.gz ]; then
 	echo $openssl'.tar.gz is not exists, system will going to download it...'
-	wget -O $base_path/$openssl.tar.gz http://o77dg0j7k.bkt.clouddn.com/$openssl.tar.gz || exit
+	wget -O $base_path/$openssl.tar.gz http://install.ruanzhijun.cn/$openssl.tar.gz || exit
 	echo 'download '$openssl' finished...'
 fi
 tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
@@ -63,18 +63,18 @@ if [ ! -d $install_path/$libatomic ]; then
 	echo 'installing '$libatomic' ...'
 	if [ ! -f $base_path/$libatomic.tar.gz ]; then
 		echo $libatomic'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libatomic.tar.gz http://o77dg0j7k.bkt.clouddn.com/$libatomic.tar.gz || exit
+		wget -O $base_path/$libatomic.tar.gz http://install.ruanzhijun.cn/$libatomic.tar.gz || exit
 		echo 'download '$libatomic' finished...'
 	fi
 	tar zxvf $base_path/$libatomic.tar.gz -C $install_path || exit
 fi
 
 #安装jemalloc
-jemalloc='jemalloc-4.2.0'
+jemalloc='jemalloc-4.2.1'
 echo 'installing '$jemalloc' ...'
 if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
 	echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
-	wget -O $base_path/$jemalloc.tar.bz2 http://o77dg0j7k.bkt.clouddn.com/$jemalloc.tar.bz2 || exit
+	wget -O $base_path/$jemalloc.tar.bz2 http://install.ruanzhijun.cn/$jemalloc.tar.bz2 || exit
 	echo 'download '$jemalloc' finished...'
 fi
 tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
@@ -86,7 +86,7 @@ echo 'installing '$tengine' ...'
 if [ ! -d $tengine_install_path/tengine ]; then
 	if [ ! -f $base_path/$tengine.tar.gz ]; then
 		echo $tengine'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$tengine.tar.gz http://o77dg0j7k.bkt.clouddn.com/$tengine.tar.gz || exit
+		wget -O $base_path/$tengine.tar.gz http://install.ruanzhijun.cn/$tengine.tar.gz || exit
 		echo 'download '$tengine' finished...'
 	fi
 	tar zxvf $base_path/$tengine.tar.gz -C $install_path || exit
@@ -95,7 +95,7 @@ if [ ! -d $tengine_install_path/tengine ]; then
 	cd $base_path
 	if [ ! -f $base_path/nginx-http-concat.zip ]; then
 		echo 'nginx-http-concat.zip is not exists, system will going to download it...'
-		wget -O $base_path/nginx-http-concat.zip http://o77dg0j7k.bkt.clouddn.com/nginx-http-concat.zip || exit
+		wget -O $base_path/nginx-http-concat.zip http://install.ruanzhijun.cn/nginx-http-concat.zip || exit
 		echo 'download nginx-http-concat finished...'
 	fi
 	unzip -o -d $install_path $base_path/nginx-http-concat.zip || exit
@@ -107,7 +107,7 @@ if [ ! -d $tengine_install_path/tengine ]; then
 	#cd $base_path
 	#if [ ! -f $base_path/nginx_tcp_proxy_module.zip ]; then
 	#	echo 'nginx_tcp_proxy_module.zip is not exists, system will going to download it...'
-	#	wget -O $base_path/nginx_tcp_proxy_module.zip http://o77dg0j7k.bkt.clouddn.com/nginx_tcp_proxy_module.zip || exit
+	#	wget -O $base_path/nginx_tcp_proxy_module.zip http://install.ruanzhijun.cn/nginx_tcp_proxy_module.zip || exit
 	#	echo 'download nginx_tcp_proxy_module finished...'
 	#fi
 	#unzip -o -d $install_path $base_path/nginx_tcp_proxy_module.zip || exit

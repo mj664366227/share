@@ -27,7 +27,7 @@ if [ ! -d $erlang_install_path/openssl ]; then
 	echo 'installing '$openssl' ...'
 	if [ ! -f $base_path/$openssl.tar.gz ]; then
 		echo $openssl'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$openssl.tar.gz http://o77dg0j7k.bkt.clouddn.com/$openssl.tar.gz || exit
+		wget -O $base_path/$openssl.tar.gz http://install.ruanzhijun.cn/$openssl.tar.gz || exit
 		echo 'download '$openssl' finished...'
 	fi
 	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
@@ -43,7 +43,7 @@ if [ ! -d $erlang_install_path/erlang ]; then
 	echo 'installing erlang '$erlang'...'
 	if [ ! -f $base_path/otp_src_$erlang.tar.gz ]; then
 		echo 'otp_src_'$erlang'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/otp_src_$erlang.tar.gz http://o77dg0j7k.bkt.clouddn.com/otp_src_$erlang.tar.gz || exit
+		wget -O $base_path/otp_src_$erlang.tar.gz http://install.ruanzhijun.cn/otp_src_$erlang.tar.gz || exit
 		echo 'download erlang'$erlang' finished...'
 	fi
 	tar zxvf $base_path/otp_src_$erlang.tar.gz -C $install_path || exit
