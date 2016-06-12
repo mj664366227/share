@@ -1,11 +1,8 @@
 var path = require('path');
-var webpack = require('webpack');
 
 module.exports = {
 	// 入口
-	entry: {
-		'main': './src/main'
-	},
+	entry: './src/main',
 	// 输出
 	output: {
 		path: path.join(__dirname, './dist'),
@@ -40,6 +37,6 @@ module.exports = {
 			components: path.join(__dirname, './src/components')
 		}
 	},
-	// 开启source-map，webpack有多种source-map，在官网文档可以查到
-	devtool: '#eval'
+	// 生产环境不需要devtool
+	devtool: false
 };
