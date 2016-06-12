@@ -1,4 +1,6 @@
 <script>
+    import Vue from "../../node_modules/vue/dist/vue.min";
+
     export default {
         props: ['session', 'user', 'userList'],
         computed: {
