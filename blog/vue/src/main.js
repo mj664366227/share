@@ -1,5 +1,4 @@
 import Vue from "./vue.min";
-import app from './components/app';
 import vueResource  from 'vue-resource';
 import VueRouter  from 'vue-router';
 Vue.use(vueResource);
@@ -7,12 +6,8 @@ Vue.use(VueRouter);
 
 Vue.config.debug = true;
 
-new Vue(app);
 
 // 定义组件
-var Foo = Vue.extend({
-	template: '<p>This is foo!</p>'
-});
 
 var Bar = Vue.extend({
 	template: '<p>This is bar!</p>'
@@ -32,7 +27,7 @@ var router = new VueRouter();
 // 稍后我们会讲解嵌套路由
 router.map({
 	'/foo': {
-		component: Foo
+		component: require("./components/app.vue")
 	},
 	'/bar': {
 		component: Bar

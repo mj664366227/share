@@ -3,14 +3,21 @@
     <h1>姓名：{{name}}</h1>
     <h2>{{age}}</h2>
     <button @click="golist">$route.router.go查看</button>
-    <a v-link="{ name: 'list' }">v-link查看列表</a>
-    <a v-link="{ name: 'index' }">回去主页</a>
+    <a v-link="{ path: '/foo' }">v-link查看列表</a>
+    <a v-link="{ path: '/bar' }">回去主页</a>
 </div>
 </template>
 <script>
     export default {//这里是官方的写法，默认导出，ES6
-        data () { //ES6，等同于data:function(){}
-            return {    //必须使用这样的形式，才能创建出单一的作用域
+        data () {
+
+            this.$http({url: '/share.git/blog/?action=index.demo', method: 'GET'}).then(function (response) {
+                      this.name = response.data.url;
+                  }, function (response) {
+                      // error callback
+                  });
+
+            return {
                 name:"guowenfh",
                 age:"21"
             }
