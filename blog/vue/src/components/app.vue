@@ -1,93 +1,26 @@
-<script>
-    import store from '../store';
-    import card from './card';
-    import list from './list';
-    import text from './text';
-    import message from './message';
-
-    export default {
-        el: '#chat',
-        data () {
-            let serverData = store.fetch();
-
-            return {
-                // 登录用户
-                user: serverData.user,
-                // 用户列表
-                userList: serverData.userList,
-                // 会话列表
-                sessionList: serverData.sessionList,
-                // 搜索key
-                search: '',
-                // 选中的会话Index
-                sessionIndex: 0
-            };
-        },
-        computed: {
-            session () {
-                return this.sessionList[this.sessionIndex];
-            }
-        },
-        watch: {
-            // 每当sessionList改变时，保存到localStorage中
-            sessionList: {
-                deep: true,
-                handler () {
-                    store.save({
-                        user: this.user,
-                        userList: this.userList,
-                        sessionList: this.sessionList
-                    });
-                }
-            }
-        },
-        components: {
-            card, list, text, message
-        }
-    };
-
-</script>
-
 <template>
-    <div>
-        <div class="sidebar">
-            <card :user="user" :search.sync="search"></card>
-            <list :user-list="userList" :session="session" :session-index.sync="sessionIndex" :search="search"></list>
-        </div>
-        <div class="main">
-            <message :session="session" :user="user" :user-list="userList"></message> 
-            <text :session="session"></text>
-        </div>
-    </div>
+<div>
+    <h1>姓名：{{name}}</h1>
+    <h2>{{age}}</h2>
+    <button @click="golist">$route.router.go查看</button>
+    <a v-link="{ name: 'list' }">v-link查看列表</a>
+    <a v-link="{ name: 'index' }">回去主页</a>
+</div>
 </template>
-
-<style lang="less">
-    #chat {
-        overflow: hidden;
-        border-radius: 3px;
-        
-        .sidebar, .main {
-            height: 100%;   
-        }
-        .sidebar {
-            float: left;
-            width: 200px;
-            color: #f4f4f4;
-            background-color: #2e3238;
-        }
-        .main {
-            position: relative;
-            overflow: hidden;   
-            background-color: #eee;
-        }
-        .m-text {
-            position: absolute;
-            width: 100%;
-            bottom: 0;
-            left: 0;
-        }
-        .m-message {
-            height: ~'calc(100% - 160px)';
+<script>
+    export default {//这里是官方的写法，默认导出，ES6
+        data () { //ES6，等同于data:function(){}
+            return {    //必须使用这样的形式，才能创建出单一的作用域
+                name:"guowenfh",
+                age:"21"
+            }
+        },
+        methods :{
+            golist () {//方法，定义路由跳转，注意这里必须使用this，不然报错
+                this.$route.router.go({name:"list"});
+            }
         }
     }
-</style>
+</script>
+<style></style>
+<!-- 样式自行设置，或者直接看源码就好 -->

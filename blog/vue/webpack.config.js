@@ -1,5 +1,5 @@
-var path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
 	// 入口
@@ -44,7 +44,7 @@ module.exports = {
 		new HtmlWebpackPlugin({                        //根据模板插入css/js等生成最终HTML
 			//favicon:'./images/favicon.ico', //favicon存放路径
 			filename:'./index.html',    //生成的html存放路径，相对于 path
-			template:'./index.html',    //html模板路径
+			template:'./src/index.html',    //html模板路径
 			inject:true,    //允许插件修改哪些内容，包括head与body
 			hash:true,    //为静态资源生成hash值
 			chunks: ['vendor', 'app'], //需要引入的chunk，不配置就会引入所有页面的资源.名字来源于你的入口文件
