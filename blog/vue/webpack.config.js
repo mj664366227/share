@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
+// http://webpack.github.io/docs/list-of-plugins.html
 module.exports = {
 	// 入口
 	entry: './src/main',
