@@ -28,15 +28,6 @@ class controller {
 	}
 
 	/**
-	 * 析构函数
-	 */
-	public function __destruct() {
-		// 显示模板(如果有特定模板显示的，在c层指定；如没有就按照$dir/class/mothod的方式寻找模板)
-		view::assign('action', $this->get('action'));
-		view::display();
-	}
-
-	/**
 	 * 是否有post数据
 	 */
 	protected function has_post() {
@@ -261,88 +252,6 @@ class controller {
 	 */
 	protected function file($key) {
 		return $GLOBALS['_FILES'][$key];
-	}
-
-	/**
-	 * 生成管理菜单
-	 */
-	public function menu($fliter_class = array(), $fliter_method = array()) {
-		$dir = sharePHP::get_application_dir() . 'controller/';
-		chdir($dir);
-		$list = glob('*.php');
-		foreach ($list as $file) {
-			if (in_array(str_replace('.php', '', $file), $fliter_class, true)) {
-				continue;
-			}
-			$str = explode('/**', file_get_contents($dir . '/' . $file));
-			$class = trim(str_replace('*', '', substr($str[1], 0, strrpos($str[1], '*/'))));
-			foreach ($str as $s) {
-				$s = explode('*', $s);
-				foreach ($s as $ss) {
-					$ss = str_replace('&lt;?php', '', $ss);
-					if (!trim($ss)) {
-						continue;
-					}
-					if (strpos($ss, '@') <= 0 && strpos($ss, 'function') <= 0 && strpos($ss, '&lt;p&gt;') <= 0 && strpos($ss, '&lt;br&gt;') <= 0) {
-						continue;
-					}
-					$index = stripos($ss, '){');
-					if ($index > 0) {
-						$p1 = strpos($ss, '/');
-						$p2 = strpos($ss, 'p');
-						$ss = substr($ss, $p1 + 1, -$p2);
-						$function = substr($ss, 0, $index);
-					}
-					if (strpos($function, 'private') > 0 || strpos($function, 'protected') > 0 || strpos($function, '__construct') > 0 || strpos($function, '__destruct') > 0) {
-						continue;
-					}
-					$function = str_replace('public ', '', substr($ss, 0, $index));
-					$function = str_replace('function ', '', $function);
-					$function = str_replace('()', '', $function);
-					$filename = trim(substr($file, 0, -4));
-					$function = $filename . '.' . str_replace('/', '', trim($function));
-					if (in_array($function, $fliter_method, true)) {
-						continue;
-					}
-					$menu[trim($class) . '#' . trim($filename)][trim($function)] = trim($s[1]);
-				}
-			}
-		}
-		view::assign('menu', $menu);
-		return $menu;
-	}
-
-	/**
-	 * 获取接口名字
-	 */
-	public function action_name() {
-		$action_name = $this->get('action');
-		if (!$action_name) {
-			return;
-		}
-		$menu = $this->menu();
-		if (!is_array($menu)) {
-			return;
-		}
-		foreach ($this->menu() as $k => $m) {
-			foreach ($m as $key => $name) {
-				if ($key === $action_name) {
-					view::assign('action_name', $name);
-					return;
-				}
-			}
-		}
-	}
-
-	/**
-	 * 跳转
-	 *
-	 * @param $action 接口        	
-	 */
-	public function redirect($action) {
-		$get = $this->get('action');
-		$get = substr($get, 0, strrpos($get, '.'));
-		redirect(url($get, $action));
 	}
 }
 ?>
