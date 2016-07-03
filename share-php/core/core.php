@@ -63,15 +63,21 @@ class sharePHP {
 		$application_dir = str_replace('\\', '/', self::$application_dir);
 		$application_base_root = str_replace($_SERVER['DOCUMENT_ROOT'], '', $application_dir);
 		$parse_url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-		$request_param = explode('/', substr(str_replace($application_base_root, '', $parse_url), 1));
+		$request_param = trim(str_replace(str_replace('index.php', '', $_SERVER['SCRIPT_NAME']), '', $parse_url));
 		
-		if ($request_param[0] && $request_param[1]) {
-			//如果有定义类和方法的覆盖默认的
-			self::set_class(strtolower($request_param[0]));
-			self::set_method(strtolower($request_param[1]));
+		// 无url
+		if (empty($request_param)) {
+			echo 'no url mapping';
+			die();
 		}
 		
-		$class = self::$class . 'controller';
+		// 约定一个规则 http://xxx.com/controller/method
+		// 只做两层，后面不加参数
+		$request_param = explode('/', $request_param);
+		$count = count($request_param);
+		$class = trim(strtolower($request_param[$count - 2]));
+		$method = trim(strtolower($request_param[$count - 1]));
+		$class = $class . 'controller';
 		$obj = new $class();
 		if (!class_exists($class)) {
 			if (DEBUG === true) {
@@ -81,16 +87,17 @@ class sharePHP {
 				die();
 			}
 		}
-		if (!method_exists($obj, self::$method)) {
+		if (!method_exists($obj, $method)) {
 			if (DEBUG === true) {
-				echo_('action ' . self::$method . ' is not exists...', true);
+				echo_('action ' . $method . ' is not exists...', true);
 			} else {
 				error404();
 				die();
 			}
 		}
-		$method = self::$method;
-		$obj->$method();
+		
+		// 约定，输出json
+		echo trim(json_encode($obj->$method()));
 	}
 }
 
@@ -154,11 +161,6 @@ function __autoload($class) {
 		}
 	}
 	load_file($autoload);
-	
-	//分页类特殊处理
-	if ($class === 'page') {
-		page::set_rewrite(MODE === 2);
-	}
 }
 
 /**

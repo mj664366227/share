@@ -2,29 +2,29 @@
 /**
  * 字符工具类
  */
-class stringcontroller extends toolscontroller {
+class stringcontroller {
 	/**
 	 * md5加密
 	 */
-	public function md5(){
+	public function md5() {
 		$md5 = $this->post('md5');
-		if(!$md5) {
+		if (!$md5) {
 			return;
 		}
-
+		
 		view::assign('input', $md5);
 		view::assign('result', md5($md5));
 	}
-	
+
 	/**
 	 * base64加密解密
 	 */
-	public function base64(){
+	public function base64() {
 		$base64 = $this->post('base64');
-		if(!$base64) {
+		if (!$base64) {
 			return;
 		}
-
+		
 		$result['encode'] = base64_encode($base64);
 		$result['decode'] = base64_decode($base64);
 		view::assign('input', $base64);
@@ -34,12 +34,12 @@ class stringcontroller extends toolscontroller {
 	/**
 	 * 哈希加密
 	 */
-	public function sha1(){
+	public function sha1() {
 		$sha1 = $this->post('sha1');
-		if(!$sha1) {
+		if (!$sha1) {
 			return;
 		}
-
+		
 		view::assign('input', $sha1);
 		view::assign('result', sha1($sha1));
 	}
@@ -47,12 +47,12 @@ class stringcontroller extends toolscontroller {
 	/**
 	 * crypt加密
 	 */
-	public function crypt(){
+	public function crypt() {
 		$crypt = $this->post('crypt');
-		if(!$crypt) {
+		if (!$crypt) {
 			return;
 		}
-
+		
 		view::assign('input', $crypt);
 		view::assign('result', crypt($crypt));
 	}
@@ -60,9 +60,9 @@ class stringcontroller extends toolscontroller {
 	/**
 	 * json工具
 	 */
-	public function json(){
+	public function json() {
 		$input = $this->post('json');
-		if(!$input) {
+		if (!$input) {
 			return;
 		}
 		$result = json_decode($input, true);
@@ -73,15 +73,15 @@ class stringcontroller extends toolscontroller {
 	/**
 	 * url编码解码
 	 */
-	public function url(){
+	public function url() {
 		$url = $this->post('url');
-		if(!$url) {
+		if (!$url) {
 			return;
 		}
-
+		
 		$result['urlencode'] = urlencode($url);
 		$result['urldecode'] = urldecode($url);
-
+		
 		view::assign('input', $url);
 		view::assign('result', $result);
 	}
@@ -89,12 +89,12 @@ class stringcontroller extends toolscontroller {
 	/**
 	 * html字符转义
 	 */
-	public function html(){
+	public function html() {
 		$html = $this->post('html');
-		if(!$html) {
+		if (!$html) {
 			return;
 		}
-
+		
 		view::assign('input', $html);
 		view::assign('result', htmlspecialchars($html));
 	}
@@ -102,13 +102,13 @@ class stringcontroller extends toolscontroller {
 	/**
 	 * ASCII编码
 	 */
-	public function ascii(){
+	public function ascii() {
 		$str = $this->post('str');
-		if(!$str) {
+		if (!$str) {
 			return;
 		}
-
-		if(is_numeric($str)) {
+		
+		if (is_numeric($str)) {
 			$result['ord'] = intval($str);
 			$result['chr'] = chr($str);
 		} else {
