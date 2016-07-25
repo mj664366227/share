@@ -1,5 +1,5 @@
 #linux php自动安装程序
-#运行例子：sh install-php.sh 7.0.6 /usr/local
+#运行例子：sh install-php.sh 7.0.9 /usr/local
  
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ php_version=$1
 php_install_path=$2 
 if [ ! $php_version ] || [ ! $php_install_path ]; then
 	echo 'error command!!! you must input php version and install path...'
-	echo 'for example: sh install-php.sh 7.0.6 /usr/local'
+	echo 'for example: sh install-php.sh 7.0.9 /usr/local'
 	exit
 fi
 
@@ -124,7 +124,7 @@ if [ ! -d $php_install_path/openssl ]; then
 fi
 
 # 安装pcre
-pcre='pcre-8.38'
+pcre='pcre-8.39'
 if [ ! -d $php_install_path/pcre ]; then
 	echo 'installing '$pcre' ...'
 	if [ ! -f $base_path/$pcre.tar.gz ]; then
@@ -140,7 +140,7 @@ if [ ! -d $php_install_path/pcre ]; then
 fi
 
 # 安装curl
-curl='curl-7.48.0'
+curl='curl-7.50.0'
 if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then

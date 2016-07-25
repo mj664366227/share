@@ -11,7 +11,7 @@ nodejs_version=$1
 nodejs_install_path=$2
 if [ ! $nodejs_version ] || [ ! $nodejs_install_path ]; then
 	echo 'error command!!! you must input nodejs version and install path...'
-	echo 'for example: sh install-nodejs.sh 6.1.0 /usr/local'
+	echo 'for example: sh install-nodejs.sh 6.3.1 /usr/local'
 	exit
 fi
 

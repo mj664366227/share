@@ -10,7 +10,7 @@ redis_version=$1
 redis_install_path=$2
 if [ ! $redis_version ] || [ ! $redis_install_path ] ; then
 	echo 'error command!!! you must input redis version and install path...'
-	echo 'for example: sh install-redis.sh 3.0.7 /usr/local'
+	echo 'for example: sh install-redis.sh 3.2.1 /usr/local'
 	exit
 fi
 
@@ -60,9 +60,6 @@ appendonly no
 auto-aof-rewrite-percentage 0
 #requirepass admin" > $redis_install_path/redis/redis.conf
 fi
-
-#开放防火墙端口
-/sbin/iptables -I INPUT -p tcp --dport 6379 -j ACCEPT && /etc/rc.d/init.d/iptables save && service iptables restart
 
 #开机启动redis
 yes|cp -rf $redis_install_path'/redis/src/redis-server' /usr/bin/

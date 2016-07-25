@@ -13,7 +13,7 @@ mkdir -p $install_path
 nsq_install_path='/usr/local' 
 
 # 安装nsq 
-nsq_version='nsq-0.3.7.linux-amd64.go1.6'
+nsq_version='nsq-0.3.8.linux-amd64.go1.6.2'
 rm -rf /usr/bin/nsq*
 if [ ! -f $base_path/nsq.tar.gz ]; then
 	wget -O $base_path/nsq.tar.gz http://install.ruanzhijun.cn/$nsq_version.tar.gz
