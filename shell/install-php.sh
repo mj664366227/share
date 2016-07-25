@@ -189,14 +189,15 @@ fi
 
 # 安装libxslt
 if [ ! -d $php_install_path/libxslt ]; then
-	libxslt='1.1.28'
+	libxslt='1.1.29'
 	echo 'installing libxslt-'$libxslt'...'
-	if [ ! -f $base_path/libxslt-$libxslt.tar.gz ]; then
+	if [ ! -f $base_path/libxslt-$libxslt.zip ]; then
 	echo 'libxslt-'$libxslt'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/libxslt-$libxslt.tar.gz http://install.ruanzhijun.cn/libxslt-$libxslt.tar.gz || exit
+		wget -O $base_path/libxslt-$libxslt.tar.gz http://install.ruanzhijun.cn/libxslt-$libxslt.zip || exit
 		echo 'download libxslt-'$libxslt'.tar.gz finished...'
 	fi
-	tar zxvf $base_path/libxslt-$libxslt.tar.gz -C $install_path || exit
+	cd $install_path
+	unzip $base_path/libxslt-$libxslt.zip || exit
 	cd $install_path/libxslt-$libxslt
 	./configure --with-libxml-prefix=$php_install_path/libxml2 --prefix=$php_install_path/libxslt && make && make install || exit
 	yes|cp $php_install_path/libxslt/bin/* /usr/bin/
@@ -223,7 +224,7 @@ if [ ! -d $php_install_path/mm ]; then
 	mm='1.4.2'
 	echo 'installing mm-'$mm'...'
 	if [ ! -f $base_path/mm-$mm.tar.gz ]; then
-	echo 'libxslt-'$libxslt'.tar.gz is not exists, system will going to download it...'
+	echo 'mm-'$mm'.tar.gz is not exists, system will going to download it...'
 		wget -O $base_path/mm-$mm.tar.gz http://install.ruanzhijun.cn/mm-$mm.tar.gz || exit
 		echo 'download mm-'$mm'.tar.gz finished...'
 	fi
@@ -249,10 +250,10 @@ fi
 # jpeg
 if [ ! -d $php_install_path/jpeg ]; then
 	if [ ! -f $base_path/jpegsrc.tar.gz ]; then
-		wget -O $base_path/jpegsrc.tar.gz http://install.ruanzhijun.cn/jpegsrc.v9a.tar.gz || exit
+		wget -O $base_path/jpegsrc.tar.gz http://install.ruanzhijun.cn/jpegsrc.v9b.tar.gz || exit
 	fi
 	tar zxvf $base_path/jpegsrc.tar.gz -C $install_path || exit
-	cd $install_path/jpeg-9a
+	cd $install_path/jpeg-9b
 	./configure --prefix=$php_install_path/jpeg && make && make install || exit
 	yes|cp $php_install_path/jpeg/bin/* /usr/bin/
 fi
