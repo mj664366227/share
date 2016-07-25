@@ -76,7 +76,7 @@ if [ ! -d $php_install_path/zlib ]; then
 fi
 
 # 安装python 
-python='Python-3.5.1'
+python='Python-3.5.2'
 if [ ! -d $php_install_path/python ]; then
 	echo 'installing '$python' ...'
 	if [ ! -f $base_path/$python.tgz ]; then
@@ -92,15 +92,16 @@ if [ ! -d $php_install_path/python ]; then
 fi
 
 # 安装libxml2
-libxml='libxml2-2.9.3'
+libxml='libxml2-2.9.4'
 if [ ! -d $php_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
-	if [ ! -f $base_path/$libxml.tar.gz ]; then
+	if [ ! -f $base_path/$libxml.zip ]; then
 		echo $libxml'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.tar.gz http://install.ruanzhijun.cn/$libxml.tar.gz || exit
+		wget -O $base_path/$libxml.zip http://install.ruanzhijun.cn/$libxml.zip || exit
 		echo 'download '$libxml' finished...'
 	fi
-	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
+	cd $install_path
+	unzip $base_path/$libxml.zip || exit
 	cd $install_path/$libxml
 	./configure --prefix=$php_install_path/libxml2 --disable-static --with-iconv=$php_install_path/libiconv --with-zlib=$php_install_path/zlib/ && make && make install || exit
 	yes|cp $php_install_path/libxml2/bin/* /usr/bin/
@@ -156,7 +157,7 @@ if [ ! -d $php_install_path/curl ]; then
 fi
 
 # 安装libmcrypt
-libmcrypt='2.5.7'
+libmcrypt='2.5.8'
 if [ ! -d $php_install_path/libmcrypt ]; then
 	echo 'installing libmcrypt-'$libmcrypt' ...'
 	if [ ! -f $base_path/libmcrypt-$libmcrypt.tar.gz ]; then
