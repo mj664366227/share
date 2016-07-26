@@ -192,7 +192,7 @@ if [ ! -d $php_install_path/libxslt ]; then
 	echo 'installing libxslt-'$libxslt'...'
 	if [ ! -f $base_path/libxslt-$libxslt.zip ]; then
 	echo 'libxslt-'$libxslt'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/libxslt-$libxslt.tar.gz http://install.ruanzhijun.cn/libxslt-$libxslt.zip || exit
+		wget -O $base_path/libxslt-$libxslt.zip http://install.ruanzhijun.cn/libxslt-$libxslt.zip || exit
 		echo 'download libxslt-'$libxslt'.tar.gz finished...'
 	fi
 	cd $install_path
