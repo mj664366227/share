@@ -32,10 +32,11 @@ tar zxvf $jdk.tar.gz -C $java_install_path
 echo "" >> /etc/profile
 echo "# set Java environment" >> /etc/profile
 echo "JAVA_HOME="$java_install_path"/jdk1.8.0_101" >> /etc/profile
-echo "PATH=$JAVA_HOME/bin:$PATH" >> /etc/profile
-echo "CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar" >> /etc/profile
+echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile
+echo "CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile
 echo "export JAVA_HOME" >> /etc/profile
 echo "export PATH" >> /etc/profile
 echo "export CLASSPATH" >> /etc/profile
 
+source /etc/profile
 java -version
