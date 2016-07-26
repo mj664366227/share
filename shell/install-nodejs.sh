@@ -40,7 +40,7 @@ ln -s $nodejs_install_path/nodejs/lib/node_modules/npm/bin/npm-cli.js /usr/bin/n
 
 #更新npm版本
 npm config set registry https://registry.npm.taobao.org/
-npm install npm -g
+npm install npm pm2 -g
 echo 'node version: '$(node -v)
 echo 'npm version: '$(npm -v)
 
