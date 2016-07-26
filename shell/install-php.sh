@@ -303,4 +303,4 @@ killall php-fpm && php-fpm
 #开机自启动
 echo '' >> /etc/rc.d/rc.local
 echo 'php-fpm' >> /etc/rc.d/rc.local
-$(source /etc/rc.d/rc.local)
+source /etc/rc.d/rc.local
