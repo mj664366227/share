@@ -21,7 +21,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #因为有些系统可能安装的类库不全，先给补上
-yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz
+yum -y install libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz
 
 # 方便以后安装扩展，安装必备的工具
 if [ ! -d $php_install_path/m4 ]; then
@@ -190,15 +190,14 @@ fi
 if [ ! -d $php_install_path/libxslt ]; then
 	libxslt='1.1.29'
 	echo 'installing libxslt-'$libxslt'...'
-	if [ ! -f $base_path/libxslt-$libxslt.zip ]; then
+	if [ ! -f $base_path/libxslt-$libxslt.tar.gz ]; then
 	echo 'libxslt-'$libxslt'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/libxslt-$libxslt.zip http://install.ruanzhijun.cn/libxslt-$libxslt.zip || exit
+		wget -O $base_path/libxslt-$libxslt.tar.gz http://install.ruanzhijun.cn/libxslt-$libxslt.tar.gz || exit
 		echo 'download libxslt-'$libxslt'.tar.gz finished...'
 	fi
-	cd $install_path
-	unzip $base_path/libxslt-$libxslt.zip || exit
+	tar zxvf $base_path/libxslt-$libxslt.tar.gz -C $install_path || exit
 	cd $install_path/libxslt-$libxslt
-	./configure --with-libxml-prefix=$php_install_path/libxml2 --prefix=$php_install_path/libxslt && make && make install || exit
+	./configure --with-libxml-prefix=$php_install_path/libxslt --prefix=$php_install_path/libxslt && make && make install || exit
 	yes|cp $php_install_path/libxslt/bin/* /usr/bin/
 	echo 'libxslt-'$libxslt' install finished...'
 fi
