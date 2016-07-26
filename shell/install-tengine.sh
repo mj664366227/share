@@ -174,7 +174,7 @@ http {
 	gzip_min_length 10k;
 	gzip_buffers 4 16k;
 	gzip_http_version 1.0;
-	gzip_comp_level 4;
+	gzip_comp_level 9;
 	gzip_types text/plain application/x-javascript text/css application/xml;
 	gzip_vary on;	
 

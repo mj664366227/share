@@ -95,13 +95,12 @@ fi
 libxml='libxml2-2.9.4'
 if [ ! -d $php_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
-	if [ ! -f $base_path/$libxml.zip ]; then
+	if [ ! -f $base_path/$libxml.tar.gz ]; then
 		echo $libxml'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.zip http://install.ruanzhijun.cn/$libxml.zip || exit
+		wget -O $base_path/$libxml.tar.gz http://install.ruanzhijun.cn/$libxml.tar.gz || exit
 		echo 'download '$libxml' finished...'
 	fi
-	cd $install_path
-	unzip $base_path/$libxml.zip || exit
+	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
 	cd $install_path/$libxml
 	./configure --prefix=$php_install_path/libxml2 --disable-static --with-iconv=$php_install_path/libiconv --with-zlib=$php_install_path/zlib/ && make && make install || exit
 	yes|cp $php_install_path/libxml2/bin/* /usr/bin/
