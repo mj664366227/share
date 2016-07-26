@@ -39,6 +39,7 @@ yes|cp -rf $nodejs_install_path/nodejs/bin/node /usr/bin/
 ln -s $nodejs_install_path/nodejs/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm
 
 #更新npm版本
+npm config set registry https://registry.npm.taobao.org/
 npm install npm -g
 echo 'node version: '$(node -v)
 echo 'npm version: '$(npm -v)

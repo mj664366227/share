@@ -21,8 +21,7 @@ fi
 
 tar zxvf $base_path/nsq.tar.gz -C $install_path || exit
 
-rm -rf $nsq_install_path
-mkdir -p $nsq_install_path/nsq
+rm -rf $nsq_install_path/nsq
 mkdir -p $nsq_install_path/nsq/data
 
 mv $install_path/$nsq_version/ $install_path/nsq
