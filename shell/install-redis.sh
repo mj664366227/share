@@ -60,12 +60,11 @@ syslog-enabled no
 slowlog-log-slower-than -1 	
 appendonly no
 auto-aof-rewrite-percentage 0
-#requirepass admin" > $redis_install_path/redis/redis.conf
+requirepass admin" > $redis_install_path/redis/redis.conf
 fi
 
 #开机启动redis
 yes|cp -rf $redis_install_path'/redis/src/redis-server' /usr/bin/
 yes|cp -rf $redis_install_path'/redis/src/redis-cli' /usr/bin/
-# --protected-mode no 是没有密码的时候必须要用的，不然java连接不上
-echo 'redis-server '$redis_install_path'/redis/redis.conf --protected-mode no' >> /etc/rc.local
+echo 'redis-server '$redis_install_path'/redis/redis.conf' >> /etc/rc.local
 source /etc/rc.local
