@@ -66,5 +66,6 @@ fi
 #开机启动redis
 yes|cp -rf $redis_install_path'/redis/src/redis-server' /usr/bin/
 yes|cp -rf $redis_install_path'/redis/src/redis-cli' /usr/bin/
-echo 'redis-server '$redis_install_path'/redis/redis.conf' >> /etc/rc.local
+# --protected-mode no 是没有密码的时候必须要用的，不然java连接不上
+echo 'redis-server '$redis_install_path'/redis/redis.conf --protected-mode no' >> /etc/rc.local
 source /etc/rc.local
