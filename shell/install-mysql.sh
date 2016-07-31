@@ -19,7 +19,7 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz
+yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz ncurses-devel perl
 
 #安装cmake
 cmake='cmake-3.6.1'
@@ -55,7 +55,7 @@ if [ ! -d $mysql_install_path/jemalloc ]; then
 fi
 
 #下载boost包
-boost='boost_1_61_0'
+boost='boost_1_59_0'
 if [ ! -d $install_path/$boost ]; then
 	echo 'installing '$boost' ...'
 	if [ ! -f $base_path/$boost.tar.gz ]; then
@@ -65,9 +65,6 @@ if [ ! -d $install_path/$boost ]; then
 	fi
 	tar zxvf $base_path/$boost.tar.gz -C $install_path || exit
 fi
-
-#安装ncurses
-yum -y install ncurses-devel perl || apt-get -y install libncurses5-dev || exit
 
 #添加mysql用户
 user=$(id -nu mysql)
