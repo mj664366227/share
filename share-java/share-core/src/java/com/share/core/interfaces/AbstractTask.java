@@ -1,7 +1,7 @@
 package com.share.core.interfaces;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * 线程任务基类
@@ -10,7 +10,7 @@ public abstract class AbstractTask implements Runnable {
 	/**
 	 * logger
 	 */
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	protected Logger logger = LogManager.getLogger(getClass());
 
 	/**
 	 * toString方法
