@@ -26,14 +26,13 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.CsvListWriter;
 import org.supercsv.prefs.CsvPreference;
 
-import com.alibaba.dubbo.common.logger.LoggerFactory;
 import com.share.core.util.SortUtil.Order;
 
 /**
@@ -638,7 +637,7 @@ public final class FileSystem {
 }
 
 final class DownThread extends Thread {
-	private final static Logger logger = LoggerFactory.getLogger(DownThread.class);
+	private final static Logger logger = LogManager.getLogger(DownThread.class);
 	private int id; // 线程id
 	private File file;// 目标文件
 	private int block;// 每个线程下载文件的大小
