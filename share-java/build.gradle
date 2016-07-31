@@ -151,6 +151,7 @@ project(':share-core') {
 		compile 'org.springframework:spring-web:4.3.2.RELEASE'
 		compile 'org.springframework:spring-webmvc:4.3.2.RELEASE'
 		compile 'org.apache.thrift:libthrift:0.9.3'
+		compile 'com.squareup.okhttp3:okhttp:3.4.1'
     }
 }
 project(':share-client') {
