@@ -2,13 +2,8 @@ package com.share.core.server;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.catalina.core.DefaultInstanceManager;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.loader.WebappLoader;
-import org.apache.naming.NamingContext;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
@@ -16,7 +11,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import com.beust.jcommander.internal.Maps;
 import com.share.core.exception.IllegalPortException;
 import com.share.core.interfaces.AbstractServer;
 import com.share.core.util.Check;
@@ -69,11 +63,6 @@ public class HttpServer extends AbstractServer {
 		String webappPath = getWebappPath();
 		WebAppContext webAppContext = new WebAppContext(webappPath + webXmlPath, "/");
 		webAppContext.setResourceBase(webappPath);
-		NamingContext namingContext = new NamingContext(new Hashtable<String, Object>(), "aa");
-		StandardContext standardContext=new StandardContext();
-		standardContext.setLoader(new WebappLoader());
-		DefaultInstanceManager instanceManager = new DefaultInstanceManager(namingContext, Maps.newHashMap(),standardContext , null);
-		webAppContext.setAttribute("org.apache.tomcat.InstanceManager", instanceManager);
 
 		// 不限制提交数据的大小，提交的key数量大小
 		webAppContext.setMaxFormContentSize(-1);
