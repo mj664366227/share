@@ -2,7 +2,7 @@
 
 
 rd /s /q %cd%\share-core\src\java\com\share\core\protocol\protobuf
-%cd%\protobuf\protoc\protoc.exe --java_out=%cd%\share-core\src\java\ -I=%cd%\protobuf\pb %cd%\protobuf\pb\*.proto
+%cd%\protobuf\protoc\protoc.exe --java_out=%cd%\share-core\src\java\ --proto_path=%cd%\protobuf\pb\ %cd%\protobuf\pb\demo.proto
 
 cd %cd%
 for /f "tokens=*" %%a in ('dir /b') do (

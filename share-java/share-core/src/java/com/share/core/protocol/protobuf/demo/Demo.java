@@ -15,25 +15,13 @@ public final class Demo {
     /**
      * <code>optional sint32 protocol = 1;</code>
      */
-    boolean hasProtocol();
-    /**
-     * <code>optional sint32 protocol = 1;</code>
-     */
     int getProtocol();
 
     /**
      * <code>optional sint32 id = 2;</code>
      */
-    boolean hasId();
-    /**
-     * <code>optional sint32 id = 2;</code>
-     */
     int getId();
 
-    /**
-     * <code>optional string name = 3;</code>
-     */
-    boolean hasName();
     /**
      * <code>optional string name = 3;</code>
      */
@@ -47,10 +35,6 @@ public final class Demo {
     /**
      * <code>optional string email = 4;</code>
      */
-    boolean hasEmail();
-    /**
-     * <code>optional string email = 4;</code>
-     */
     java.lang.String getEmail();
     /**
      * <code>optional string email = 4;</code>
@@ -61,122 +45,36 @@ public final class Demo {
   /**
    * Protobuf type {@code com.share.core.protocol.protobuf.demo.ReqDemo}
    */
-  public static final class ReqDemo extends
-      com.google.protobuf.GeneratedMessageLite implements
+  public  static final class ReqDemo extends
+      com.google.protobuf.GeneratedMessageLite<
+          ReqDemo, ReqDemo.Builder> implements
       // @@protoc_insertion_point(message_implements:com.share.core.protocol.protobuf.demo.ReqDemo)
       ReqDemoOrBuilder {
-    // Use ReqDemo.newBuilder() to construct.
-    private ReqDemo(com.google.protobuf.GeneratedMessageLite.Builder builder) {
-      super(builder);
-      this.unknownFields = builder.getUnknownFields();
+    private ReqDemo() {
+      name_ = "";
+      email_ = "";
     }
-    private ReqDemo(boolean noInit) { this.unknownFields = com.google.protobuf.ByteString.EMPTY;}
-
-    private static final ReqDemo defaultInstance;
-    public static ReqDemo getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public ReqDemo getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.ByteString unknownFields;
-    private ReqDemo(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.ByteString.Output unknownFieldsOutput =
-          com.google.protobuf.ByteString.newOutput();
-      com.google.protobuf.CodedOutputStream unknownFieldsCodedOutput =
-          com.google.protobuf.CodedOutputStream.newInstance(
-              unknownFieldsOutput);
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(input, unknownFieldsCodedOutput,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 8: {
-              bitField0_ |= 0x00000001;
-              protocol_ = input.readSInt32();
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              id_ = input.readSInt32();
-              break;
-            }
-            case 26: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000004;
-              name_ = bs;
-              break;
-            }
-            case 34: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000008;
-              email_ = bs;
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
-      } finally {
-        try {
-          unknownFieldsCodedOutput.flush();
-        } catch (java.io.IOException e) {
-        // Should not happen
-        } finally {
-          unknownFields = unknownFieldsOutput.toByteString();
-        }
-        makeExtensionsImmutable();
-      }
-    }
-    public static com.google.protobuf.Parser<ReqDemo> PARSER =
-        new com.google.protobuf.AbstractParser<ReqDemo>() {
-      public ReqDemo parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ReqDemo(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<ReqDemo> getParserForType() {
-      return PARSER;
-    }
-
-    private int bitField0_;
     public static final int PROTOCOL_FIELD_NUMBER = 1;
     private int protocol_;
     /**
      * <code>optional sint32 protocol = 1;</code>
      */
-    public boolean hasProtocol() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+    public int getProtocol() {
+      return protocol_;
     }
     /**
      * <code>optional sint32 protocol = 1;</code>
      */
-    public int getProtocol() {
-      return protocol_;
+    private void setProtocol(int value) {
+      
+      protocol_ = value;
+    }
+    /**
+     * <code>optional sint32 protocol = 1;</code>
+     */
+    private void clearProtocol() {
+      
+      protocol_ = 0;
     }
 
     public static final int ID_FIELD_NUMBER = 2;
@@ -184,471 +82,313 @@ public final class Demo {
     /**
      * <code>optional sint32 id = 2;</code>
      */
-    public boolean hasId() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+    public int getId() {
+      return id_;
     }
     /**
      * <code>optional sint32 id = 2;</code>
      */
-    public int getId() {
-      return id_;
+    private void setId(int value) {
+      
+      id_ = value;
+    }
+    /**
+     * <code>optional sint32 id = 2;</code>
+     */
+    private void clearId() {
+      
+      id_ = 0;
     }
 
     public static final int NAME_FIELD_NUMBER = 3;
-    private java.lang.Object name_;
-    /**
-     * <code>optional string name = 3;</code>
-     */
-    public boolean hasName() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
+    private java.lang.String name_;
     /**
      * <code>optional string name = 3;</code>
      */
     public java.lang.String getName() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          name_ = s;
-        }
-        return s;
-      }
+      return name_;
     }
     /**
      * <code>optional string name = 3;</code>
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
-      java.lang.Object ref = name_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        name_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      return com.google.protobuf.ByteString.copyFromUtf8(name_);
+    }
+    /**
+     * <code>optional string name = 3;</code>
+     */
+    private void setName(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      name_ = value;
+    }
+    /**
+     * <code>optional string name = 3;</code>
+     */
+    private void clearName() {
+      
+      name_ = getDefaultInstance().getName();
+    }
+    /**
+     * <code>optional string name = 3;</code>
+     */
+    private void setNameBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      name_ = value.toStringUtf8();
     }
 
     public static final int EMAIL_FIELD_NUMBER = 4;
-    private java.lang.Object email_;
-    /**
-     * <code>optional string email = 4;</code>
-     */
-    public boolean hasEmail() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
+    private java.lang.String email_;
     /**
      * <code>optional string email = 4;</code>
      */
     public java.lang.String getEmail() {
-      java.lang.Object ref = email_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          email_ = s;
-        }
-        return s;
-      }
+      return email_;
     }
     /**
      * <code>optional string email = 4;</code>
      */
     public com.google.protobuf.ByteString
         getEmailBytes() {
-      java.lang.Object ref = email_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        email_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      return com.google.protobuf.ByteString.copyFromUtf8(email_);
     }
-
-    private void initFields() {
-      protocol_ = 0;
-      id_ = 0;
-      name_ = "";
-      email_ = "";
+    /**
+     * <code>optional string email = 4;</code>
+     */
+    private void setEmail(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      email_ = value;
     }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
+    /**
+     * <code>optional string email = 4;</code>
+     */
+    private void clearEmail() {
+      
+      email_ = getDefaultInstance().getEmail();
+    }
+    /**
+     * <code>optional string email = 4;</code>
+     */
+    private void setEmailBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      email_ = value.toStringUtf8();
     }
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (protocol_ != 0) {
         output.writeSInt32(1, protocol_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (id_ != 0) {
         output.writeSInt32(2, id_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, getNameBytes());
+      if (!name_.isEmpty()) {
+        output.writeString(3, getName());
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getEmailBytes());
+      if (!email_.isEmpty()) {
+        output.writeString(4, getEmail());
       }
-      output.writeRawBytes(unknownFields);
     }
 
-    private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (protocol_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeSInt32Size(1, protocol_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (id_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeSInt32Size(2, id_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (!name_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getNameBytes());
+          .computeStringSize(3, getName());
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (!email_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getEmailBytes());
+          .computeStringSize(4, getEmail());
       }
-      size += unknownFields.size();
       memoizedSerializedSize = size;
       return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
     }
 
     public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
     }
 
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(com.share.core.protocol.protobuf.demo.Demo.ReqDemo prototype) {
-      return newBuilder().mergeFrom(prototype);
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
     }
-    public Builder toBuilder() { return newBuilder(this); }
+    public static Builder newBuilder(com.share.core.protocol.protobuf.demo.Demo.ReqDemo prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
 
     /**
      * Protobuf type {@code com.share.core.protocol.protobuf.demo.ReqDemo}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageLite.Builder<
-          com.share.core.protocol.protobuf.demo.Demo.ReqDemo, Builder>
-        implements
+          com.share.core.protocol.protobuf.demo.Demo.ReqDemo, Builder> implements
         // @@protoc_insertion_point(builder_implements:com.share.core.protocol.protobuf.demo.ReqDemo)
         com.share.core.protocol.protobuf.demo.Demo.ReqDemoOrBuilder {
       // Construct using com.share.core.protocol.protobuf.demo.Demo.ReqDemo.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+        super(DEFAULT_INSTANCE);
       }
 
-      private void maybeForceBuilderInitialization() {
-      }
-      private static Builder create() {
-        return new Builder();
-      }
 
-      public Builder clear() {
-        super.clear();
-        protocol_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        id_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
-        email_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.share.core.protocol.protobuf.demo.Demo.ReqDemo getDefaultInstanceForType() {
-        return com.share.core.protocol.protobuf.demo.Demo.ReqDemo.getDefaultInstance();
-      }
-
-      public com.share.core.protocol.protobuf.demo.Demo.ReqDemo build() {
-        com.share.core.protocol.protobuf.demo.Demo.ReqDemo result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public com.share.core.protocol.protobuf.demo.Demo.ReqDemo buildPartial() {
-        com.share.core.protocol.protobuf.demo.Demo.ReqDemo result = new com.share.core.protocol.protobuf.demo.Demo.ReqDemo(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.protocol_ = protocol_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.id_ = id_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.name_ = name_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.email_ = email_;
-        result.bitField0_ = to_bitField0_;
-        return result;
-      }
-
-      public Builder mergeFrom(com.share.core.protocol.protobuf.demo.Demo.ReqDemo other) {
-        if (other == com.share.core.protocol.protobuf.demo.Demo.ReqDemo.getDefaultInstance()) return this;
-        if (other.hasProtocol()) {
-          setProtocol(other.getProtocol());
-        }
-        if (other.hasId()) {
-          setId(other.getId());
-        }
-        if (other.hasName()) {
-          bitField0_ |= 0x00000004;
-          name_ = other.name_;
-          
-        }
-        if (other.hasEmail()) {
-          bitField0_ |= 0x00000008;
-          email_ = other.email_;
-          
-        }
-        setUnknownFields(
-            getUnknownFields().concat(other.unknownFields));
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.share.core.protocol.protobuf.demo.Demo.ReqDemo parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.share.core.protocol.protobuf.demo.Demo.ReqDemo) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      private int protocol_ ;
-      /**
-       * <code>optional sint32 protocol = 1;</code>
-       */
-      public boolean hasProtocol() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
       /**
        * <code>optional sint32 protocol = 1;</code>
        */
       public int getProtocol() {
-        return protocol_;
+        return instance.getProtocol();
       }
       /**
        * <code>optional sint32 protocol = 1;</code>
        */
       public Builder setProtocol(int value) {
-        bitField0_ |= 0x00000001;
-        protocol_ = value;
-        
+        copyOnWrite();
+        instance.setProtocol(value);
         return this;
       }
       /**
        * <code>optional sint32 protocol = 1;</code>
        */
       public Builder clearProtocol() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        protocol_ = 0;
-        
+        copyOnWrite();
+        instance.clearProtocol();
         return this;
       }
 
-      private int id_ ;
-      /**
-       * <code>optional sint32 id = 2;</code>
-       */
-      public boolean hasId() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
       /**
        * <code>optional sint32 id = 2;</code>
        */
       public int getId() {
-        return id_;
+        return instance.getId();
       }
       /**
        * <code>optional sint32 id = 2;</code>
        */
       public Builder setId(int value) {
-        bitField0_ |= 0x00000002;
-        id_ = value;
-        
+        copyOnWrite();
+        instance.setId(value);
         return this;
       }
       /**
        * <code>optional sint32 id = 2;</code>
        */
       public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        id_ = 0;
-        
+        copyOnWrite();
+        instance.clearId();
         return this;
       }
 
-      private java.lang.Object name_ = "";
-      /**
-       * <code>optional string name = 3;</code>
-       */
-      public boolean hasName() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
       /**
        * <code>optional string name = 3;</code>
        */
       public java.lang.String getName() {
-        java.lang.Object ref = name_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            name_ = s;
-          }
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+        return instance.getName();
       }
       /**
        * <code>optional string name = 3;</code>
        */
       public com.google.protobuf.ByteString
           getNameBytes() {
-        java.lang.Object ref = name_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          name_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+        return instance.getNameBytes();
       }
       /**
        * <code>optional string name = 3;</code>
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        name_ = value;
-        
+        copyOnWrite();
+        instance.setName(value);
         return this;
       }
       /**
        * <code>optional string name = 3;</code>
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        name_ = getDefaultInstance().getName();
-        
+        copyOnWrite();
+        instance.clearName();
         return this;
       }
       /**
@@ -656,75 +396,39 @@ public final class Demo {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        name_ = value;
-        
+        copyOnWrite();
+        instance.setNameBytes(value);
         return this;
       }
 
-      private java.lang.Object email_ = "";
-      /**
-       * <code>optional string email = 4;</code>
-       */
-      public boolean hasEmail() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
       /**
        * <code>optional string email = 4;</code>
        */
       public java.lang.String getEmail() {
-        java.lang.Object ref = email_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            email_ = s;
-          }
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+        return instance.getEmail();
       }
       /**
        * <code>optional string email = 4;</code>
        */
       public com.google.protobuf.ByteString
           getEmailBytes() {
-        java.lang.Object ref = email_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          email_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+        return instance.getEmailBytes();
       }
       /**
        * <code>optional string email = 4;</code>
        */
       public Builder setEmail(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-        email_ = value;
-        
+        copyOnWrite();
+        instance.setEmail(value);
         return this;
       }
       /**
        * <code>optional string email = 4;</code>
        */
       public Builder clearEmail() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        email_ = getDefaultInstance().getEmail();
-        
+        copyOnWrite();
+        instance.clearEmail();
         return this;
       }
       /**
@@ -732,24 +436,130 @@ public final class Demo {
        */
       public Builder setEmailBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
-        email_ = value;
-        
+        copyOnWrite();
+        instance.setEmailBytes(value);
         return this;
       }
 
       // @@protoc_insertion_point(builder_scope:com.share.core.protocol.protobuf.demo.ReqDemo)
     }
+    protected final Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        Object arg0, Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.share.core.protocol.protobuf.demo.Demo.ReqDemo();
+        }
+        case IS_INITIALIZED: {
+          return DEFAULT_INSTANCE;
+        }
+        case MAKE_IMMUTABLE: {
+          return null;
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case VISIT: {
+          Visitor visitor = (Visitor) arg0;
+          com.share.core.protocol.protobuf.demo.Demo.ReqDemo other = (com.share.core.protocol.protobuf.demo.Demo.ReqDemo) arg1;
+          protocol_ = visitor.visitInt(protocol_ != 0, protocol_,
+              other.protocol_ != 0, other.protocol_);
+          id_ = visitor.visitInt(id_ != 0, id_,
+              other.id_ != 0, other.id_);
+          name_ = visitor.visitString(!name_.isEmpty(), name_,
+              !other.name_.isEmpty(), other.name_);
+          email_ = visitor.visitString(!email_.isEmpty(), email_,
+              !other.email_.isEmpty(), other.email_);
+          if (visitor == com.google.protobuf.GeneratedMessageLite.MergeFromVisitor
+              .INSTANCE) {
+          }
+          return this;
+        }
+        case MERGE_FROM_STREAM: {
+          com.google.protobuf.CodedInputStream input =
+              (com.google.protobuf.CodedInputStream) arg0;
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry =
+              (com.google.protobuf.ExtensionRegistryLite) arg1;
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                default: {
+                  if (!input.skipField(tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+                case 8: {
 
-    static {
-      defaultInstance = new ReqDemo(true);
-      defaultInstance.initFields();
+                  protocol_ = input.readSInt32();
+                  break;
+                }
+                case 16: {
+
+                  id_ = input.readSInt32();
+                  break;
+                }
+                case 26: {
+                  String s = input.readStringRequireUtf8();
+
+                  name_ = s;
+                  break;
+                }
+                case 34: {
+                  String s = input.readStringRequireUtf8();
+
+                  email_ = s;
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw new RuntimeException(e.setUnfinishedMessage(this));
+          } catch (java.io.IOException e) {
+            throw new RuntimeException(
+                new com.google.protobuf.InvalidProtocolBufferException(
+                    e.getMessage()).setUnfinishedMessage(this));
+          } finally {
+          }
+        }
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          if (PARSER == null) {    synchronized (com.share.core.protocol.protobuf.demo.Demo.ReqDemo.class) {
+              if (PARSER == null) {
+                PARSER = new DefaultInstanceBasedParser(DEFAULT_INSTANCE);
+              }
+            }
+          }
+          return PARSER;
+        }
+      }
+      throw new UnsupportedOperationException();
     }
 
+
     // @@protoc_insertion_point(class_scope:com.share.core.protocol.protobuf.demo.ReqDemo)
+    private static final com.share.core.protocol.protobuf.demo.Demo.ReqDemo DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new ReqDemo();
+      DEFAULT_INSTANCE.makeImmutable();
+    }
+
+    public static com.share.core.protocol.protobuf.demo.Demo.ReqDemo getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<ReqDemo> PARSER;
+
+    public static com.google.protobuf.Parser<ReqDemo> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
   }
 
   public interface ResDemoOrBuilder extends
@@ -759,16 +569,8 @@ public final class Demo {
     /**
      * <code>optional sint32 protocol = 1;</code>
      */
-    boolean hasProtocol();
-    /**
-     * <code>optional sint32 protocol = 1;</code>
-     */
     int getProtocol();
 
-    /**
-     * <code>optional string email = 2;</code>
-     */
-    boolean hasEmail();
     /**
      * <code>optional string email = 2;</code>
      */
@@ -782,458 +584,243 @@ public final class Demo {
   /**
    * Protobuf type {@code com.share.core.protocol.protobuf.demo.ResDemo}
    */
-  public static final class ResDemo extends
-      com.google.protobuf.GeneratedMessageLite implements
+  public  static final class ResDemo extends
+      com.google.protobuf.GeneratedMessageLite<
+          ResDemo, ResDemo.Builder> implements
       // @@protoc_insertion_point(message_implements:com.share.core.protocol.protobuf.demo.ResDemo)
       ResDemoOrBuilder {
-    // Use ResDemo.newBuilder() to construct.
-    private ResDemo(com.google.protobuf.GeneratedMessageLite.Builder builder) {
-      super(builder);
-      this.unknownFields = builder.getUnknownFields();
+    private ResDemo() {
+      email_ = "";
     }
-    private ResDemo(boolean noInit) { this.unknownFields = com.google.protobuf.ByteString.EMPTY;}
-
-    private static final ResDemo defaultInstance;
-    public static ResDemo getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public ResDemo getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.ByteString unknownFields;
-    private ResDemo(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.ByteString.Output unknownFieldsOutput =
-          com.google.protobuf.ByteString.newOutput();
-      com.google.protobuf.CodedOutputStream unknownFieldsCodedOutput =
-          com.google.protobuf.CodedOutputStream.newInstance(
-              unknownFieldsOutput);
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(input, unknownFieldsCodedOutput,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 8: {
-              bitField0_ |= 0x00000001;
-              protocol_ = input.readSInt32();
-              break;
-            }
-            case 18: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000002;
-              email_ = bs;
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
-      } finally {
-        try {
-          unknownFieldsCodedOutput.flush();
-        } catch (java.io.IOException e) {
-        // Should not happen
-        } finally {
-          unknownFields = unknownFieldsOutput.toByteString();
-        }
-        makeExtensionsImmutable();
-      }
-    }
-    public static com.google.protobuf.Parser<ResDemo> PARSER =
-        new com.google.protobuf.AbstractParser<ResDemo>() {
-      public ResDemo parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ResDemo(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<ResDemo> getParserForType() {
-      return PARSER;
-    }
-
-    private int bitField0_;
     public static final int PROTOCOL_FIELD_NUMBER = 1;
     private int protocol_;
-    /**
-     * <code>optional sint32 protocol = 1;</code>
-     */
-    public boolean hasProtocol() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
     /**
      * <code>optional sint32 protocol = 1;</code>
      */
     public int getProtocol() {
       return protocol_;
     }
+    /**
+     * <code>optional sint32 protocol = 1;</code>
+     */
+    private void setProtocol(int value) {
+      
+      protocol_ = value;
+    }
+    /**
+     * <code>optional sint32 protocol = 1;</code>
+     */
+    private void clearProtocol() {
+      
+      protocol_ = 0;
+    }
 
     public static final int EMAIL_FIELD_NUMBER = 2;
-    private java.lang.Object email_;
-    /**
-     * <code>optional string email = 2;</code>
-     */
-    public boolean hasEmail() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
+    private java.lang.String email_;
     /**
      * <code>optional string email = 2;</code>
      */
     public java.lang.String getEmail() {
-      java.lang.Object ref = email_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          email_ = s;
-        }
-        return s;
-      }
+      return email_;
     }
     /**
      * <code>optional string email = 2;</code>
      */
     public com.google.protobuf.ByteString
         getEmailBytes() {
-      java.lang.Object ref = email_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        email_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      return com.google.protobuf.ByteString.copyFromUtf8(email_);
     }
-
-    private void initFields() {
-      protocol_ = 0;
-      email_ = "";
+    /**
+     * <code>optional string email = 2;</code>
+     */
+    private void setEmail(
+        java.lang.String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  
+      email_ = value;
     }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
+    /**
+     * <code>optional string email = 2;</code>
+     */
+    private void clearEmail() {
+      
+      email_ = getDefaultInstance().getEmail();
+    }
+    /**
+     * <code>optional string email = 2;</code>
+     */
+    private void setEmailBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+      
+      email_ = value.toStringUtf8();
     }
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (protocol_ != 0) {
         output.writeSInt32(1, protocol_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getEmailBytes());
+      if (!email_.isEmpty()) {
+        output.writeString(2, getEmail());
       }
-      output.writeRawBytes(unknownFields);
     }
 
-    private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (protocol_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeSInt32Size(1, protocol_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (!email_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getEmailBytes());
+          .computeStringSize(2, getEmail());
       }
-      size += unknownFields.size();
       memoizedSerializedSize = size;
       return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
     }
 
     public static com.share.core.protocol.protobuf.demo.Demo.ResDemo parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ResDemo parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ResDemo parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ResDemo parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ResDemo parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ResDemo parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ResDemo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ResDemo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ResDemo parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return PARSER.parseFrom(input);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
     }
     public static com.share.core.protocol.protobuf.demo.Demo.ResDemo parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
     }
 
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(com.share.core.protocol.protobuf.demo.Demo.ResDemo prototype) {
-      return newBuilder().mergeFrom(prototype);
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
     }
-    public Builder toBuilder() { return newBuilder(this); }
+    public static Builder newBuilder(com.share.core.protocol.protobuf.demo.Demo.ResDemo prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
 
     /**
      * Protobuf type {@code com.share.core.protocol.protobuf.demo.ResDemo}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageLite.Builder<
-          com.share.core.protocol.protobuf.demo.Demo.ResDemo, Builder>
-        implements
+          com.share.core.protocol.protobuf.demo.Demo.ResDemo, Builder> implements
         // @@protoc_insertion_point(builder_implements:com.share.core.protocol.protobuf.demo.ResDemo)
         com.share.core.protocol.protobuf.demo.Demo.ResDemoOrBuilder {
       // Construct using com.share.core.protocol.protobuf.demo.Demo.ResDemo.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+        super(DEFAULT_INSTANCE);
       }
 
-      private void maybeForceBuilderInitialization() {
-      }
-      private static Builder create() {
-        return new Builder();
-      }
 
-      public Builder clear() {
-        super.clear();
-        protocol_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        email_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.share.core.protocol.protobuf.demo.Demo.ResDemo getDefaultInstanceForType() {
-        return com.share.core.protocol.protobuf.demo.Demo.ResDemo.getDefaultInstance();
-      }
-
-      public com.share.core.protocol.protobuf.demo.Demo.ResDemo build() {
-        com.share.core.protocol.protobuf.demo.Demo.ResDemo result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public com.share.core.protocol.protobuf.demo.Demo.ResDemo buildPartial() {
-        com.share.core.protocol.protobuf.demo.Demo.ResDemo result = new com.share.core.protocol.protobuf.demo.Demo.ResDemo(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.protocol_ = protocol_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.email_ = email_;
-        result.bitField0_ = to_bitField0_;
-        return result;
-      }
-
-      public Builder mergeFrom(com.share.core.protocol.protobuf.demo.Demo.ResDemo other) {
-        if (other == com.share.core.protocol.protobuf.demo.Demo.ResDemo.getDefaultInstance()) return this;
-        if (other.hasProtocol()) {
-          setProtocol(other.getProtocol());
-        }
-        if (other.hasEmail()) {
-          bitField0_ |= 0x00000002;
-          email_ = other.email_;
-          
-        }
-        setUnknownFields(
-            getUnknownFields().concat(other.unknownFields));
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.share.core.protocol.protobuf.demo.Demo.ResDemo parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.share.core.protocol.protobuf.demo.Demo.ResDemo) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      private int protocol_ ;
-      /**
-       * <code>optional sint32 protocol = 1;</code>
-       */
-      public boolean hasProtocol() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
       /**
        * <code>optional sint32 protocol = 1;</code>
        */
       public int getProtocol() {
-        return protocol_;
+        return instance.getProtocol();
       }
       /**
        * <code>optional sint32 protocol = 1;</code>
        */
       public Builder setProtocol(int value) {
-        bitField0_ |= 0x00000001;
-        protocol_ = value;
-        
+        copyOnWrite();
+        instance.setProtocol(value);
         return this;
       }
       /**
        * <code>optional sint32 protocol = 1;</code>
        */
       public Builder clearProtocol() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        protocol_ = 0;
-        
+        copyOnWrite();
+        instance.clearProtocol();
         return this;
       }
 
-      private java.lang.Object email_ = "";
-      /**
-       * <code>optional string email = 2;</code>
-       */
-      public boolean hasEmail() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
       /**
        * <code>optional string email = 2;</code>
        */
       public java.lang.String getEmail() {
-        java.lang.Object ref = email_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            email_ = s;
-          }
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+        return instance.getEmail();
       }
       /**
        * <code>optional string email = 2;</code>
        */
       public com.google.protobuf.ByteString
           getEmailBytes() {
-        java.lang.Object ref = email_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          email_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+        return instance.getEmailBytes();
       }
       /**
        * <code>optional string email = 2;</code>
        */
       public Builder setEmail(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        email_ = value;
-        
+        copyOnWrite();
+        instance.setEmail(value);
         return this;
       }
       /**
        * <code>optional string email = 2;</code>
        */
       public Builder clearEmail() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        email_ = getDefaultInstance().getEmail();
-        
+        copyOnWrite();
+        instance.clearEmail();
         return this;
       }
       /**
@@ -1241,24 +828,115 @@ public final class Demo {
        */
       public Builder setEmailBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        email_ = value;
-        
+        copyOnWrite();
+        instance.setEmailBytes(value);
         return this;
       }
 
       // @@protoc_insertion_point(builder_scope:com.share.core.protocol.protobuf.demo.ResDemo)
     }
+    protected final Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        Object arg0, Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.share.core.protocol.protobuf.demo.Demo.ResDemo();
+        }
+        case IS_INITIALIZED: {
+          return DEFAULT_INSTANCE;
+        }
+        case MAKE_IMMUTABLE: {
+          return null;
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case VISIT: {
+          Visitor visitor = (Visitor) arg0;
+          com.share.core.protocol.protobuf.demo.Demo.ResDemo other = (com.share.core.protocol.protobuf.demo.Demo.ResDemo) arg1;
+          protocol_ = visitor.visitInt(protocol_ != 0, protocol_,
+              other.protocol_ != 0, other.protocol_);
+          email_ = visitor.visitString(!email_.isEmpty(), email_,
+              !other.email_.isEmpty(), other.email_);
+          if (visitor == com.google.protobuf.GeneratedMessageLite.MergeFromVisitor
+              .INSTANCE) {
+          }
+          return this;
+        }
+        case MERGE_FROM_STREAM: {
+          com.google.protobuf.CodedInputStream input =
+              (com.google.protobuf.CodedInputStream) arg0;
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry =
+              (com.google.protobuf.ExtensionRegistryLite) arg1;
+          try {
+            boolean done = false;
+            while (!done) {
+              int tag = input.readTag();
+              switch (tag) {
+                case 0:
+                  done = true;
+                  break;
+                default: {
+                  if (!input.skipField(tag)) {
+                    done = true;
+                  }
+                  break;
+                }
+                case 8: {
 
-    static {
-      defaultInstance = new ResDemo(true);
-      defaultInstance.initFields();
+                  protocol_ = input.readSInt32();
+                  break;
+                }
+                case 18: {
+                  String s = input.readStringRequireUtf8();
+
+                  email_ = s;
+                  break;
+                }
+              }
+            }
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            throw new RuntimeException(e.setUnfinishedMessage(this));
+          } catch (java.io.IOException e) {
+            throw new RuntimeException(
+                new com.google.protobuf.InvalidProtocolBufferException(
+                    e.getMessage()).setUnfinishedMessage(this));
+          } finally {
+          }
+        }
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          if (PARSER == null) {    synchronized (com.share.core.protocol.protobuf.demo.Demo.ResDemo.class) {
+              if (PARSER == null) {
+                PARSER = new DefaultInstanceBasedParser(DEFAULT_INSTANCE);
+              }
+            }
+          }
+          return PARSER;
+        }
+      }
+      throw new UnsupportedOperationException();
     }
 
+
     // @@protoc_insertion_point(class_scope:com.share.core.protocol.protobuf.demo.ResDemo)
+    private static final com.share.core.protocol.protobuf.demo.Demo.ResDemo DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new ResDemo();
+      DEFAULT_INSTANCE.makeImmutable();
+    }
+
+    public static com.share.core.protocol.protobuf.demo.Demo.ResDemo getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<ResDemo> PARSER;
+
+    public static com.google.protobuf.Parser<ResDemo> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
   }
 
 
