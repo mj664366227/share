@@ -20,7 +20,7 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-yum -y install libtool sed gcc gcc-c++ make net-snmp curl net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz
+yum -y install libtool sed gcc gcc-c++ make net-snmp curl net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz bzip2 unzip
 
 rm -rf $mongodb_install_path/mongodb
 

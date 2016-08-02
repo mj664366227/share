@@ -19,7 +19,7 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz ncurses-devel perl
+yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz ncurses-devel perl bzip2 unzip vim
 
 #安装cmake
 cmake='cmake-3.6.1'
@@ -179,6 +179,10 @@ mysql -u root -e "INSERT INTO mysql.user (Host,User,Select_priv,Insert_priv,Upda
 sed -i 's/skip-grant-tables/#skip-grant-tables/' /etc/my.cnf || exit
 
 service mysqld restart
+
+#关闭防火墙
+systemctl stop firewalld
+systemctl disable firewalld.service
 
 #开机自启动
 echo '' >> /etc/rc.d/rc.local

@@ -21,7 +21,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #因为有些系统可能安装的类库不全，先给补上
-yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz
+yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip vim
 
 # 方便以后安装扩展，安装必备的工具
 if [ ! -d $php_install_path/m4 ]; then
@@ -299,6 +299,10 @@ sed -i 's/group = nobody/group = www/' $php_install_path/php/etc/php-fpm.d/www.c
 yes|cp -rf $php_install_path/php/bin/* /usr/bin/
 yes|cp -rf $php_install_path/php/sbin/* /usr/bin/
 killall php-fpm && php-fpm
+
+#关闭防火墙
+systemctl stop firewalld
+systemctl disable firewalld.service
 
 #开机自启动
 echo '' >> /etc/rc.d/rc.local

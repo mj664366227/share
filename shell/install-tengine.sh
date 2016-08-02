@@ -15,7 +15,7 @@ if [ ! $tengine_version ] || [ ! $tengine_install_path ]; then
 	exit
 fi
 
-yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz
+yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip vim
 
 #建立临时安装目录
 echo 'preparing working path...'
@@ -311,8 +311,13 @@ $(source /etc/profile)
 yes|cp -rf $tengine_install_path/tengine/sbin/nginx /usr/bin/
 nginx
 
+#关闭防火墙
+systemctl stop firewalld
+systemctl disable firewalld.service
+
 #开机自启动
 echo '' >> /etc/rc.d/rc.local
 echo 'systemctl stop firewalld' >> /etc/rc.d/rc.local
+echo 'systemctl disable firewalld.service' >> /etc/rc.d/rc.local
 echo 'nginx' >> /etc/rc.d/rc.local
 $(source /etc/rc.d/rc.local)
