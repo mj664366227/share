@@ -12,3 +12,12 @@ share-*.jar
 *~$*
 ES7Express
 ES7Express.git
+node_modules/
+*._.DS_Store
+*.log
+*._.DS_Store
+*.DS_Store
+*-compiled.js.map
+*-compiled.js
+.gitignore
+web-im/

@@ -31,7 +31,7 @@ if [ ! -d $gitlab_install_path/ruby ]; then
 	echo 'installing ruby ...'
 	if [ ! -f $base_path/ruby-$ruby.tar.gz ]; then
 		echo 'ruby-'$ruby'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/ruby-$ruby.tar.gz https://cache.ruby-lang.org/pub/ruby/2.2/ruby-$ruby.tar.gz || exit
+		wget -O $base_path/ruby-$ruby.tar.gz http://install.ruanzhijun.cn/ruby-$ruby.tar.gz || exit
 		echo 'download ruby-'$ruby' finished...'
 	fi
 	tar zxvf $base_path/ruby-$ruby.tar.gz -C $install_path || exit

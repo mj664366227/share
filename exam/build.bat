@@ -4,6 +4,7 @@
 
 rd /s/q D:\exam\lib\
 rd /s/q D:\exam\etc\
+rd /s/q %cd%\.gradle
 md D:\exam\lib\
 md D:\exam\etc\
 

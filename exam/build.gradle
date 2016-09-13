@@ -4,7 +4,7 @@ buildscript {
 			maven { url "http://127.0.0.1:8081/nexus/content/repositories/central/" }
         }
         dependencies {
-            classpath "net.saliman:gradle-cobertura-plugin:2.2.8"
+            classpath "net.saliman:gradle-cobertura-plugin:2.3.0"
         }
 }
 
@@ -62,9 +62,9 @@ project(':exam') {
 	dependencies{ 
 	    compile fileTree( dir: "lib", include: '*.jar' )
 		compile 'javax.servlet:javax.servlet-api:3.1.0'
-		compile 'com.alibaba:druid:1.0.15'
+		compile 'com.alibaba:druid:1.0.16'
 		compile 'com.google.code.gson:gson:2.5'
-		compile 'org.apache.httpcomponents:httpclient:4.5'
+		compile 'org.apache.httpcomponents:httpclient:4.5.1'
 		compile 'org.eclipse.jetty:jetty-http:9.3.0.M1'
 		compile 'org.eclipse.jetty:jetty-server:9.3.0.M1'
 		compile 'org.eclipse.jetty:jetty-webapp:9.3.0.M1'
@@ -74,16 +74,16 @@ project(':exam') {
 		compile 'com.google.guava:guava:18.0'
 		compile 'org.slf4j:slf4j-api:1.7.12'
 		compile 'org.slf4j:slf4j-log4j12:1.7.12'
-		compile 'mysql:mysql-connector-java:5.1.36'
+		compile 'mysql:mysql-connector-java:5.1.38'
 		compile 'net.sf.supercsv:super-csv:2.3.1'
 		compile 'javax.servlet:jstl:1.2'
-		compile 'org.springframework:spring-beans:4.2.3.RELEASE'
-		compile 'org.springframework:spring-core:4.2.3.RELEASE'
-		compile 'org.springframework:spring-expression:4.2.3.RELEASE'
-		compile 'org.springframework:spring-test:4.2.3.RELEASE'
-		compile 'org.springframework:spring-jdbc:4.2.3.RELEASE'
-		compile 'org.springframework:spring-web:4.2.3.RELEASE'
-		compile 'org.springframework:spring-webmvc:4.2.3.RELEASE'
+		compile 'org.springframework:spring-beans:4.2.4.RELEASE'
+		compile 'org.springframework:spring-core:4.2.4.RELEASE'
+		compile 'org.springframework:spring-expression:4.2.4.RELEASE'
+		compile 'org.springframework:spring-test:4.2.4.RELEASE'
+		compile 'org.springframework:spring-jdbc:4.2.4.RELEASE'
+		compile 'org.springframework:spring-web:4.2.4.RELEASE'
+		compile 'org.springframework:spring-webmvc:4.2.4.RELEASE'
     }
 	task deploy(dependsOn: [copyLib, copyWebapp])
 }

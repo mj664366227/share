@@ -20,12 +20,12 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #下载gradle
-gradle='gradle-2.9'
+gradle='gradle-2.14.1'
 if [ ! -d $install_path/$gradle ]; then
 	echo 'installing '$gradle' ...'
 	if [ ! -f $base_path/$gradle.zip ]; then
 		echo $gradle'-bin.zip is not exists, system will going to download it...'
-		wget -O $base_path/$gradle.zip --no-check-certificate https://services.gradle.org/distributions/$gradle-bin.zip || exit
+		wget -O $base_path/$gradle.zip http://install.ruanzhijun.cn/$gradle-bin.zip || exit
 		echo 'download '$gradle' finished...'
 	fi
 	unzip $gradle.zip

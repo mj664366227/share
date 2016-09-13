@@ -1,5 +1,5 @@
 #linux php自动安装程序
-#运行例子：sh install-php.sh 5.6.16 /usr/local
+#运行例子：sh install-php.sh 7.0.9 /usr/local
  
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ php_version=$1
 php_install_path=$2 
 if [ ! $php_version ] || [ ! $php_install_path ]; then
 	echo 'error command!!! you must input php version and install path...'
-	echo 'for example: sh install-php.sh 5.6.16 /usr/local'
+	echo 'for example: sh install-php.sh 7.0.9 /usr/local'
 	exit
 fi
 
@@ -21,7 +21,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #因为有些系统可能安装的类库不全，先给补上
-yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz
+yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip vim iptables-services
 
 # 方便以后安装扩展，安装必备的工具
 if [ ! -d $php_install_path/m4 ]; then
@@ -38,7 +38,7 @@ fi
 if [ ! -d $php_install_path/autoconf ]; then
 	autoconf='autoconf-2.69'
 	if [ ! -f $base_path/$autoconf.tar.gz ]; then
-		wget -O $base_path/$autoconf.tar.gz http://ftp.gnu.org/gnu/autoconf/$autoconf.tar.gz || exit
+		wget -O $base_path/$autoconf.tar.gz http://install.ruanzhijun.cn/$autoconf.tar.gz || exit
 	fi
 	tar zxvf $base_path/$autoconf.tar.gz -C $install_path || exit
 	cd $install_path/$autoconf
@@ -50,7 +50,7 @@ fi
 if [ ! -d $php_install_path/libiconv ]; then
 	libiconv='libiconv-1.14'
 	if [ ! -f $base_path/$libiconv.tar.gz ]; then
-		wget -O $base_path/$libiconv.tar.gz http://ftp.gnu.org/pub/gnu/libiconv/$libiconv.tar.gz || exit
+		wget -O $base_path/$libiconv.tar.gz http://install.ruanzhijun.cn/$libiconv.tar.gz || exit
 	fi
 	tar zxvf $base_path/$libiconv.tar.gz -C $install_path || exit
 	cd $install_path/$libiconv/srclib
@@ -76,12 +76,12 @@ if [ ! -d $php_install_path/zlib ]; then
 fi
 
 # 安装python 
-python='Python-3.5.1'
+python='Python-3.5.2'
 if [ ! -d $php_install_path/python ]; then
 	echo 'installing '$python' ...'
 	if [ ! -f $base_path/$python.tgz ]; then
 		echo $python'.tgz is not exists, system will going to download it...'
-		wget -O $base_path/$python.tgz --no-check-certificate https://www.python.org/ftp/python/3.5.1/$python.tgz || exit
+		wget -O $base_path/$python.tgz http://install.ruanzhijun.cn/$python.tgz || exit
 		echo 'download '$python' finished...'
 	fi
 	tar xvf $base_path/$python.tgz -C $install_path || exit
@@ -92,28 +92,28 @@ if [ ! -d $php_install_path/python ]; then
 fi
 
 # 安装libxml2
-libxml='libxml2-2.9.3'
-if [ ! -d $nginx_install_path/libxml2 ]; then
+libxml='libxml2-2.9.4'
+if [ ! -d $php_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
 	if [ ! -f $base_path/$libxml.tar.gz ]; then
 		echo $libxml'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.tar.gz http://xmlsoft.org/sources/$libxml.tar.gz || exit
+		wget -O $base_path/$libxml.tar.gz http://install.ruanzhijun.cn/$libxml.tar.gz || exit
 		echo 'download '$libxml' finished...'
 	fi
 	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
 	cd $install_path/$libxml
-	./configure --prefix=$nginx_install_path/libxml2 --disable-static --with-iconv=$nginx_install_path/libiconv --with-zlib=$nginx_install_path/zlib/ && make && make install || exit
-	yes|cp $nginx_install_path/libxml2/bin/* /usr/bin/
+	./configure --prefix=$php_install_path/libxml2 --disable-static --with-iconv=$php_install_path/libiconv --with-zlib=$php_install_path/zlib/ && make && make install || exit
+	yes|cp $php_install_path/libxml2/bin/* /usr/bin/
 	echo $libxml' install finished...'
 fi
 
 # 安装OpenSSL
-openssl='openssl-1.0.2e'
+openssl='openssl-1.0.2h'
 if [ ! -d $php_install_path/openssl ]; then
 	echo 'installing '$openssl' ...'
 	if [ ! -f $base_path/$openssl.tar.gz ]; then
 		echo $openssl'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$openssl.tar.gz http://www.openssl.org/source/$openssl.tar.gz || exit
+		wget -O $base_path/$openssl.tar.gz http://install.ruanzhijun.cn/$openssl.tar.gz || exit
 		echo 'download '$openssl' finished...'
 	fi
 	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
@@ -124,12 +124,12 @@ if [ ! -d $php_install_path/openssl ]; then
 fi
 
 # 安装pcre
-pcre='pcre-8.38'
+pcre='pcre-8.39'
 if [ ! -d $php_install_path/pcre ]; then
 	echo 'installing '$pcre' ...'
 	if [ ! -f $base_path/$pcre.tar.gz ]; then
 		echo $pcre'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$pcre.tar.gz ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$pcre.tar.gz || exit
+		wget -O $base_path/$pcre.tar.gz http://install.ruanzhijun.cn/$pcre.tar.gz || exit
 		echo 'download '$pcre' finished...'
 	fi
 	tar zxvf $base_path/$pcre.tar.gz -C $install_path || exit
@@ -140,12 +140,12 @@ if [ ! -d $php_install_path/pcre ]; then
 fi
 
 # 安装curl
-curl='curl-7.45.0'
+curl='curl-7.50.0'
 if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then
 		echo $curl'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$curl.tar.gz http://curl.haxx.se/download/$curl.tar.gz || exit
+		wget -O $base_path/$curl.tar.gz http://install.ruanzhijun.cn/$curl.tar.gz || exit
 		echo 'download '$curl' finished...'
 	fi
 	tar zxvf $base_path/$curl.tar.gz -C $install_path || exit
@@ -156,12 +156,12 @@ if [ ! -d $php_install_path/curl ]; then
 fi
 
 # 安装libmcrypt
-libmcrypt='2.5.7'
+libmcrypt='2.5.8'
 if [ ! -d $php_install_path/libmcrypt ]; then
 	echo 'installing libmcrypt-'$libmcrypt' ...'
 	if [ ! -f $base_path/libmcrypt-$libmcrypt.tar.gz ]; then
 		echo 'libmcrypt-'$libmcrypt'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/libmcrypt-$libmcrypt.tar.gz ftp://mcrypt.hellug.gr/pub/crypto/mcrypt/libmcrypt/libmcrypt-$libmcrypt.tar.gz || exit
+		wget -O $base_path/libmcrypt-$libmcrypt.tar.gz http://install.ruanzhijun.cn/libmcrypt-$libmcrypt.tar.gz || exit
 		echo 'download libmcrypt-'$libmcrypt' finished...'
 	fi
 	tar zxvf $base_path/libmcrypt-$libmcrypt.tar.gz -C $install_path || exit
@@ -174,10 +174,10 @@ fi
 # 安装bz2
 if [ ! -d $php_install_path/bz2 ]; then
 	bz2='1.0.6'
-	echo 'installing '$ncurses'...'
+	echo 'installing bz2-'$bz2'...'
 	if [ ! -f $base_path/bzip2-$bz2.tar.gz ]; then
-	echo $ncurses'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/bzip2-$bz2.tar.gz http://www.bzip.org/$bz2/bzip2-$bz2.tar.gz || exit
+	echo $bz2'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/bzip2-$bz2.tar.gz http://install.ruanzhijun.cn/bzip2-$bz2.tar.gz || exit
 		echo 'download bzip2-'$bz2' finished...'
 	fi
 	tar zxvf $base_path/bzip2-$bz2.tar.gz -C $install_path || exit
@@ -185,12 +185,44 @@ if [ ! -d $php_install_path/bz2 ]; then
 	make -f Makefile-libbz2_so && make && make install || exit 
 fi
 
+
+# 安装icu
+if [ ! -d $php_install_path/icu ]; then
+	echo 'installing icu...'
+	if [ ! -f $base_path/icu.tgz ]; then
+	echo 'icu.tgz is not exists, system will going to download it...'
+		wget -O $base_path/icu.tgz http://install.ruanzhijun.cn/icu.tgz || exit
+		echo 'download icu.tgz finished...'
+	fi
+	tar zxf $base_path/icu.tgz -C $install_path || exit
+	cd $install_path/icu/source
+	./configure --prefix=$php_install_path/icu && make && make install || exit
+	yes|cp $php_install_path/icu/bin/* /usr/bin/
+	echo 'icu install finished...'
+fi
+
+# 安装mm
+if [ ! -d $php_install_path/mm ]; then
+	mm='1.4.2'
+	echo 'installing mm-'$mm'...'
+	if [ ! -f $base_path/mm-$mm.tar.gz ]; then
+	echo 'mm-'$mm'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/mm-$mm.tar.gz http://install.ruanzhijun.cn/mm-$mm.tar.gz || exit
+		echo 'download mm-'$mm'.tar.gz finished...'
+	fi
+	tar zxvf $base_path/mm-$mm.tar.gz -C $install_path || exit
+	cd $install_path/mm-$mm
+	./configure --prefix=$php_install_path/mm && make && make install || exit
+	yes|cp $php_install_path/mm/bin/* /usr/bin/
+	echo 'mm-'$mm' install finished...'
+fi
+
 # 安装GD库
 # # libpng
 if [ ! -d $php_install_path/libpng ]; then
-	libpng='1.6.19'
+	libpng='1.6.23'
 	if [ ! -f $base_path/libpng-$libpng.tar.gz ]; then
-		wget -O $base_path/libpng-$libpng.tar.gz http://jaist.dl.sourceforge.net/project/libpng/libpng16/$libpng/libpng-$libpng.tar.gz || exit
+		wget -O $base_path/libpng-$libpng.tar.gz http://install.ruanzhijun.cn/libpng-$libpng.tar.gz || exit
 	fi
 	tar zxvf $base_path/libpng-$libpng.tar.gz -C $install_path || exit
 	cd $install_path/libpng-$libpng
@@ -200,18 +232,18 @@ fi
 # jpeg
 if [ ! -d $php_install_path/jpeg ]; then
 	if [ ! -f $base_path/jpegsrc.tar.gz ]; then
-		wget -O $base_path/jpegsrc.tar.gz http://www.ijg.org/files/jpegsrc.v9a.tar.gz || exit
+		wget -O $base_path/jpegsrc.tar.gz http://install.ruanzhijun.cn/jpegsrc.v9b.tar.gz || exit
 	fi
 	tar zxvf $base_path/jpegsrc.tar.gz -C $install_path || exit
-	cd $install_path/jpeg-9a
+	cd $install_path/jpeg-9b
 	./configure --prefix=$php_install_path/jpeg && make && make install || exit
 	yes|cp $php_install_path/jpeg/bin/* /usr/bin/
 fi
 # freetype
 if [ ! -d $php_install_path/freetype ]; then
-	freetype='freetype-2.6.1'
+	freetype='freetype-2.6.5'
 	if [ ! -f $base_path/$freetype.tar.gz ]; then
-		wget -O $base_path/$freetype.tar.gz http://download.savannah.gnu.org/releases/freetype/$freetype.tar.gz || exit
+		wget -O $base_path/$freetype.tar.gz http://install.ruanzhijun.cn/$freetype.tar.gz || exit
 	fi
 	rm -rf $install_path/$freetype
 	tar zxvf $base_path/$freetype.tar.gz -C $install_path || exit
@@ -223,7 +255,7 @@ fi
 echo 'installing php-'$php_version'...'
 if [ ! -f $base_path/php-$php_version.tar.gz ]; then
 	echo 'php-'$php_version'.tar.gz is not exists, system will going to download it...'
-	wget -O $base_path/php-$php_version.tar.gz http://cn2.php.net/distributions/php-$php_version.tar.gz || exit
+	wget -O $base_path/php-$php_version.tar.gz http://install.ruanzhijun.cn/php-$php_version.tar.gz || exit
 	echo 'download php-'$php_version' finished...'
 fi
 rm -rf $install_path/php-$php_version
@@ -232,11 +264,11 @@ cd $install_path/php-$php_version
 
 #如果安装了mysql，就把mysql扩展当作内核安装
 if [ -d $php_install_path/mysql ]; then
-	mysql_install='--with-mysql='$php_install_path'/mysql -with-mysqli='$php_install_path'/mysql/bin/mysql_config'
+	mysql_install='--with-pdo-mysql='$php_install_path'/mysql -with-mysqli='$php_install_path'/mysql/bin/mysql_config'
 fi
 
 
-./configure --prefix=$php_install_path/php --with-config-file-path=$php_install_path/php/etc --with-pcre-dir=$php_install_path/pcre --with-libxml-dir=$php_install_path/libxml2 --with-openssl-dir=$php_install_path/openssl --with-zlib-dir=$php_install_path/zlib $php_mysql_install_str --with-curl=$php_install_path/curl --with-curlwrappers --with-iconv-dir=$php_install_path/libiconv --with-mcrypt=$php_install_path/libmcrypt --with-jpeg-dir=$php_install_path/jpeg --with-png-dir=$php_install_path/libpng --with-freetype-dir=$php_install_path/freetype $mysql_install --enable-mysqlnd --with-mhash --with-snmp --with-xmlrpc --with-bz2 --with-openssl --enable-mbstring --enable-fpm --enable-zip --enable-sockets --enable-soap --enable-xml --enable-zend-signals --enable-wddx --enable-calendar --enable-mbstring --enable-bcmath --enable-ftp --enable-shmop --enable-gd-native-ttf --enable-exif --enable-sysvmsg --with-pic --enable-sysvsem --enable-sysvshm && make && make install || exit
+./configure --prefix=$php_install_path/php --with-config-file-path=$php_install_path/php/etc --with-pcre-dir=$php_install_path/pcre --with-libxml-dir=$php_install_path/libxml2 --with-openssl-dir=$php_install_path/openssl --with-zlib-dir=$php_install_path/zlib $php_mysql_install_str --with-curl=$php_install_path/curl --enable-libgcc --with-curlwrappers --with-iconv-dir=$php_install_path/libiconv --with-mcrypt=$php_install_path/libmcrypt --with-jpeg-dir=$php_install_path/jpeg --with-png-dir=$php_install_path/libpng --with-freetype-dir=$php_install_path/freetype $mysql_install --with-icu-dir=$php_install_path/icu --enable-mysqlnd --with-mhash --with-snmp --with-xmlrpc --with-bz2 --with-openssl --enable-mbstring --enable-fpm --enable-zip --enable-sockets --enable-soap --enable-xml --enable-zend-signals --enable-wddx --enable-gd-jis-conv --enable-intl --enable-calendar --enable-mbstring --enable-bcmath --enable-ftp --enable-shmop --enable-gd-native-ttf --enable-exif --enable-dba --with-mm=$php_install_path/mm --enable-sysvmsg --with-pic --enable-sysvsem --enable-sysvshm && make && make install || exit
 echo 'php-'$php_version' install finshed...'
 
 # 新建php.ini 
@@ -245,7 +277,7 @@ cp $install_path/php-$php_version/php.ini-production $php_install_path/php/etc/p
 sed -i 's/expose_php = On/expose_php = Off/' $php_install_path/php/etc/php.ini || exit   #屏蔽php的版本
 sed -i 's/display_errors = Off/display_errors = On/' $php_install_path/php/etc/php.ini || exit   #让php显示报错
 sed -i 's/;date.timezone =/date.timezone = Asia\/Shanghai/' $php_install_path/php/etc/php.ini || exit #根据系统的时区设置php的时区
-#sed -i 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE/' $php_install_path/php/etc/php.ini || exit #修改报错等级
+sed -i 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL \& ~E_DEPRECATED \& ~E_STRICT \& ~E_NOTICE/' $php_install_path/php/etc/php.ini || exit #修改报错等级
 
 # 新建php-fpm.conf
 echo 'create php-fpm.conf...'
@@ -259,15 +291,20 @@ if [ ! $user_exists ]; then
 	/usr/sbin/groupadd -f $group
 	/usr/sbin/useradd -g $group $user
 fi
-sed -i 's/user = nobody/user = www/' $php_install_path/php/etc/php-fpm.conf || exit
-sed -i 's/group = nobody/group = www/' $php_install_path/php/etc/php-fpm.conf || exit
+mv $php_install_path/php/etc/php-fpm.d/www.conf.default $php_install_path/php/etc/php-fpm.d/www.conf
+sed -i 's/user = nobody/user = www/' $php_install_path/php/etc/php-fpm.d/www.conf || exit
+sed -i 's/group = nobody/group = www/' $php_install_path/php/etc/php-fpm.d/www.conf || exit
 
 #启动php-fpm
 yes|cp -rf $php_install_path/php/bin/* /usr/bin/
 yes|cp -rf $php_install_path/php/sbin/* /usr/bin/
 killall php-fpm && php-fpm
 
+#关闭防火墙
+systemctl stop firewalld
+systemctl disable firewalld.service
+
 #开机自启动
 echo '' >> /etc/rc.d/rc.local
 echo 'php-fpm' >> /etc/rc.d/rc.local
-$(source /etc/rc.d/rc.local)
+source /etc/rc.d/rc.local
