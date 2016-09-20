@@ -1,0 +1,66 @@
+<!--左边-->
+
+{foreach from=$singer item=a}
+<div class="left"> 
+  <!--{$a.name}开始-->
+  <div class="singer">
+    <div class="title_div" style="width:575px;"><span class="title">{$a.name}</span></div>
+    <div class="pic"><img src="{$base_url}thumbs/thumbs/cache/w184h184/admin/{$a.pic}" border="0" width="190" height="190" alt="{$a.name}"/></div>
+    <div class="info">{$a.introduce}</div>
+  </div>
+  <!--{$a.name}结束--> 
+  
+  <!--发行专辑开始-->
+  <div class="zhuanji">
+    <div class="title_div" style="width:580px;"><span class="title">发行专辑</span></div>
+    <ul>
+    {if $no_album=='0'}<li>我们正在努力添加中...</li>
+    {else}
+      {foreach from=$album item=a}
+      <li><a href="album.php?skin=deafault&id={$a.id}" title="{$a.artist}-{$a.title}"><img src="thumbs/thumbs/cache/w190h190/admin/{$a.picture}" border="0" width="135" height="135" alt="{$a.artist}-{$a.title}"/></a></li>
+      {/foreach}
+      {/if}
+    </ul>
+  </div>
+  
+  <!--发行专辑结束--> 
+</div>
+{/foreach} 
+<!--右边-->
+<div class="right"> 
+  <!--广告开始-->
+  <div class="ad">
+    <div class="slide">
+      <div class="slide_content">
+        <div class="slide_nav"> {foreach from=$ad item=a}
+          {if $a.show==1}
+          <dd class="ddd" title="{$a.title}">{$a.show_id}</dd>
+          {/if}
+          {/foreach} </div>
+      </div>
+      <div class="slide_content_list">
+        <ul>
+          {foreach from=$ad item=a}
+          {if $a.show==1}
+          <li><a{if $a.url!=''} href="{$a.url}" title="{$a.title}" target="_blank"{/if}><img src="{$base_url}thumbs/thumbs/cache/w320h150/admin/{$a.picture}" border="0" width="320" height="150" alt="{$a.title}"/></a></li>
+          {/if}
+          {/foreach}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!--广告结束--> 
+  
+  <!--其他歌手开始-->
+  <div class="other_artist">
+    <div class="title_div" style="width:320px;"><span class="title">相关音乐人</span></div>
+    <div class="clear"></div>
+    <ul>
+      {foreach from=$other item=a}
+      <li> <a href="musician.php?skin=deafault&action=look&id={$a.id}" title="{$a.name}"><img src="thumbs/thumbs/cache/w184h184/admin/{$a.pic}" border="0" width="100" height="100" alt="{$a.name}"/></a> </li>
+      {/foreach}
+    </ul>
+  </div>
+  <!--其他歌手结束--> 
+</div>
+{include file="foot.html"}

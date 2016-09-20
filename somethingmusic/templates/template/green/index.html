@@ -1,0 +1,59 @@
+<!--图片滑动-->
+<div class="slide">
+<div class="slide_content">
+<div class="slide_nav">
+<dd class="prev">&nbsp;</dd>
+<dd class="dddd">&nbsp;</dd>
+<dd class="dddd">&nbsp;</dd>
+<dd class="dddd">&nbsp;</dd>
+<dd class="dddd">&nbsp;</dd>
+<dd class="dddd">&nbsp;</dd>
+<dd class="next">&nbsp;</dd>
+</div>
+<div class="slide_content_list">
+<ul>
+{foreach item=r from=$suggest}
+<li><img src="pic.php?src=admin/{$r.pic}&w=960&h=340&zc=0&q=100" border="0" width="960" height="340" alt="{$r.title}"/><span><dd><a href="content.php?id={$r.id}" title="{$r.title}">{$r.title}</a></dd><dt><a href="content.php?id={$r.id}" title="{$r.title}">{$r.content|truncate:318}</a></dt></span></li>
+{/foreach}
+</ul>
+</div>
+</div>
+</div>
+<!--音乐推荐-->
+<div class="music_introduction">
+<div class="music_introduction_nav"><div class="left"></div><div class="middle">音乐推荐</div><div class="right"></div></div>
+<ul class="music_introduction_list">
+{foreach item=m from=$album}
+<li id="on{$m.show_id}"><a href="album.php?id={$m.id}" title="{$m.artist}-{$m.title}"><img src="pic.php?src=admin/{$m.picture}&w=190&h=190&zc=0&q=100" border="0" width="190" height="190" alt="{$m.artist}-{$m.title}"/><span id="show{$m.show_id}"><dd>{$m.artist}</dd><dt>{$m.title}</dt></span></a></li>
+{/foreach}
+<li><img src="pic.php?src=templates/template/deafault/images/white.png&w=960&h=65&zc=0&q=100" border="0" width="960" height="65"/></li>
+<li style="width:960px">
+<!--每周推荐-->
+<!--
+<div class="week">
+<div class="week_nav"><div class="left"></div><div class="middle">每周推荐</div><div class="right"></div></div>
+{foreach item=w from=$week}
+<a href="content.php?id={$w.id}" title="{$w.title}"><img src="pic.php?src=admin/{$w.pic}&w=640&h=250&zc=0&q=100" width="640" height="250" alt="{$w.title}" border="0"/></a><p><a href="content.php?id={$w.id}" title="{$w.title}">{$w.content|truncate:145}</a></p>
+{/foreach}
+</div>
+-->
+<!--专题推荐-->
+<!--
+<div class="topic">
+<div class="topic_nav"><div class="left"></div><div class="middle">专题推荐</div><div class="right"></div></div>
+<img src="templates/template/deafault/images/qqq.jpg" width="310" height="130" /><p>艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿儿艾薇儿艾薇儿艾薇儿艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇儿艾艾薇薇儿艾艾薇艾薇儿儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿艾薇儿....</p>
+-->
+<!--
+<ul>
+{foreach item=t from=$topic}
+<li>{$t.id}</li>
+{/foreach}
+</ul>
+-->
+</div>
+</li>
+
+</ul>
+</div>
+
+{include file="foot.html"}

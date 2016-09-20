@@ -1,0 +1,15 @@
+/*ie6样式*/
+.slide ul li span{position:absolute;top:222px; height:118px}
+.slide .slide_content_list span dd{ margin-left:-29px}
+.slide .slide_content_list span dt{ padding-bottom:12px}
+.music_introduction_list span{top:129px;}
+.music_introduction_list li{margin-top:-5px}
+.album_intro{ margin-top:0px}
+.album_playlist li{ margin-top:5px}
+#player_stop,#player_play,#player_next,#player_prev,#player_pause,#player_volumn{margin-left:8px}
+#player_volume_bar{margin-top:14px;}
+#player_volume_max{ margin-top:-260px}
+#player_progress_load_bar{margin-top:-2px; margin-left:10px;}
+.album_left .about{ margin-left:5px}
+.wrap_right ul li{ float:left; margin:0px 1px 0px 0px;}
+.page{width:100%}

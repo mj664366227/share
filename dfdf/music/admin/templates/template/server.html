@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>添加服务器</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>添加服务器</a></div>
+  <table cellpadding="0">
+    <form action="server_add.php" method="post">
+      <tr>
+        <td>服务器地址：</td>
+        <td><input type="text" class="text" name="server_address" value="http://"/></td>
+      </tr>
+      <tr>
+        <td>服务器名称：</td>
+        <td><input type="text" class="text" name="server_name" /></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><input type="submit" class="button" value="提  交"/></td>
+      </tr>
+    </form>
+  </table>
+</div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>服务器列表</a></div>
+  <table cellpadding="0">
+    <tr align="center" class="bold">
+      <td width="30%">服务器地址</td>
+      <td width="30%">服务器名称</td>
+      <td>操作</td>
+    </tr>
+    {section loop=$server name=sec}
+    <tr class="comment">
+      <td align="center">{$server[sec].server}</td>
+      <td align="center">{$server[sec].name}</td>
+      <td align="center"><a href="server_modify.php?id={$server[sec].id}">修改</a>     <a href="server_delete.php?id={$server[sec].id}" onclick="return confirm('你真的要删除吗？')">删除</a></td>
+    </tr>
+    {/section}
+    {if $str!=''}
+    <tr>
+      <td colspan="3" align="center" class="showpage">{$str}</td>
+    </tr>
+    {/if}
+  </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<script type="text/javascript" src="templates/template/jquery-1.4a2.js"></script>
+<script type="text/javascript" src="templates/template/highcharts.js"></script>
+<title>数据统计 - 专辑点击统计</title>
+</head>
+<body>
+<script type="text/javascript">
+		
+			var chart;
+			$(document).ready(function() {
+				chart = new Highcharts.Chart({
+					chart: {
+						renderTo: 'container',
+						plotBackgroundColor: null,
+						plotBorderWidth: null,
+						plotShadow: false
+					},
+					title: {
+						text: '{$title}'
+					},
+					tooltip: {
+						formatter: function() {
+							return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
+						}
+					},
+					plotOptions: {
+						pie: {
+							allowPointSelect: true,
+							cursor: 'pointer',
+							dataLabels: {
+								enabled: true,
+								color: '#000000',
+								connectorColor: '#000000',
+								formatter: function() {
+									return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
+								}
+							}
+						}
+					},
+				    series: [{
+						type: 'pie',
+						data: [{$data}]
+					}]
+				});
+			});
+				
+		</script>
+        <div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>专辑点击统计(括号内为专辑数，百分数表示点击数占总的比例，色块表示专辑数占总的比例)</a></div>
+  <table cellspacing="0">
+    <tr>
+      <td>
+      {foreach from=$menu item=m key=k}
+      {if $type==$k}
+      <font>{$m}</font>
+      {else}
+      <a href="data.php?action=album&type={$k}">{$m}</a>
+      {/if}
+      {/foreach}
+        <br/> 
+      <div id="container" style="width:100%; height: 400px; margin: 0 auto"></div></td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
+<style>
+table tr td a {
+	color:#09F;
+	text-decoration:underline;
+	line-height:20px
+}
+table tr td a:hover {
+	color:#F00;
+	font-weight:bold;
+	text-decoration:none
+}
+</style>

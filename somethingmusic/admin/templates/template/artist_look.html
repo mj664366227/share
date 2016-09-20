@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<script type="text/javascript" src="../kindeditor/kindeditor.js"></script>
+<script type="text/javascript" src="templates/template/jquery-1.4a2.js"></script>
+<title>添加音乐人</title>
+</head>
+<style>
+input {
+	border:#bbbbbb 1px solid;
+}
+.highlight {
+	border:#F00 1px solid
+}
+</style>
+<script type="text/javascript">
+function removeMyClass(id_or_class)
+{
+
+	$(id_or_class).click(function(){
+
+		$(this).removeClass('highlight');
+
+		});
+
+}
+$(document).ready(function(){
+	$('#submit').click(function(){
+		if($('#name').val()=='')
+		{
+			$('#name').addClass('highlight');
+			alert('音乐人姓名为空');
+			return false;
+		}
+		if($('#area').val()=='')
+		{
+				alert('地区为空');
+				return false;
+		}
+		if($('#introduce').val()=='')
+		{
+			$('#introduce').addClass('highlight');
+			alert('音乐人介绍为空');
+			return false;
+		}
+	})
+
+removeMyClass('#name');
+removeMyClass('#pic');
+removeMyClass('#area');
+removeMyClass('#introduce');
+})
+
+KE.show({
+				id : 'introduce',
+				items : [
+		'source',  'undo', 'redo', 'cut', 'copy', 'paste',
+		'plainpaste', 'wordpaste','justifyleft', 'justifycenter', 'justifyright',
+		'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+		'superscript', 
+		'title', 'fontname', 'fontsize','textcolor', 'bgcolor', 'bold',
+		'italic', 'underline', 'strikethrough', 'removeformat','image',
+		'flash', 'media'
+	],
+				 
+				afterCreate : function(id) {
+					KE.event.ctrl(document, 13, function() {
+						KE.util.setData(id);
+						document.forms['example'].submit();
+					});
+					KE.event.ctrl(KE.g[id].iframeDoc, 13, function() {
+						KE.util.setData(id);
+						document.forms['example'].submit();
+					});
+				}
+			});
+
+
+</script>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>修改音乐人</a></div>
+  <table cellpadding="0">
+    {foreach from=$artist item=s}
+    <form action="add_artist.php?action=modify" method="post" enctype="multipart/form-data">
+     <input type="hidden" name="id" value="{$s.id}" />
+     <!-- <tr><td class="table_left">操作：</td><td class="comment"><a href="add_artist.php?action=deleted&id={$s.id}" onclick="return confirm('你真的要删除吗？');">删除{$s.name}</a></td></tr>
+      <tr>-->
+     
+        <td class="table_left">音乐人姓名：</td>
+        <td><input class="text" type="text" name="name" id="name" value="{$s.name}"/></td>
+      </tr>
+      <td class="table_left">地区：</td>
+        <td><select name="area1" id="area1" style="float:left">
+            <option value="">----请选择----</option>
+            <option value="1">香港</option>
+            <option value="2">台湾</option>
+            <option value="3">日本</option>
+            <option value="4">韩国</option>
+            <option value="5">欧美</option>
+            <option value="6">大陆</option>
+            <option value="8">菲律宾</option>
+            <option value="9">马来西亚</option>
+            <option value="10">新加坡</option>
+            <option value="11">其他</option>
+          </select>
+          <div style="margin-left:5px; float:left">{$s.area}
+          <input value="{$s.4}" type="hidden" name="area"/>
+          <a href="#" onClick="this.parentNode.parentNode.removeChild(this.parentNode)">删除</a>
+          </div>
+          </td>
+      </tr>
+
+      <tr>
+        <td class="table_left">音乐人头像：</td>
+        <td>
+        <input name="pic" type="file" class="text" style="cursor:pointer" id="pic" style="float:left">
+          <input type="text" value="{$s.pic}" style="display:none" name="pic" id="pic"/>
+          <br>
+          <br>
+          <div style="float:left"><img src="{$s.pic}" alt="{$s.name}" /> <a href="#" onClick="this.parentNode.parentNode.removeChild(this.parentNode)">删除</a> </div></td>
+      </tr>
+      <tr>
+        <td class="table_left">音乐人介绍：</td>
+        <td><textarea name="introduce" style="width:100%;height:300px;display:block;" id="introduce">{$s.introduce}</textarea></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><input type="submit" class="button" value="添   加" id="submit"/></td>
+      </tr>
+    </form>
+    {/foreach}
+  </table>
+</div>
+</body>
+</html>
+<style>
+table tr td a {
+	color:#09F;
+	text-decoration:underline;
+	line-height:20px
+}
+table tr td a:hover {
+	color:#F00;
+	font-weight:bold;
+	text-decoration:none
+}
+.look {
+	text-align:left
+}
+.look a {
+	margin-left:20px;
+	margin-top:10px
+}
+</style>

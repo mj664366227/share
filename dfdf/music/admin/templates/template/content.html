@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>文章列表</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>文章列表</a></div>
+  <table cellspacing="0">
+    <tr align="center" class="bold">
+      <td>系统编号</td>
+      <td>文章标题</td>
+      <td>浏览次数</td>
+      <td>发布时间</td>
+      <td>操作</td>
+    </tr>
+    {section loop=$content name=sec}
+    <tr align="center" class="comment">
+      <td>{$content[sec].id}</td>
+      <td><a href="content_look.php?id={$content[sec].id}" title="点击查看《{$content[sec].title}》的内容">{$content[sec].title}</a></td>
+      <td>{$content[sec].click}</td>
+      <td>{$content[sec].time}</td>
+      <td><a href="content_delete.php?id={$content[sec].id}" onclick="return confirm('你真的要删除吗？')">删除</a></td>
+    </tr>
+    {/section}
+    {if $str!=''}
+    <tr>
+      <td colspan="5" class="showpage" align="center">{$str}</td>
+    </tr>
+    {/if}
+  </table>
+</div>
+</body>
+</html>

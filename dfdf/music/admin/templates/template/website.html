@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>站点信息设置</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>站点信息设置</a></div>
+  <table cellspacing="0">
+    <form action="website_infor.php" method="post">
+      {section loop=$array name=sec}
+      <tr>
+        <td class="table_left">网站名称：</td>
+        <td><input type="text" value="{$array[sec].webtitle}" name="webtitle" class="text"/></td>
+      </tr>
+      <tr>
+        <td class="table_left">域名：</td>
+        <td><input type="text" value="{$array[sec].yuming}" name="yuming" class="text"/>&nbsp;&nbsp;<font>亲，请确保域名的正确性，否则页面无法正确显示！</font></td>
+      </tr>
+      <tr>
+        <td class="table_left">关键字：</td>
+        <td><textarea cols="80" rows="7"  name="seo">{$array[sec].seo}</textarea></td>
+      </tr>
+      <tr>
+        <td class="table_left">网站描述：</td>
+        <td><textarea cols="80" rows="7"  name="description">{$array[sec].description}</textarea></td>
+      </tr>
+      <tr>
+        <td class="table_left">网站运行状态：</td>
+        <td><label class="label"><input type="radio" name="status" value="1" {if $array[sec].status==1}checked{/if}>
+          运行</label>
+          <label class="label"><input type="radio" name="status" value="0" {if $array[sec].status==0}checked{/if}>
+          关闭</label> </td>
+      </tr>
+      <tr><td class="table_left">首页幻灯片数量：</td>
+      <td>
+      <select name="slide">
+      {foreach from=$num item=n}
+      <option value="{$n}"{if $n==$array[sec].slide} selected="selected"{/if}>&nbsp;{$n}&nbsp;</option>
+      {/foreach}
+      </select>
+      </td>
+      </tr>
+      <tr>
+      <td class="table_left">页面模板：<br><br><font>亲，换模板后记得清缓存！</font></td>
+      <td>
+      <ul>
+      {foreach from=$file item=f}
+     <label class="label" title="{$f}"><li><img src="{$base_url}../templates/template/{$f}/pic.png"/><br>
+      <input type="radio" name="template" value="{$f}"{if $f==$array[sec].template} checked="checked"{/if}/>
+      {$f}</li></label>
+      {/foreach}
+      </ul>
+      </td>
+      </tr>
+      <tr>
+        <td class="table_left">暂停理由：</td>
+        <td><textarea cols="80" rows="7"  name="reason">{$array[sec].reason}</textarea></td>
+      </tr>
+      {/section}
+      <tr>
+        <td class="table_left"></td>
+        <td><input type="submit" class="button" value="提  交"/></td>
+      </tr>
+    </form>
+  </table>
+</div>
+</body>
+</html>
+<style>
+ul{ list-style:none; padding:0 }
+ul li{ float:left; width:155px; text-align:center }
+</style>

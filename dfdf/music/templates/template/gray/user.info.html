@@ -1,0 +1,55 @@
+<div class="step">
+<ul class="step_nav">
+<li>{if $step==1}<a href="{$base_url}api.php?skin=gray&action=user&mod=info&step=1"><font color="8ad1e9">第一步</font></a>{else}<a href="{$base_url}api.php?skin=gray&action=user&mod=info&step=1">第一步</a>{/if}</li>
+<li>{if $step==2}<a href="{$base_url}api.php?skin=gray&action=user&mod=info&step=2"><font color="8ad1e9" title="你选择的音乐风格和歌手将会出现在你的私人电台中">第二步</font></a>{else}<a href="{$base_url}api.php?skin=gray&action=user&mod=info&step=2" title="你选择的音乐风格和歌手将会出现在你的私人电台中">第二步</a>{/if}</li>
+<li>{if $step==3}<a href="{$base_url}api.php?skin=gray&action=user&mod=info&step=3"><font color="8ad1e9">第三步</font></a>{else}<a href="{$base_url}api.php?skin=gray&action=user&mod=info&step=3">第三步</a>{/if}</li>
+<li><font color="d06e6f">个人设置</font></li>
+</ul>
+<div class="step_body">
+{if $step==1}
+<form action="{$base_url}api.php?skin=gray&action=user&mod=info" method="post">
+<table cellpadding="0" cellspacing="15">
+<tr><td width="100" align="right">昵称<font color="#FF0000">*</font></td><td><input type="text" class="text" name="nick" autocomplete="off" id="nick" value="{$step1.nick}"/></td></tr>
+<tr><td align="right">真实姓名</td><td><input type="text" class="text" name="realname" autocomplete="off" id="realname" value="{$step1.realname}"/></td></tr>
+<tr><td align="right">系别</td><td><input type="text" class="text" name="xi" autocomplete="off" id="xi" value="{$step1.xi}"/></td></tr>
+<tr><td align="right">班级</td><td><input type="text" class="text" name="classname" autocomplete="off" id="classname" value="{$step1.classname}"/></td></tr>
+<tr><td></td><td align="right"><input type="submit" value="下一步" class="btn" name="step1" id="step1" title="下一步设置你私人电台中的选择的音乐风格和歌手"/></td></tr>
+</table>
+</form>
+{else if $step==2}
+<div class="style">喜欢的音乐风格</div>
+<form action="{$base_url}api.php?skin=gray&action=user&mod=info&step=2" method="post">
+<div id="music_style">
+{foreach from=$style_list item=ss}
+{if $ss}
+<label style="color:#d06e6f;font-size:14px;margin:0 10px 0 0"><input checked="checked" name="style[]" class="checkbox" type="checkbox" style="display:none" value="{$ss}"/>{$ss}<img src="templates/template/gray/images/x.png" width="12" height="12" style="cursor:pointer" title="取消{$ss}" onClick="this.parentNode.parentNode.removeChild(this.parentNode)"/></label>{/if}
+{/foreach}
+<style>#music_style{ width:100%; height:auto}</style>
+</div>
+<ul class="list">
+{foreach from=$style item=s}
+<li><a href="javascript:void(0)" title="{$s.smallcategory}" class="music_style_btn">{$s.smallcategory}</a></li>
+{/foreach}
+</ul>
+<div class="style">喜欢的歌手&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" style="text-decoration:none; color:#d06e6f" title="换一批" id="next_artist_">换一批</a></div>
+<div id="music_srtist">
+{foreach from=$artist_list item=sss}
+{if $sss}
+<label style="color:#d06e6f;font-size:14px;margin:0 10px 0 0"><input checked="checked" name="artist[]" class="checkbox" type="checkbox" style="display:none" value="{$sss}"/>{$sss}<img src="templates/template/gray/images/x.png" width="12" height="12" style="cursor:pointer" title="取消{$ss}" onClick="this.parentNode.parentNode.removeChild(this.parentNode)"/></label>{/if}
+{/foreach}
+<style>#music_srtist{ width:100%; height:auto}</style>
+</div>
+<ul class="list" id="music_srtist_list">
+{foreach from=$artist item=a}
+<li style="width:170px; text-align:left"><a href="javascript:void(0)" title="{$a.artist}" class="music_srtist_btn">{$a.artist}</a></li>
+{/foreach}
+</ul>
+<div style="width:100%; text-align:right; margin:10px 0 0 0"><input type="submit" value="下一步" class="btn" name="step2" id="step2" title="下一步设置你的个人头像"/></div>
+</form>
+{else}
+{$avatar}
+<div style="width:100%; text-align:right; margin:10px 0 0 0"><form action="{$base_url}api.php?skin=gray&action=user&mod=info&step=3" method="post"><input type="submit" value="完成" class="btn" name="step3" id="step3"/></form></div>
+{/if}
+</div>
+</div>
+{include file="ad.html"}

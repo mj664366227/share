@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<script type="text/javascript" src="templates/template/jquery-1.4a2.js"></script>
+<title>查看歌曲</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>电台一览</a></div>
+  <table cellspacing="0">
+    <tr>
+      <td>{foreach from=$channel item=c} 
+      {if $ch==$c.en}<font>{$c.name}</font>{else}
+      <a href="look_channel_song.php?action=index&channel={$c.en}">{$c.name}</a>{/if} 
+      {/foreach}</td>
+    </tr>
+  </table>
+</div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>{$ch}频道的歌曲</a></div>
+  <table>
+    <tr class="bold" align="center">
+      <td width="10%">系统编号</td>
+      <td width="40%">歌名</td>
+      <td width="13%">操作</td>
+      <td width="37%">加入其他频道</td>
+    </tr>
+    {foreach from=$res item=a}
+    <tr align="center">
+      <td>{$a.id}</td>
+      <td>{$a.artist} - {$a.title}</td>
+      <td><a href="javascript:void(0)" class="getout" id="{$ch}" songid="{$a.id}" title="移出{$ch}频道">移出{$ch}频道</a></td>
+      <td><form id="check_box">
+          {foreach from=$channel item=c}
+          {if $c.en!=$ch}
+          <input type="checkbox" songid="{$a.id}" value="{$c.en}"{if $a.{$c.en}=="1"} checked="checked"{/if} class="check"/>
+          &nbsp;{$c.name}&nbsp;
+          {/if}
+          {/foreach}
+        </form></td>
+    </tr>
+    {/foreach}
+    <tr align="center">
+      <td colspan="4"><!--<form>
+          <input type="checkbox" class="allpage"/>
+          一键操作
+        </form>--><font>批量操作等我做完课程设计再搞！</font></td>
+    </tr>
+    {if $p!=''}
+    <tr>
+      <td colspan="4" class="showpage" align="center">{$p}</td>
+    </tr>
+    {/if}
+  </table>
+</div>
+</body>
+</html>
+<style>
+table tr td a {
+	color:#09F;
+	text-decoration:underline;
+	line-height:20px
+}
+table tr td a:hover {
+	color:#F00;
+	font-weight:bold;
+	text-decoration:none
+}
+.look {
+	text-align:center
+}
+input {
+	border:1px solid #CCC
+}
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+	//移出
+	$('.getout').click(function(){
+		var id=$(this).attr('id');
+		var songid=$(this).attr('songid');
+		$.ajax({
+				type:'post',
+				url:'radio.php',
+				data:'action='+id+'&type=false&id='+songid,
+				success:function(){}
+		})
+		$(this).parent().parent().remove();
+	})
+	$('.check').click(function(){
+	var action=$(this).attr('value');	
+	var songid=$(this).attr('songid');
+	var checked=$(this).attr('checked');
+	if(checked)
+		{
+			$.ajax({
+				type:'post',
+				url:'radio.php',
+				data:'action='+action+'&type=true&id='+songid,
+				success:function(){}
+			})
+		}
+		else
+		{
+			$.ajax({
+				type:'post',
+				url:'radio.php',
+				data:'action='+action+'&type=false&id='+songid,
+				success:function(){}
+			})
+		}
+	})
+	//一键操作
+	$('.allpage').click(function(){
+		var i=$('#check_box .check').length;
+		$('#check_box .check').each(function(){
+			alert($(this).attr('songid'));
+		})
+	})
+})
+</script>

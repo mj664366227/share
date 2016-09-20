@@ -1,0 +1,32 @@
+<?php
+session_start();
+include "config.php";//载入系统配置文件
+//检测验证码
+$yzm=clean($_POST['yanzhengma']);
+$a=$_SESSION['yzm_check'];
+$real_yzm=substr($a,-4,strlen($a));
+if($yzm!=$real_yzm)
+{
+	tips('验证码错误！');
+	die();
+}
+//检查登录
+$username=clean($_REQUEST['username']);
+$pwd=clean($_REQUEST['pwd']);
+$pwd=secret(md5($pwd));
+if($_POST)
+{
+	$sql="select * from `somethingmusic_admin` where name='$username' and pwd='$pwd'";
+	$result=$conn->Execute($sql);
+	if($result->recordcount()==1)
+	{
+		$_SESSION['login']=md5(rand(1000,9999));
+		$_SESSION['username']=$username;
+		header("location:admin.php");
+	}
+	if($result->recordcount()==0)
+	{
+		tips('不存在此帐号!');
+	}
+}
+?>

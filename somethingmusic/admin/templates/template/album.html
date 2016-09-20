@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>专辑列表</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>专辑搜索</a></div>
+  <form action="album.php?action=search" method="post">
+
+    <table>
+
+      <tr>
+
+        <td width="10%" align="right">搜索关键字：</td><td><input type="text" class="text" name="search" id="search_text"/>&nbsp;<input type="submit" value="搜 索" class="button" id="search_button"/></td>
+
+      </tr>
+
+    </table>
+
+  </form>
+  </div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>专辑列表</a></div>
+  <table cellspacing="0">
+    <tr align="center" class="bold">
+      <td width="10%">编号</td>
+      <td>专辑名称</td>
+      <td width="40">添加者</td>
+      <td width="75">类型</td>
+      <td width="60">专辑热度</td>
+      <td width="40">操作</td>
+    </tr>
+    {section loop=$album name=s}
+    <tr align="center" class="comment">
+      <td>{$album[s].id}</td>
+      <td class="comment"><a href="album_look.php?id={$album[s].id}">{$album[s].artist} - {$album[s].title}</a></td>
+      <td>{$album[s].author}</td>
+      <td>{$album[s].category}</td>
+      <td>{$album[s].hit}</td>
+      <td><a href="album_delete.php?id={$album[s].id}" title="点击删除《{$album[s].title}》" onclick="return confirm('真的要删除本专辑以及其包括的所有歌曲吗？')">删除</a></td>
+    </tr>
+    {/section}
+    {if $str!=''}
+    <tr><td colspan="5" class="showpage" align="center">{$str}</td></tr>
+    {/if}
+  </table>
+</div>
+</body>
+</html>

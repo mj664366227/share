@@ -1,0 +1,11 @@
+/*ie7样式*/
+.slide .slide_content_list span dt{ margin:3px 3px 10px 12px;}
+.slide .slide_content_list span dd{ margin-left:-29px}
+.music_introduction_list span{top:130px;}
+.music_introduction_list li{margin-top:1px;}
+.music_introduction_list a{ margin-bottom:5px}
+.album_intro{ margin-top:0px}
+.album_playlist li{ margin-top:5px}
+.ajax_search_result{right:100px}
+.result{right:47px;}
+.album .album_sth{ width:345px}

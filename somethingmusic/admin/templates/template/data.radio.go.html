@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<script type="text/javascript" src="templates/template/jquery-1.4a2.js"></script>
+<script type="text/javascript" src="templates/template/highcharts.js"></script>
+<script type="text/javascript" src="templates/template/calendar/WdatePicker.js"></script>
+<script type="text/javascript">
+		
+			var chart;
+			$(document).ready(function() {
+				chart = new Highcharts.Chart({
+					chart: {
+						renderTo: 'container',
+						defaultSeriesType: 'line'
+					},
+					title: {
+						text: '{if $st==$et}{$et} 电台收听走势{else}{$st} 至 {$et} 电台 {$en} 收听走势{/if}'
+					},
+					xAxis: {
+						categories: [{$time}]
+					},
+					yAxis: {
+						title: {
+							text: '收听人数'
+						}
+					},
+					tooltip: {
+						enabled: false,
+						formatter: function() {
+							return '<b>'+ this.series.name +'</b><br/>'+
+								this.x +': '+ this.y +'°C';
+						}
+					},
+					plotOptions: {
+						line: {
+							dataLabels: {
+								enabled: true
+							},
+							enableMouseTracking: false
+						}
+					},
+					series: [{$result}]
+				});
+				
+				
+			});
+				
+		</script>
+<title>数据统计 - 电台收听走势</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>电台收听走势</a></div>
+  <form action="data.php" method="get">
+  <table cellspacing="0">
+  <input type="hidden" name="action" value="go"/>
+  {if $html}
+  <input type="hidden" name="st" value="{$st}"/>
+  <input type="hidden" name="et" value="{$et}"/>
+  {/if}
+  <input type="hidden" name="channel" value="{$channel}"/>
+  <tr><td>
+  {if $channel=='all'}
+       <font>总走势</font>
+      {else}
+      <a href="data.php?action=go&channel=all">总走势</a>
+      {/if}
+  {foreach from=$radio item=m key=k}
+      {if $channel==$m.en_name}
+      <font>{$m.name}</font>
+      {else}
+      <a href="data.php?action=go&channel={$m.en_name}{$html}">{$m.name}</a>
+      {/if}
+      {/foreach}
+        <br/><br/><br/> 
+  时间：<input type="text" name="st" onclick="WdatePicker()" value="{$st}" class="t"/> — <input type="text" name="et" onclick="WdatePicker()" value="{$et}" class="t" autocomplete="off"/>&nbsp;&nbsp;<input type="submit" class="button" value="提  交" autocomplete="off"/><br/><br/>
+  <div id="container"></div>
+  </td></tr> 
+  </table>
+  </form>
+</div>
+</body>
+</html>
+<style>
+table tr td a {
+	color:#09F;
+	text-decoration:underline;
+	line-height:20px
+}
+table tr td a:hover {
+	color:#F00;
+	font-weight:bold;
+	text-decoration:none
+}
+.t{ width:65px}
+</style>

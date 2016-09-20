@@ -1,0 +1,13 @@
+<?PHP exit;?>	UCenterAdministrator	183.1.189.186	1323614557	login	succeed
+<?PHP exit;?>	UCenterAdministrator	183.1.189.186	1323614589	login	succeed
+<?PHP exit;?>	UCenterAdministrator	183.1.189.186	1323614659	app_edit	appid=4
+<?PHP exit;?>	UCenterAdministrator	183.1.189.186	1323875313	login	succeed
+<?PHP exit;?>	UCenterAdministrator	183.1.189.186	1323875393	app_edit	appid=4
+<?PHP exit;?>	UCenterAdministrator	121.8.147.244	1323876742	login	succeed
+<?PHP exit;?>	UCenterAdministrator	183.1.189.186	1323876810	domain_add	domainnew=gfc&amp;ipnew=3.3.3.3
+<?PHP exit;?>	UCenterAdministrator	183.1.189.186	1323876822	domain_delete	delete=1
+<?PHP exit;?>	UCenterAdministrator	183.1.189.186	1323877182	login	succeed
+<?PHP exit;?>	UCenterAdministrator	121.32.50.50	1323966677	login	succeed
+<?PHP exit;?>	UCenterAdministrator	121.32.50.50	1323967029	app_edit	appid=4
+<?PHP exit;?>	UCenterAdministrator	116.22.166.18	1324042838	login	succeed
+<?PHP exit;?>	UCenterAdministrator	121.32.64.133	1324479107	login	succeed

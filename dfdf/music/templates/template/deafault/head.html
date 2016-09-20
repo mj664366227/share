@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="{$keyword}" />
+<meta name="description" content="{$description}" />
+<link rel="shortcut icon" href="favicon.ico"/>
+<link rel="stylesheet" href="templates/template/deafault/css/css.css" type="text/css" />
+<!--[if IE]><link rel="stylesheet" href="templates/template/deafault/css/all_ie.css" type="text/css" /><![endif]-->
+<!--[if IE 6]><link rel="stylesheet" href="templates/template/deafault/css/ie6.css" type="text/css" /><![endif]-->
+<!--[if IE 7]><link rel="stylesheet" href="templates/template/deafault/css/ie7.css" type="text/css" /><![endif]-->
+<title>{$web_title}</title>
+</head>
+<body>
+<!--初始化播放器-->
+<div id="jquery_jplayer"></div>
+<!--头部-->
+<div class="header">
+<a href="{$base_url}/?skin=deafault" title="somethingmusic音乐电台"><img src="templates/template/deafault/images/logo.png" width="107" height="35" alt="logo" border="0"/></a>
+
+
+</div>
+{if $active=='radio'}
+{else}
+<!--导航栏-->
+<div class="nav">
+<ul>
+<li><a href="{$base_url}?skin=deafault" title="网站首页">{if $active=='index'}<font color="#ff0066">首页</font>{else}首页{/if}</a></li>
+<li><a href="radio.php?skin=deafault" title="音乐电台" target="_blank">电台</a></li>
+<li><a href="resources.php?skin=deafault&action=all" title="本站资源">{if $active=='resources' || $active=='album' || $active=='search'}<font color="#ff0066">资源</font>{else}资源{/if}</a></li>
+<li><a href="musician.php?skin=deafault&action=all" title="音乐人介绍">{if $active=='musician'}<font color="#ff0066">音乐人</font>{else}音乐人{/if}</a></li>
+<li><a href="introduce.php?skin=deafault&action=all" title="音乐推荐文章">{if $active=='introduce' || $active=='content'}<font color="#ff0066">推荐</font>{else}推荐{/if}</a></li>
+{if $active=='index'}<li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li>&nbsp;</li><li><a href="{$base_url}?skin=gray">新版皮肤</a></li>{/if}
+</ul>
+<!--搜索栏-->
+<div class="search">
+<form action="search.php?skin=deafault&action=search" method="post">
+<input type="text" class="search_input" id="search_input" name="search_input" onclick="value=''" autocomplete="off"/>
+<div class="submit" title="搜！"><input type="image" src="templates/template/deafault/images/search.png" width="18" height="18" id="search_submit"/></div>
+</form></div>
+</div>
+{/if}
+<!--网站主体-->
+<div class="body">
+<div class="main">
+<div class="result"></div>

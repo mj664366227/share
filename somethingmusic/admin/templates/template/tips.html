@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>消息提示</title>
+</head>
+<body>
+<script type="text/javascript">
+var i=6;
+function daoshu()
+{
+	i=i-1;
+	document.write(i);
+	setInterval("daoshu()",1000);
+	if(i==0)
+	{
+		history.back(-1);
+	}
+}
+</script>
+<div class="main_right" align="center">
+<div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>消息提示</a></div>
+<table cellspacing="0"><form>
+<tr><td>操作成功！<br><br><br><br>
+<!--在<script type="text/javascript">daoshu();</script>秒后自动返回。<br>-->
+<input type="button" class="button" value="返  回" onclick="history.back(-1)"/></td></tr></form>
+</table>
+</div>
+</body>
+</html>

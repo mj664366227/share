@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>文章评论</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>文章评论</a></div>
+  <table cellspacing="0">
+    <tr class="bold" align="center">
+      <td width="50">序号</td>
+      <td>评论内容</td>
+      <td>评论人</td>
+      <td>评论人ip地址</td>
+      <td width="140">评论时间</td>
+      <td width="30">操作</td>
+    </tr>
+    {section loop=$wz name=sec}
+    <tr align="center">
+      <td>{$wz[sec].id}</td>
+      <td>{$wz[sec].text}</td>
+      <td>{$wz[sec].name}</td>
+      <td>{$wz[sec].ip}</td>
+      <td>{$wz[sec].time}</td>
+      <td class="comment"><a href="wz_delete.php?id={$wz[sec].id}" onclick="return confirm('你真的要删除吗？')" title="删除本条内容">删除</a></td>
+    </tr>
+    {/section}
+    {if $str!=''}
+    <tr>
+      <td colspan="7" align="center" class="showpage">{$str}</td>
+    </tr>
+    {/if}
+  </table>
+</div>
+</body>
+</html>

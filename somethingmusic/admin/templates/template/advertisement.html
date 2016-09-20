@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>广告管理</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>添加广告(960*100)</a></div>
+  <table cellspacing="0">
+    <form action="advertisement_add.php" method="post" enctype="multipart/form-data">
+      <tr>
+        <td class="table_left"><font>*</font>广告标题：</td>
+        <td><input type="text" name="ad_title" class="text"/></td>
+      </tr>
+      <tr>
+        <td class="table_left"><font>*</font>广告图片（jpeg or png）：<br><font>320*150</font></td>
+        <td><input type="file" name="pic" class="text"/></td>
+      </tr>
+      <tr>
+        <td class="table_left">连接地址：</td>
+        <td><input type="text" name="ad_url" class="text" value="http://"/></td>
+      </tr>
+      <tr>
+        <td class="table_left"></td>
+        <td><input type="submit" class="button" value="提  交"/></td>
+      </tr>
+    </form>
+  </table>
+</div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>广告列表</a></div>
+  <table cellpadding="0">
+    <tr align="center" class="bold">
+      <td>系统编号</td>
+      <td>广告内容</td>
+      <td>添加时间</td>
+      <td>广告图片</td>
+      <td>状态</td>
+      <td>操作</td>
+    </tr>
+    {section loop=$adarr name=sec}
+    <tr align="center">
+      <td>{$adarr[sec].id}</td>
+      <td>{$adarr[sec].title|truncate:50}</td>
+      <td>{$adarr[sec].time}</td>
+      <td><img src="{$adarr[sec].picture}" border="0" width="100" height="30" alt="{$adarr[sec].title}"/></td>
+      <td>{if $adarr[sec].show==1}<font>显示</font>{/if}{if $adarr[sec].show==0}<a style="color:#00F; font-weight:bold">隐藏</a>{/if}</td>
+      <td class="comment">{if $adarr[sec].show==1}<a href="advertisement_hide.php?id={$adarr[sec].id}&&show={$adarr[sec].show}">隐藏</a>{/if}  {if $adarr[sec].show==0}<a href="advertisement_show.php?id={$adarr[sec].id}">显示</a>{/if} <a href="advertisement_delete.php?id={$adarr[sec].id}" onclick="return confirm('你真的要删除吗？')">删除</a></td>
+    </tr>
+    {/section}
+    {if $str!=''}
+    <tr>
+      <td colspan="5" align="center" class="showpage">{$str}</td>
+    </tr>
+    {/if}
+  </table>
+</div>
+</body>
+</html>

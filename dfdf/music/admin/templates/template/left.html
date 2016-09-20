@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="css.css" type="text/css" />
+<script type="text/javascript" src="jquery-1.4a2.js"></script>
+</head>
+<script type="text/javascript">
+function toggle(id)
+{
+	$("div.choice ul."+id).toggle("fast");
+}
+</script>
+
+<div class="main_left">
+  <div class="title"><img src="images/ico_switch_close.gif" border="0"/>&nbsp;<a href="javascript:void(0)" onclick="toggle('usual')">常规操作</a></div>
+  <div class="choice">
+    <ul class="usual">
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../right.php" target="right">后台首页</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../../" target="_blank">浏览首页</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../safe_exit.php" target="_top" onclick="return confirm('你真的要退出吗？');">安全退出</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main_left">
+  <div class="title"><img src="images/ico_switch_close.gif" border="0"/>&nbsp;<a href="javascript:void(0)" onclick="toggle('system')">系统设置</a></div>
+  <div class="choice">
+    <ul class="system">
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../website.php" target="right">站点信息</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../gonggao.php" target="right">发布公告</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../user.php" target="right">用户管理</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../cache.php" target="right">缓存管理</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../comment.php" target="right">评论管理</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../advertisement.php" target="right">广告管理</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="http://www.cnzz.com" target="_blank">查看统计</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../mkcache.php" target="right">图片缓存</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../file_scan.php?action=list" target="right">文件浏览器</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../db.php" target="right">查看表信息</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="http://lovemusic.cc/phpmyadmin" target="_blank">查看数据库</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../../i.php" target="right">查看PHP配置</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main_left">
+  <div class="title"><img src="images/ico_switch_close.gif" border="0"/>&nbsp;<a href="javascript:void(0)" onclick="toggle('data')">数据统计</a></div>
+  <div class="choice">
+    <ul class="data">
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../data.php?action=album&type=category" target="right">专辑点击统计</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../data.php?action=radio" target="right">音乐电台统计</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../data.php?action=go" target="right">电台收听走势</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main_left">
+  <div class="title"><img src="images/ico_switch_close.gif" border="0"/>&nbsp;<a href="javascript:void(0)" onclick="toggle('music')">音乐发布</a></div>
+  <div class="choice">
+    <ul class="music">
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../category.php" target="right">添加类型</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../album_add.php" target="right">添加专辑</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../album.php" target="right">专辑列表</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../error_info.php" target="right">错误报告</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../add_artist.php" target="right">添加音乐人</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../server.php" target="right">添加服务器</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main_left">
+  <div class="title"><img src="images/ico_switch_close.gif" border="0"/>&nbsp;<a href="javascript:void(0)" onclick="toggle('wz')">音乐文章</a></div>
+  <div class="choice">
+    <ul class="wz">
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../music_introduce.php" target="right">音乐推荐</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../content.php" target="right">文章列表</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../wz.php" target="right">文章评论</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../slide.php" target="right">首页幻灯片</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../topic.php" target="right">音乐专题制作</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main_left">
+  <div class="title"><img src="images/ico_switch_close.gif" border="0"/>&nbsp;<a href="javascript:void(0)" onclick="toggle('radio')">音乐电台</a></div>
+  <div class="choice">
+    <ul class="radio">
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../shoujuanyu.php?action=default" target="right">首卷语</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../set_channel.php?action=index" target="right">新建频道</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../look_channel_song.php?action=index" target="right">查看歌曲</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../channel.php?action=流行" target="right">设置歌曲</a></li>
+    </ul>
+  </div>
+</div>
+<div class="main_left">
+  <div class="title"><img src="images/ico_switch_close.gif" border="0"/>&nbsp;<a href="javascript:void(0)" onclick="toggle('user')">飞车坊平台</a></div>
+  <div class="choice">
+    <ul class="user">
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../../ucenter" target="right">UCenter</a></li>
+      <li><img src="images/ico_special.gif" border="0"/><a href="../../doc.php" target="right">接口文档</a></li>
+    </ul>
+  </div>
+</div>
+</html>

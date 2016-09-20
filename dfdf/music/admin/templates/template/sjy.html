@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>电台首卷语</title>
+</head>
+<script type="text/javascript" src="templates/template/jquery-1.4a2.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+$('.button').click(function(){
+	var a=$('#text').val().length;
+	if(a<=1)
+	{
+		alert('1个字都写不出吗！');
+		return false;
+	}
+	})
+})
+</script>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>添加电台首卷语（100-200字）</a></div>
+  <table cellspacing="0">
+    <form action="shoujuanyu.php?action=post" method="post">
+      <tr>
+        <td class="table_left">首卷语内容：</td>
+        <td><textarea cols="80" rows="12"  name="text" id="text"></textarea></td>
+      </tr>
+      <tr>
+        <td class="table_left"></td>
+        <td><input type="submit" class="button" value="添  加"/></td>
+      </tr>
+    </form>
+  </table>
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>已有的电台首卷语</a></div>
+  <table cellspacing="0" class="noticelist">
+    <tr align="center" class="bold">
+      <td>显示序号</td>
+      <td width="70%">首卷语内容</td>
+      <td>操作</td>
+    </tr>
+    {section loop=$sjy name=sec}
+    <tr align="center">
+      <td>{$sjy[sec].id}</td>
+      <td style="text-align:left">{$sjy[sec].text}</td>
+      <td><a href="shoujuanyu.php?action=modify&id={$sjy[sec].id}">修改</a>  <a href="shoujuanyu.php?action=delete&id={$sjy[sec].id}" onclick="return confirm('你真的要删除吗？');return false;">删除</a></td>
+      </tr>
+    {/section} 
+    
+    {if $str!=''}
+    <tr>
+      <td colspan="5" align="center" class="showpage">{$str}</td>
+    </tr>
+    {/if}
+  </table>
+</div>
+</html>

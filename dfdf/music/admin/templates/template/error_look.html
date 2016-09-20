@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+{section loop=$look name=sec}
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>{$look[sec].id}</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>错误报告</a></div>
+  <table cellspacing="0">
+    <tr>
+      <td align="center">{$look[sec].text}<br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <input type="button" class="button" value="返回" onclick="history.back(-1)"/></td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
+{/section}

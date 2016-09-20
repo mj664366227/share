@@ -1,0 +1,128 @@
+<!--左边-->
+<!--[if IE 6]><style>.right{ margin-left:-5px}</style><![endif]-->
+<div class="left"> 
+  <!--音乐人开始-->
+  <div class="musician">
+    <div class="title_div" style="width:575px;"><span class="title">音乐人</span></div>
+    <ul>
+      {if $musician!='0'}
+      {foreach from=$musician item=a}
+      <li>
+        <div class="pic"> <a href="musician.php?skin=deafault&action=look&id={$a.id}" title="{$a.name}"><img src="{$base_url}thumbs/thumbs/cache/w184h184/admin/{$a.pic}" border="0" width="135" height="135" alt="{$a.name}"/></a> </div>
+        <div class="singer_info"> <span class="h2"><a href="musician.php?skin=deafault&action=look&id={$a.id}" title="查看{$a.name}的详细介绍">{$a.name}</a></span>
+          <p>{$a.introduce|truncate:160}</p>
+        </div>
+      </li>
+      {/foreach}
+      
+      {else}
+      <li style="font-size:16px">暂无记录...</li>
+      {/if}
+    </ul>
+    {if $page!=''} 
+    <!--分页-->
+    <div class="page">{$page}</div>
+    {/if} </div>
+  <!--音乐人结束--> 
+</div>
+<!--右边-->
+<div class="right"> 
+  <!--分类查找-->
+  <div class="sort">
+    <div class="title_div"><span class="title">分类查找</span></div>
+    <span class="h2">按地区</span>
+    <div class="type">
+      <ul>
+      {if $action=='all'}
+      <li><a href="musician.php?skin=deafault&action=all" title="全部"><font color="#ff0066">全部</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all" title="全部">全部</a></li>
+      {/if}
+      {if $action=='1'}
+      <li><a href="musician.php?skin=deafault&action=all&area=1" title="香港"><font color="#ff0066">香港</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&area=1" title="香港">香港</a></li>
+      {/if}
+      {if $action=='2'}
+      <li><a href="musician.php?skin=deafault&action=all&area=2" title="台湾"><font color="#ff0066">台湾</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&area=2" title="台湾">台湾</a></li>
+      {/if}
+      {if $action=='3'}
+      <li><a href="musician.php?skin=deafault&action=all&area=3" title="日本"><font color="#ff0066">日本</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&area=3" title="日本">日本</a></li>
+      {/if}
+      {if $action=='4'}
+      <li><a href="musician.php?skin=deafault&action=all&area=4" title="韩国"><font color="#ff0066">韩国</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&area=4" title="韩国">韩国</a></li>
+      {/if}
+      {if $action=='5'}
+      <li><a href="musician.php?skin=deafault&action=all&area=5" title="欧美"><font color="#ff0066">欧美</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&area=5" title="欧美">欧美</a></li>
+      {/if}
+      {if $action=='6'}
+      <li><a href="musician.php?skin=deafault&action=all&area=6" title="大陆"><font color="#ff0066">大陆</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&area=6" title="大陆">大陆</a></li>
+      {/if}
+      {if $action=='8'}
+      <li><a href="musician.php?skin=deafault&action=all&area=8" title="菲律宾"><font color="#ff0066">菲律宾</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&area=8" title="菲律宾">菲律宾</a></li>
+      {/if}
+      {if $action=='9'}
+      <li><a href="musician.php?skin=deafault&action=all&area=9" title="马来西亚"><font color="#ff0066">马来西亚</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&area=9" title="马来西亚">马来西亚</a></li>
+      {/if}
+      {if $action=='10'}
+      <li><a href="musician.php?skin=deafault&action=all&area=10" title="新加坡"><font color="#ff0066">新加坡</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&area=10" title="新加坡">新加坡</a></li>
+      {/if}
+      {if $action=='11'}
+      <li><a href="musician.php?skin=deafault&action=all&area=11" title="其他"><font color="#ff0066">其他</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&area=11" title="其他">其他</a></li>
+      {/if}
+      </ul>
+    </div>
+     <span class="h2">按字母</span>
+    <div class="type">
+      <ul>
+      {foreach from=$a_z item=a}
+      {if $action==$a}
+      <li><a href="musician.php?skin=deafault&action=all&letter={$a}" title="{$a}"><font color="#ff0066">{$a}</font></a></li>
+      {else}
+      <li><a href="musician.php?skin=deafault&action=all&letter={$a}" title="{$a}">{$a}</a></li>
+      {/if}
+      {/foreach}
+      </ul></div>
+  </div>
+  <!--广告开始-->
+  <div class="ad">
+    <div class="slide">
+      <div class="slide_content">
+        <div class="slide_nav"> {foreach from=$ad item=a}
+          {if $a.show==1}
+          <dd class="ddd" title="{$a.title}">{$a.show_id}</dd>
+          {/if}
+          {/foreach} </div>
+      </div>
+      <div class="slide_content_list">
+        <ul>
+          {foreach from=$ad item=a}
+          {if $a.show==1}
+          <li><a{if $a.url!=''} href="{$a.url}" title="{$a.title}" target="_blank"{/if}><img src="{$base_url}thumbs/?thumb=admin/{$a.picture}&w=320&h=150&q=85" border="0" width="320" height="150" alt="{$a.title}"/></a></li>
+          {/if}
+          {/foreach}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!--广告结束--> 
+</div>
+{include file="foot.html"}

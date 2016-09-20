@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>内容查看</title>
+</head>
+<body>
+{section loop=$content name=sec}
+<div class="main_right">
+<div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>{$content[sec].user}在{$content[sec].addtime}评论专辑《{$content[sec].title}》时说：</a></div>
+<table cellpadding="0">
+<tr align="center"><td>{$content[sec].text}<br><br><br><br><input type="button" class="button" value="返回" onclick="history.back(-1)"/></td></tr>
+{/section}
+</table>
+</div>
+</body>
+</html>

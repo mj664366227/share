@@ -1,0 +1,77 @@
+<style>
+.left, .right {
+	margin-left:20px
+}
+</style>
+<!--[if IE 6]><style>.left{ margin-left:10px}</style><![endif]-->
+<!--左边-->
+<div class="left">
+ {if $type=='content'} 
+  {*********************文章列表**************************} 
+  <!--每周热点-->
+  <div class="week">
+    <div class="title_div"><span class="title">更多每周热点</span></div>
+    {foreach from=$content item=s}
+    <div class="content">
+      <ul>
+        <li class="title"><a href="content.php?skin=deafault&id={$s.id}" title="{$s.title}">{$s.title|trim}</a></li>
+        <li class="time">{$s.time}</li>
+        <li><a href="content.php?skin=deafault&id={$s.id}" title="{$s.title}"><img src="thumbs/thumbs/cache/w575h270/admin/{$s.pic}" border="0" width="575" height="270" alt="{$s.title}"/></a></li>
+        <li class="text">{$s.content|truncate:165}</li>
+      </ul>
+    </div>
+    {/foreach} </div>
+  <!--每周热点-->
+  <div class="page">{$page}</div>
+  {/if}
+  
+  {if $type=='topic'} 
+    {*********************专题列表**************************} 
+  <!--专题列表-->
+  <div class="week">
+    <div class="title_div"><span class="title">更多音乐专题</span></div>
+    <div class="content">
+     <ul>
+        {foreach from=$content item=aa}
+        <li><a href="introduce.php?skin=deafault&action=content_list&id={$aa.id}" title="{$aa.name}">{$aa.name}</a></li>
+        <li style="margin-bottom:20px">{$aa.introduce|truncate:154}</li>
+        {/foreach}
+      </ul>
+    </div>
+   </div>
+  <!--每周热点-->
+  <div class="page">{$page}</div>
+  {/if} </div>
+<!--右边-->
+<div class="right"> 
+  <!--随机专辑-->
+  <div class="rand_album">
+    <div class="title_div"><span class="title">随机专辑推荐</span></div>
+    <ul>
+      {foreach from=$random item=s}
+      <li><a href="album.php?skin=deafault&id={$s.id}" title="{$s.artist}-{$s.title}"><img src="{$base_url}thumbs/thumbs/cache/w190h190/admin/{$s.picture}" border="0" width="100" height="100" alt="{$s.artist}-{$s.title}"/></a></li>
+      {/foreach}
+    </ul>
+  </div>
+  
+  <!--热门文章-->
+  <div class="rand">
+    <div class="title_div"><span class="title">热门文章</span></div>
+    <ul>
+      {foreach from=$hot item=s}
+      <li><a href="content.php?skin=deafault&id={$s.id}" title="《{$s.title|trim}》阅读次数：{$s.click}">{$s.title|trim}({$s.click})</a></li>
+      {/foreach}
+    </ul>
+  </div>
+  
+  <!--最新评论-->
+  <div class="rand">
+    <div class="title_div"><span class="title">最新评论</span></div>
+    <ul>
+      {foreach from=$read_comment item=s}
+      <li>{$s.name}：<a href="content.php?skin=deafault&id={$s.content_id}#ok{$s.id}" title="{$s.name}说：{$s.text}">{$s.text|truncate:42}</a></li>
+      {/foreach}
+    </ul>
+  </div>
+</div>
+{include file='foot.html'}

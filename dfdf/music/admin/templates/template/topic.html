@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<script type="text/javascript" src="../kindeditor/kindeditor.js"></script>
+<title>音乐专题制作</title>
+</head>
+<script type="text/javascript">
+KE.show({
+				id : 'topic_introduce',
+				items : [
+		'source',  'undo', 'redo', 'cut', 'copy', 'paste',
+		'plainpaste', 'wordpaste','justifyleft', 'justifycenter', 'justifyright',
+		'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+		'superscript', 
+		'title', 'fontname', 'fontsize','textcolor', 'bgcolor', 'bold',
+		'italic', 'underline', 'strikethrough', 'removeformat','image',
+		'flash', 'media'
+	],
+				 
+				afterCreate : function(id) {
+					KE.event.ctrl(document, 13, function() {
+						KE.util.setData(id);
+						document.forms['example'].submit();
+					});
+					KE.event.ctrl(KE.g[id].iframeDoc, 13, function() {
+						KE.util.setData(id);
+						document.forms['example'].submit();
+					});
+				}
+			});
+
+</script>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>添加新专题</a></div>
+  <table cellpadding="0">
+    <form action="topic.php?action=add_topic" method="post">
+      <tr>
+        <td class="table_left">专题名称：</td>
+        <td><input class="text" type="text" name="topic_name"/></td>
+      </tr>
+      <tr>
+        <td class="table_left">专题介绍：</td>
+        <td><textarea name="topic_introduce" style="width:100%;height:170px;display:block;"></textarea></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><input type="submit" class="button" value="添   加"/></td>
+      </tr>
+    </form>
+  </table>
+</div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>已有专题</a></div>
+  <table cellspacing="0">
+    <tr class="bold" align="center">
+      <td>专题编号</td>
+      <td width="50%">专题名称</td>
+      <td>发布时间</td>
+      <td>操作</td>
+    </tr>
+    {section loop=$topic name=sec}
+    <tr align="center" class="comment">
+      <td>{$topic[sec].id}</td>
+      <td><a href="topic.php?action=look&id={$topic[sec].id}">{$topic[sec].name}</a></td>
+      <td>{$topic[sec].time}</td>
+      <td><a href="topic.php?action=look&id={$topic[sec].id}">查看</a> <a href="topic.php?action=delete&id={$topic[sec].id}" onclick="return confirm('你真的要删除本专题及其所有文章吗？')">删除</a></td>
+    </tr>
+    {/section}
+    {if $str!=''}
+    <tr>
+      <td colspan="6" class="showpage" align="center">{$str}</td>
+    </tr>
+    {/if}
+  </table>
+</div>
+</body>
+</html>

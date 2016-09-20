@@ -1,0 +1,67 @@
+<div class="user">
+<div class="left">
+<div class="user_card">
+<img src="{$avatar}" width="160" height="160" {if $other}title="我的头像"{else}title="{$nick}的头像"{/if} border="0"/>
+<div class="username">{$nick}</div>
+<ul>
+<li>{if $other}<a href="{$base_url}api.php?skin=gray&action=user&mod=info&step=3" title="更换我的头像">更换头像</a>&nbsp;&nbsp;
+<a href="{$base_url}api.php?skin=gray&action=user&mod=info" title="修改我的资料">修改资料</a>{else}{if !$is_friend}<a href="{$base_url}api.php?skin=gray&action=user&mod=add_friend&uid={$uid}&from=index">加好友</a>{/if}</li>
+{/if}
+</ul>
+<div class="sign">
+{if !$sign}{$pms.sign}{else}{$sign}{/if}
+</div>
+<div class="sign_area">
+<textarea id="sign_content">{$sign}</textarea>
+</div>
+{if $other}
+<div class="edit_sign" title="修改签名">修改签名</div>
+<div class="edit_sign_submit" title="提交">提交</div>
+{/if}
+</div>
+{if $other}
+<div class="friend">
+{if $friend_list}
+<ul>
+{foreach from=$friend_list item=f}
+<li><a href="{$base_url}api.php?skin=gray&action=user&mod=index&look=true&uid={$f.friendid}" title="点击查看{$f.nick}的主页"><img src="{$f.avatar}" width="60" height="60" alt="{$f.friendid}" border="0"/></a></li>
+{/foreach}
+</ul>
+{if $friend_list_num >=6}
+<a href="{$base_url}api.php?skin=gray&action=user&mod=friend" style="float:right; margin:-10px 15px 15px 0; font-size:12px" title="更多好友...">更多好友...</a>
+{/if}
+{else}
+{$pms.no_friend}
+{/if}
+</div>
+
+{/if}
+</div>
+
+<div class="user_new_action">
+<div class="user_title">{if $other}最新动态{else}{$nick}的动态{/if}
+{if $other}
+<br/>
+{if $type==1}<span>所有动态</span>{else}<a href="{$base_url}api.php?skin=gray&action=user&mod=index&type=1" title="查看所有动态">所有动态</a>{/if}
+{if $has_friend}{if $type==2}&nbsp;<span>好友动态</span>{else}<a href="{$base_url}api.php?skin=gray&action=user&mod=index&type=2" title="查看好友动态">好友动态</a>{/if}{/if}&nbsp;
+{if $type==3}<span>我的动态</span>{else}<a href="{$base_url}api.php?skin=gray&action=user&mod=index&type=3" title="查看我的动态">我的动态</a>{/if}
+{/if}
+</div>
+<ul>
+{if $action}
+{foreach from=$action item=a}
+<li>
+<div class="user_avatar"><a href="{$base_url}api.php?skin=gray&action=user&mod=index&look=true&uid={$a.uid}" title="查看{$a.nick}的主页"><img src="{$a.avatar}" width="80" height="80" title="{$a.nick}" border="0"/></a></div>
+<div class="title"><a href="{$base_url}api.php?skin=gray&action=user&mod=index&look=true&uid={$a.uid}" title="查看{$a.nick}的主页">{$a.nick}</a>&nbsp;&nbsp;{$a.time}</div>
+<div class="action">{$a.action|trim}</div>
+</li>
+{/foreach}
+{else}
+<br/>这家伙很懒，神马都没留下。
+{/if}
+</ul>
+{if $page}
+<div class="page">{$page}</div>
+{/if}
+</div>
+</div>

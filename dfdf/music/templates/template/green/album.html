@@ -1,0 +1,56 @@
+<!--专辑界面-->
+{foreach item=s from=$song}
+<div class="album">
+<div class="album_title">{$s.title}</div>
+<div class="album_left">
+<div class="album_left_title">相似专辑</div>
+{foreach item=a from=$about_artist}
+<div class="about"><a href="album.php?id={$a.id}" title="{$a.artist}-《{$a.title}》"><img src="pic.php?src=admin/{$a.picture}&w=70&h=70&zc=0&q=100" width="70" height="70" alt="{$a.artist}"/ border="0"></a><div class="s"><a href="album.php?id={$a.id}" title="{$a.artist}-《{$a.title}》">&nbsp;&nbsp;{$a.artist}-<br>《{$a.title|truncate:16}》</a></div></div>
+{/foreach}
+</div>
+<div class="album_right">
+<div class="album_info">
+<div class="album_pic"><img src="pic.php?src=admin/{$s.picture}&w=190&h=190&zc=0&q=100" width="190" height="190" alt="{$s.title}"/></div>
+<div class="album_sth">
+<p>歌手名称：{$s.artist}</p>
+<p>歌曲语种：{$s.language}</p>
+<p>音乐风格：{$s.category}</p>
+<p>来源地区：{$s.area}</p>
+<p>发行时间：{$s.time}</p>
+<p>唱片公司：{$s.company}</p>
+</div>
+</div>
+
+<div class="clear"></div>
+<div class="album_intro">
+<P>专辑简介</P>
+<br>
+<p>{$s.text}</p>
+</div>
+<div class="clear"></div>
+<ul class="album_playlist">
+<form>
+{foreach item=m from=$songlist}
+
+<li>
+<input type="checkbox" class="check" name="chk" value="{$m.id}" src="{$m.url}" style="display: none;" checked="checked"/>
+<div class="pid">{$m.pid}</div>
+<div class="ptitle">{$m.title}</div>
+<div class="list_btn"><a href="player.php?id={$m.id}" title="试听《{$m.title}》" target="_blank">
+<img src="pic.php?src=templates/template/deafault/images/try.png&w=63&h=25&zc=0&q=100" width="63" height="25" alt="试听" border="0"/></a></div><div class="list_btn">
+<a thunderHref="{$m.url}" title="下载《{$m.title}》" onClick="return OnDownloadClick_Simple(this,2,4)">
+<!--<a href="{$m.url}" title="下载《{$m.title}》">-->
+<img src="pic.php?src=templates/template/deafault/images/down.png&w=63&h=25&zc=0&q=100" width="63" height="25" alt="下载" border="0"/></a></div>
+</li>
+
+{/foreach}
+</form>
+<li class="other"><!--<div class="other_btn" id="selectall" title="全选">全选</div>  <div class="other_btn" id="selectnotall" title="反选">反选</div>--> 
+<div class="btn" id="down"><img src="pic.php?src=templates/template/deafault/images/down_select.png&w=125&h=25&zc=0&q=100" border="0" width="125" height="25" alt="下载整张专辑" title="下载整张专辑"/></div>
+<a href="player.php?album={$s.id}" target="_blank"><div class="btn" id="play"><img src="pic.php?src=templates/template/deafault/images/play_select.png&w=125&h=25&zc=0&q=100" border="0" width="125" height="25" alt="播放整张专辑" title="播放整张专辑"/></div></a>
+</li>
+</ul>
+</div>
+</div>
+{/foreach}
+{include file="foot.html"}

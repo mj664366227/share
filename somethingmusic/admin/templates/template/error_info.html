@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>错误报告</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>错误报告</a></div>
+  <table cellspacing="0">
+    <tr class="bold" align="center">
+      <td>系统序号</td>
+      <td>错误内容</td>
+      <td>提交时间</td>
+      <td>操作</td>
+    </tr>
+    {section loop=$error_info name=sec}
+    <tr align="center">
+      <td>{$error_info[sec].id}</td>
+      <td class="comment"><a href="error_look.php?id={$error_info[sec].id}" title="{$error_info[sec].text}">{$error_info[sec].text|truncate:100}</a></td>
+      <td>{$error_info[sec].addtime}</td>
+      <td class="comment"><a href="error_delete.php?id={$error_info[sec].id}" onclick="return confirm('你真的要删除吗？')">删除</a></td>
+    </tr>
+    {/section}
+    {if $str!=''}
+    <tr>
+      <td colspan="4" class="showpage" align="center">{$str}</td>
+    </tr>
+    {/if}
+  </table>
+</div>
+</body>
+</html>

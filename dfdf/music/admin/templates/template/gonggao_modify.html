@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>修改公告</title>
+</head>
+<body>
+<div class="main_right">
+<div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>修改公告</a></div>
+<table cellspacing="0">
+<form action="gonggao_modify_submit.php" method="post">
+{section loop=$modify name=sec}
+<tr><td class="table_left">公告内容：</td><td><textarea cols="80" rows="12"  name="gonggao">{$modify[sec].gonggao}</textarea><input type="text" value="{$modify[sec].id}" name="id" style="display:none"/></td></tr>
+<tr><td class="table_left"></td><td><input type="submit" class="button" value="添  加"/></td></tr>
+{/section}
+</table>
+</form>
+</div>
+</body>
+</html>

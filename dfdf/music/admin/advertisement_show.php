@@ -1,0 +1,15 @@
+<?php
+session_start();
+include "config.php";//载入系统配置文件
+$login=$_SESSION['login'];
+if($login=="")
+{
+	header("location:index.php");
+}
+else
+{
+    $id=$_GET['id'];
+	$conn->Execute("update `somethingmusic_ad` set `show`='1' where `id`='$id'")or die('error!');
+	tips('显示成功！');
+}
+?>

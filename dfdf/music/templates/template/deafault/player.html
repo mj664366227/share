@@ -1,0 +1,63 @@
+<!--整个播放器-->
+<div id="player">
+<!--播放器各功能模块-->
+<div id="pic">
+<!--logo-->
+<div id="player_logo"><img src="pic.php?src=templates/template/deafault/images/player_logo.png&w=200&h=40&zc=0&q=100" width="200" height="40" alt="logo"/></div>
+<!--图片-->
+{foreach item=p from=$pic}
+<div id="player_pic"><img src="pic.php?src=admin/{$p.picture|escape:'hex'}&w=170&h=170&zc=0&q=100" width="170" height="170" align="eason"/></div>
+{/foreach}
+<!--显示歌手-->
+<div id="singer"><div class="common">歌手</div><span></span></div>
+<!--显示歌名-->
+<div id="songname"><div class="common">歌曲</div><span></span></div>
+<!--显示专辑-->
+<div id="album"><div class="common">专辑</div><span></span></div>
+<div id="player_function">
+<!--播放-->
+<div id="player_play"><img src="pic.php?src=templates/template/deafault/images/play.png&w=45&h=40&zc=0&q=100" width="45" height="40" alt="play"/></div>
+<div id="player_pause"><img src="pic.php?src=templates/template/deafault/images/pause.png&w=45&h=40&zc=0&q=100" width="45" height="40" alt="pause" /></div>
+<div id="player_prev"><img src="pic.php?src=templates/template/deafault/images/prev.png&w=45&h=40&zc=0&q=100" width="45" height="40" alt="prev"/></div>
+<div id="player_next"><img src="pic.php?src=templates/template/deafault/images/next.png&w=45&h=40&zc=0&q=100" width="45" height="40" alt="next"/></div>
+<div id="player_stop"><img src="pic.php?src=templates/template/deafault/images/stop.png&w=45&h=40&zc=0&q=100" width="45" height="40" alt="stop"/></div>
+<!--音量-->
+<div id="player_volumn">
+<div id="player_volume_min"><img src="templates/template/deafault/images/min.png" width="45" height="40" alt="min" /></div>
+<div id="player_volume_bar">
+<div id="player_volume_bar_value"></div>
+</div>
+<div id="player_volume_max"><img src="templates/template/deafault/images/max.png" width="45" height="40" alt="min" /></div>
+</div>
+</div>
+<div class="clear"></div>
+<!--播放进度-->
+<div id="player_progres">
+<div id="player_progress">
+<div id="player_progress_load_bar" class="jqjp_buffer"> 
+<div id="player_progress_play_bar"></div> 
+</div>
+</div>
+</div>
+<div id="jquery_jplayer"></div>
+<div class="clear"></div>
+<!--播放列表-->
+<div id="playlist_list">
+<ul class="playlist_content">
+{foreach item=s from=$single}
+<li jplayer="{$s.url}" songer="{$s.artist}" album="{$s.album}" songname="{$s.title}"><span>{$s.title}</span></li>
+{/foreach}
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="clear"></div>
+<div class="foot">
+<span>Copyright © 2009-2010 <a href="http://lib.gzauto.edu.cn/index" target="_blank" title="图书馆主页">华南理工大学广州汽车学院图书馆</a> 保留全部版权 | 技术支持：<a href="http://lib.gzauto.edu.cn/libmill" target="_blank" title="访问我们的团队博客">极品飞车坊</a> | <a href="http://dh.gzauto.edu.cn/join" target="_blank" title="加入我们的团队">加入我们</a> | 用户交流群：79041971</span>
+</div>
+<script type="text/javascript" src="templates/template/deafault/js/jquery-1.5.min.js"></script>
+<script type="text/javascript" src="templates/template/deafault/js/player_functions.js"></script>
+<script type="text/javascript" src="templates/template/deafault/js/jquery.jplayer.js"></script>
+</body>
+</html>

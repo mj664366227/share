@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>发布公告</title>
+</head>
+
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>发布公告</a></div>
+  <table cellspacing="0">
+    <form action="adgonggao.php" method="post">
+      <tr>
+        <td class="table_left">公告内容：</td>
+        <td><textarea cols="80" rows="12"  name="adgonggao">点击这里添加公告...</textarea></td>
+      </tr>
+      <tr>
+        <td class="table_left"></td>
+        <td><input type="submit" class="button" value="添  加"/></td>
+      </tr>
+    </form>
+  </table>
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>已添加的公告</a></div>
+  <table cellspacing="0" class="noticelist">
+    <tr align="center" class="bold">
+      <td>显示序号</td>
+      <td width="50%">公告内容</td>
+      <td>添加时间</td>
+      <td>首页状态</td>
+      <td>操作</td>
+    </tr>
+    {section loop=$gonggaoarr name=sec}
+    <tr align="center">
+      <td>{$gonggaoarr[sec].id}</td>
+      <td>{$gonggaoarr[sec].gonggao|truncate:100}</td>
+      <td>{$gonggaoarr[sec].time}</td>
+      <td>{if $gonggaoarr[sec].show==0}<font style="color:#00F">隐藏</font>{elseif $gonggaoarr[sec].show==1}<font>显示</font>{/if}</td>
+      <td><a href="gonggao_modify.php?id={$gonggaoarr[sec].id}">修改</a> <a href="gonggao_delete.php?id={$gonggaoarr[sec].id}" onclick="return confirm('确认删除吗？')">删除</a> {if $gonggaoarr[sec].show==1}<a href="hidegonggao.php?id={$gonggaoarr[sec].id}&&show={$gonggaoarr[sec].show}" title="在前台隐藏此公告">隐藏</a>{/if}{if $gonggaoarr[sec].show==0}<a href="showgonggao.php?id={$gonggaoarr[sec].id}&&show={$gonggaoarr[sec].show}" title="在前台显示此公告">显示</a>{/if}</td>
+    </tr>
+    {/section} 
+    
+    {if $str!=''}
+    <tr>
+      <td colspan="5" align="center" class="showpage">{$str}</td>
+    </tr>
+    {/if}
+  </table>
+</div>
+</html>

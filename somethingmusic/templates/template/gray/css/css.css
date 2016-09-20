@@ -1,0 +1,371 @@
+@charset "utf-8";/*全局*/
+*{margin:0;font-family:'Microsoft YaHei','宋体'}
+body{background-color:#eee}
+.body{width:980px;margin:15px auto}
+.body div,.header #submit,.header #search_input,ul,ul li{float:left}
+ul,li{padding:0;list-style:none}
+.clear{clear:both}
+.img,.pause,.play,.a,.b{cursor:pointer}
+#slide_{width:350px;float:left;margin-left:20px; height:160px}
+/*小字条消息*/
+.pms{font-size:12px;color:#999;text-align:center}
+.pms a{text-decoration:none;color:#999}
+.pms a:hover{text-decoration:underline}
+/*版头*/
+.header{width:100%}
+/*搜索框*/
+.result{z-index:1000}
+.header .search{margin-left:12px}
+.header #search_input{width:312px;border:#e5e5e5 solid 1px;height:20px;line-height:20px}
+.header #submit{margin-left:5px}
+/*ajax搜索结果*/
+.ajax_search_result,.result{width:311px;background-color:#eee;z-index:1000}
+.ajax_search_result{float:left}
+.result{position:relative;top:25px;left:-342px;border:#e5e5e5 1px solid;display:none}
+.ajax_search_result a{text-decoration:none;font-size:12px;color:#000}
+.a,.b{background-color:#eee}
+/*顶部链接*/
+.top{width:275px;height:12px;margin-left:130px}
+.top ul li{height:15px;width:65px;cursor:pointer;text-align:center}
+.top a{font-size:12px;text-decoration:none}
+.vod{color:#a2d8ea}
+.dh{color:#bad19f}
+.lib{color:#f7cd96}
+.gzauto{color:#e7999a}
+/*导航*/
+.nav{border-bottom:#e8e8e8 1px solid;border-top:#e8e8e8 1px solid;height:35px;margin-top:25px;width:100%}
+.nav ul li{height:15px;width:45px;cursor:pointer;margin:11px 30px}
+.nav a{font-size:14px;text-decoration:none;color:#000}
+.nav a:hover{color:#d06e6f}
+.index_out{background-image:url(../images/index_out.png)}
+.radio_out{background-image:url(../images/radio_out.png)}
+.resources_out{background-image:url(../images/resources_out.png)}
+.musician_out{background-image:url(../images/musician_out.png)}
+.introduce_out{background-image:url(../images/introduce_out.png)}
+.index,.index_on{background-image:url(../images/index_on.png)}
+.radio_on{background-image:url(../images/radio_on.png)}
+.resources,.resources_on{background-image:url(../images/resources_on.png)}
+.musician,.musician_on{background-image:url(../images/musician_on.png)}
+.introduce,.introduce_on{background-image:url(../images/introduce_on.png)}
+/*登录*/
+.login{ float:right; width:450px; text-align:right; margin-top:5px}
+.login font{ font-size:12px; cursor:text}
+.login ul li{height:35px;width:390px;text-align:right;margin-top:8px; cursor: default}
+.login a{color:#000;text-decoration:none;font-size:12px}
+.login a:hover{color:#d06e6f;text-decoration:none}
+/*幻灯片*/
+.slide{width:980px;height:300px;position:relative;margin-top:20px}
+.slide a{color:#FFF;text-decoration:none}
+.slide .pointer{cursor:pointer}
+.slide .slide_nav{position:absolute;top:5px;right:5px;z-index:1000}
+.slide .slide_nav dd{background-image:url(../images/white.png);background-repeat:no-repeat;font-size:12px;width:10px;height:10px;margin-right:5px;float:left}
+.slide .slide_nav .mouseover{width:10px;height:10px;background-image:url(../images/blue.png);background-repeat:no-repeat}
+.slide .slide_nav .onmouseover{width:10px;height:10px;background-image:url(../images/blue.png);background-repeat:no-repeat}
+.slide ul li{list-style:none;position:absolute;display:none}
+.slide ul li span{width:100%;background-image:url(../images/black.png);color:#FFF;position:absolute;left:0px;top:200px;height:70px}
+.slide .slide_content_list span dd,.slide .slide_content_list span dt{margin:3px 3px 5px 12px;word-spacing:15px}
+.slide .slide_content_list span dd{font-size:24px}
+.slide .slide_content_list span dt{font-size:13px;line-height:14px;word-break:break-all}
+.slide .slide_content_list a:hover{text-decoration:underline}
+/*最近更新*/
+.new,.hot,.ad,.tui{margin-top:20px}
+.new{width:100%}
+.new .title{border-bottom:#e8e8e8 1px solid;height:30px;width:900px}
+.new .more,.tui .more{float:right}
+.new a{font-size:12px;text-decoration:none}
+.new li{margin:8px 0 10px 5px;width:190px}
+.new li a{line-height:20px}
+.new li #artist{color:#959595;width:100%}
+.new li #title{color:#d06e6f;width:100%}
+.new li #artist:hover{color:#000}
+.new li #title:hover{color:#a44041}
+/*热门歌曲*/
+.hot,.hot li,.hot .title{width:600px}
+.hot,.hot a{text-decoration:none}
+.hot .title,.hot li{border-bottom:#dcdcdc 1px solid}
+.hot .title{height:30px}
+.hot .info_img{height:52px}
+.hot li{height:65px}
+.hot .info_artist,.hot .info_song{width:430px}
+.hot .info_number,.hot .info_artist{font-size:14px}
+.hot .info_song{font-size:12px}
+.hot .info_number{width:50px;text-align:center;line-height:60px}
+.hot .info_img{margin:7px 10px 0 10px}
+.hot .info_artist{margin-top:10px}
+.hot .info_song,.hot .info_artist{height:28px;line-height:28px}
+.hot .info_artist a,.hot .info_number{color:#d06e6f}
+.hot .info_song a{color:#959595}
+.hot .info_artist a:hover{color:#a44041}
+.hot .info_song a:hover{color:#000}
+/*播放模块*/
+.img,.play,.pause{width:45px;height:45px;margin-top:-20px}
+.img,.play{background:url(../images/play.png)}
+.pause{background:url(../images/pause.png)}
+/*广告*/
+.ad{width:360px;height:150px}
+.ad{margin-left:20px}
+/*热点推荐*/
+.tui .title{width:310px}
+.tui .title,.tui .more{border-bottom:#dcdcdc 1px solid;height:25px}
+.tui a{color:#959595;text-decoration:none;font-size:14px}
+.tui a:hover{color:#000}
+.tui span{font-size:12px;color:#959595;line-height:20px}
+#tui_img{margin-top:-10px}
+#detail{float:right;font-size:12px}
+/*分类查询*/
+.sort{width:100%;background:#f8f8f8;border-top:#eeeeee dotted 1px;border-left:#eeeeee dotted 1px;border-right:#eeeeee dotted 1px;margin-top:20px}
+.sort ul li{height:35px;border:#eeeeee dotted 1px;width:100%}
+.sort .title{width:135px;text-align:center;padding-top:10px}
+.sort .type{width:845px}
+.sort .type ul li{float:left;width:auto;margin-right:10px;line-height:35px;border:none }
+.sort a{color:#959595;text-decoration:none;font-size:14px}
+.sort a:hover{color:#e7999a}
+/*专辑列表*/
+.new .special{width:100%}
+.new .special{border-bottom:#e5e5e5 1px solid;height:30px}
+.new .special a,.new .special span{color:#959595;text-decoration:none;font-size:14px}
+.new .special a:hover{color:#e7999a}
+.new .page{width:100%}
+/*分页*/
+.page{width:100%;text-align:center;margin-top:10px}
+.page a,.page font{font-size:14px;padding:2px 5px 2px 5px}
+.page a{color:#969696;text-decoration:none;margin:5px 5px 5px 5px}
+.page font,.page a:hover{color:#FFF;background:#e7999a}
+.page font{margin-left:-8px}
+/*专辑*/
+.album,.album .album_intro,.album .song{width:600px;margin-top:20px}
+.album_card{background:#f7f7f7;height:230px}
+.album_card .album_pic{margin:20px 20px;width:190px;height:190px}
+.album_card .album_pic,.album_card .album_detail{float:left}
+.album_card .album_detail,.album_card .album_details{width:300px;margin-top:20px;line-height:28px}
+.album_card .album_detail span{color:#e7999a;font-size:14px}
+.album_card .album_detail p{font-size:12px}
+.album_card .album_detail p font{color:#a0a0a0;font-size:12px}
+.album .album_like_on,.album .album_like_out,.album .album_like{width:50px;height:20px;z-index:1000;margin-top:23px;margin-right:20px;cursor:pointer}
+.album .album_like_on,.artist .album_like_on{display:none}
+.album .album_like_on,.album .album_like,.artist .artist_like_on,.artist .artist_like{background:url(../images/like_on.png)}
+.album .album_like_out,.artist .artist_like_out{background:url(../images/like_out.png)}
+.album .album_intro{font-size:12px}
+.album .album_intro .title,.album .song .title{border-bottom:#dcdcdc solid 1px;height:25px;width:100%}
+.album .album_intro .title font{color:#e7999a;font-size:12px}
+.song ul li{width:100%;height:40px;background:#eee;border-bottom:#dcdcdc solid 1px;font-size:14px;line-height:40px}
+.song .songid{color:#aaa;width:60px;text-align:center}
+.song .songtitle{color:#d06e6f;width:420px}
+.songdowntext,.songplaytext,.songpausetext{color:#aaa;font-size:12px}
+.songdown,.songimg,.songpause,.songplay{width:30px;height:30px;cursor:pointer;margin-top:5px}
+.songdown{background:url(../images/songdown.png)}
+.songimg{background:url(../images/songplay.png)}
+.songpause{background:url(../images/songpause.png)}
+.songplay{background:url(../images/songplay.png)}
+/*喜欢这张专辑的其他人*/
+.otherlike{height:170px}
+.otherlike,.maybelike,.musician_sort,.musician_sort{margin-top:20px;width:350px;margin-left:20px}
+.otherlike .title{border-bottom:#dcdcdc solid 1px;height:25px;width:82%}
+.otherlike .next{border-bottom:#dcdcdc solid 1px;;height:25px;width:18%}
+.otherlike ul li{margin:10px 4px 0 5px}
+.onlyone,#onlyone{margin-top:70px;text-align:center;width:350px;color:#e7999a;font-size:12px}
+/*可能感兴趣的专辑*/
+.maybelike .title{border-bottom:#dcdcdc solid 1px;height:25px;width:82%}
+.maybelike .next{border-bottom:#dcdcdc solid 1px;height:25px;width:18%}
+.maybelike ul li,.maybelike_on,.maybelike_out{width:350px;height:80px;margin-top:10px;cursor:pointer;font-size:14px}
+.maybelike_out{background:url(../images/maybelike_out.png)}
+.maybelike_on{background:url(../images/maybelike_on.png)}
+.maybelike ul li img{float:left}
+.maybelike ul li div{width:240px;margin-left:30px;margin-top:15px}
+.maybelike ul li .name{color:#e7999a}
+.maybelike ul li .artist{color:#9e9e9e}
+.maybelike ul li a{text-decoration:none}
+/*音乐人列表*/
+.musician_list{width:590px;margin-bottom:10px}
+.musician_list ul li{margin-top:20px}
+.musician_list ul li .pic{width:140px}
+.musician_list ul li .singer_info{margin-left:10px;width:430px;line-height:21px}
+.musician_list ul li .singer_info a{color:#e7999a;text-decoration:none}
+.musician_list ul li .singer_info a:hover{color:#a44041}
+.musician_list ul li .singer_info p{font-size:12px}
+/*音乐人查找*/
+.musician_sort{background:#f8f8f8;padding:10px 10px 10px 10px}
+.musician_sort .title{width:350px}
+.musician_sort ul li{margin-bottom:10px;width:100%}
+.musician_sort .type{margin-top:5px}
+.musician_sort .type ul li{margin:5px;border:#f8f8f8 1px solid;width:auto}
+.musician_sort a{color:#c9c9c9;text-decoration:none;font-size:14px}
+.musician_sort a:hover{color:#e7999a}
+/*音乐人单页*/
+.artist{width:560px;margin-top:20px}
+.artist #gray{background:#f7f7f7;padding:15px;position:relative}
+.artist .artist_details{width:320px;margin-left:15px;line-height:25px;height:150px;overflow:hidden}
+.artist .artist_like_out,.artist .artist_like_on,.artist .artist_like{position:absolute;width:50px;height:20px;z-index:1000;top:20px;left:490px;cursor:pointer}
+.artist .details{text-align:right;width:300px;line-height:25px;margin-top:5px;float:right}
+.artist .details a{color:#e7999a;font-size:14px;text-decoration:none}
+.artist .details a:hover{text-decoration:underline}
+/*其他歌手*/
+.maybelike .ul{margin-top:10px;height:225px;margin-bottom:5px}
+.maybelike .ul li{margin:3px;width:110px;height:110px;text-align:center}
+/*发行专辑*/
+.publish{width:560px;margin-top:20px; height:auto}
+.publish .title{border-bottom:#dcdcdc 1px solid;width:560px;height:30px}
+.publish .zhuanji{width:560px;margin-top:5px}
+.publish .zhuanji ul li{margin:5px}
+/*文章列表*/
+.content,.contents,.say{width:570px;margin-top:20px}
+.content .title,.contents .title{width:100%;border-bottom:#dcdcdc solid 1px;height:25px}
+.content .ul li{border-bottom:#d2d2d2 1px dashed;margin-left:5px;padding-bottom:10px;font-size:14px;color:#626262;line-height:25px}
+.content .ul li img{margin:10px}
+.content .ul li .info{width:100%}
+.content .ul li .info .content_title{width:435px;margin-left:10px;margin-top:10px}
+.content .ul li .info .time{color:#a0a0a0;font-size:12px;margin-top:10px}
+.content .ul li a{color:#88d0e9;text-decoration:none}
+.content .ul li a:hover{color:#1fb5e9}
+.sss{width:550px;margin-left:10px}
+/*热门文章*//*评论*/
+.comment{margin-top:40px;width:350px;margin-left:20px}
+.comment .title{border-bottom:#dcdcdc solid 1px;height:25px;width:350px}
+.comment ul li{width:350px;height:40px;border-bottom:#d2d2d2 1px dotted;line-height:40px;cursor:pointer;padding-left:5px}
+.comment .ls, .comment a{font-size:12px;text-decoration:none;color:#626262}
+.comment a:hover{color:#e7999a}
+/*文章内容*/
+.contents .title{margin-bottom:10px}
+.contents .title span{font-size:14px;color:#88d0e9}
+.contents .title font{font-size:12px;color:#a0a0a0}
+.contents img{width:570px}
+/*发布评论*/
+.say{font-size:12px}
+/*评论列表*/
+.comment__{margin-top:20px}
+.comment__ .comment_div{font-size:14px;text-align:left;padding:10px 10px 10px 10px;border:#CCC 1px solid;margin-bottom:10px;background:#fff;width:550px}
+.comment__ .title_div,.say .title_div{margin-bottom:10px;margin-top:10px;width:570px;border-bottom:#dcdcdc 1px solid;height:25px}
+.comment__ .comment_div .comment_div_left{width:570px;text-align:left;height:50px;line-height:22px }
+.comment__ .comment_div .comment_div_left img{margin-right:5px}
+.comment__ .comment_div .comment_text{width:550px;margin-top:5px;font-size:14px;padding:5px 5px 5px 5px }
+/*分享*/
+.share{font-size:12px;color:#d06e6f}
+.share img{width:16px;height:16px}
+/*电台*/
+.radio{width:100%}
+.radio .p{font-size:12px;color:#959595;width:980px;text-align:left;margin:0 auto}
+.radio .p div{width:650px;margin-left:30px}
+.radio .radio_body{height:160px;background:#FFF;margin-top:160px}
+.radio .radio_core{width:980px;margin:0 auto;height:190px;position:relative;top:-60px}
+.radio .radio_pic{width:190px;height:190px;float:left}
+.radio .radio_right_top{width:780px;height:60px;float:left}
+.radio .radio_right_top_title{height:30px;width:100%;width:470px;float:left}
+.radio .radio_right_top_title span{font-size:14px;margin-left:30px}
+.radio .radio_right_top_title .song_title{color:#e7999a}
+.radio .radio_right_top_album{padding-left:30px;font-size:12px;width:440px;color:#959595;height:30px;float:left}
+.radio .radio_right_top_album a{color:#959595; text-decoration:none}
+.radio .radio_right_top_album a:hover{ text-decoration:underline}
+.radio .radio_right_middle{width:780px;height:110px;float:left;}
+.radio .radio_right_middle .radio_play,.radio .radio_right_middle .radio_pause,.radio .radio_right_middle .radio_next{cursor:pointer}
+.radio .radio_right_middle .radio_play,.radio .radio_right_middle .radio_pause{float:left;margin-top:40px;margin-left:30px}
+.radio .radio_right_middle .radio_play{display:none}
+.radio .radio_right_middle .radio_next{float:left;margin-top:40px;margin-left:20px}
+.radio .radio_right_bottom{ float:left; width:640px; text-align:right; font-size:12px; color:#e7999a;}
+.radio .channel{width:230px;height:30px;float:left; margin-left:450px; margin-top:-159px}
+.radio .channel .left,.radio .channel .right{float:left;height:30px;text-align:center;line-height:30px;cursor:pointer}
+.radio .channel .left{width:160px;background:#FFFFFF;z-index:2}
+.radio .channel .right{width:70px;background:#e5e5e5;color:#e7999a}
+.radio .channel .channel_list li{width:160px;background:#e5e5e5;z-index:9999;border-bottom:#FFF 1px solid;height:30px;font-size:18px}
+.radio .channel .channel_list .last_channel{border-bottom:none}
+.radio .channel .channel_list .current,.radio .channel .channel_list .onmouse{color:#69cae4;background:#FFF}
+.radio .channel .channel_list .common{color:#bfbfbf;display:none}
+.radio #close{display:none}
+#player_progres{height:3px;width:450px;margin-top:55px;float:left}
+#player_progress_load_bar{width:450px;height:3px;background-color:#e7999a;cursor:pointer;margin-top:13px;margin-left:20px;float:left;margin-bottom:3px}
+#player_progress_play_bar{float:left;background-color:#dedede;cursor:pointer;width:0px;height:3px}
+#play_time{font-size:12px;float:left;margin-left:438px;color:#e7999a}
+/*注册*/
+.register{ width:710px;}
+.register,.other_login{margin-top:20px;float:left}
+.other_login{ display:none}/*暂时不做QQ、新浪*/
+.register .title,.other_login .title{ border-bottom:#dcdcdc 1px solid; width:100%; height:30px; font-size:18px; margin-bottom:20px;}
+.register .title,.register tr td,.other_login .title{color:#7dcfeb}
+.register table{ float:left}
+.register tr td{ font-size:14px; padding:5px; height:20px}
+.register .text{ border:#d2d2d2 1px solid; width:580px; height:25px; color:#999999}
+.register .btn,.step .btn,.user_album .btn{ background:#8ad1e9;border: none; cursor:pointer; color:#FFFFFF; height:35px; font-size:16px; margin-right:10px;}
+/*其他方式登录*/
+.other_login{ width:210px; margin-left:20px}
+.other_login ul li{ margin-bottom:30px}
+/*msg*/
+.msg{ width:960px; margin:60px auto;text-align:center}
+.msg a{ color:#7dcfeb; text-decoration:none; font-size:16px}
+.msg a:hover,.user a:hover{ text-decoration:underline}
+/*用户部分*/
+.user,.user .user_avatar_{ margin-top:20px; width:100%}
+.user a,.user_nav a{ color:#7dcfeb; text-decoration:none; font-size:14px}
+.user .user_title{color:#d06e6f; font-size:16px;border-bottom:#d6d6d6 1px dashed; width:100%; padding-bottom:10px; line-height:25px}
+.user .user_title span{ color:#000000; font-size:14px}
+/*修改头像*/
+.user .user_avatar_{ text-align:center}
+/*用户卡片*/
+.user .left,.user .left .user_card,.user .left .friend{ width:205px;}
+.user .left .user_card,.user .left .friend{background:#f8f8f8; border:#e6e6e6 1px solid; text-align:center}
+.user .user_card .username{ width:100%; text-align:center; color:#d06e6f; font-size:14px; margin:5px 0 0 0}
+.user .user_card img {margin:20px 0 0 0}
+.user .user_card ul li{ width:205px; text-align:center; border-bottom:#d6d6d6 1px dashed;border-top:#d6d6d6 1px dashed; margin:5px 0 0 0; height:25px}
+.user .sign{ font-size:12px; padding:20px; text-align:left; width:83%;}
+.user .edit_sign,.user .edit_sign_submit{ font-size:12px; color:#FFF; background:#d06e6f; padding:3px; cursor:pointer; margin:0 20px 20px 20px; float:right}
+.user .sign_area,.user .edit_sign_submit{ display:none}
+.user .sign_area textarea{ overflow-x: hidden;overflow-y: hidden; margin:20px; width:160px; height:100px;}
+/*最新动态*/
+.user .user_new_action{margin-left:20px; width:720px;}
+.user .user_new_action ul li{ min-height:100px; margin:5px;width:720px; margin-top:20px;border-bottom:#d6d6d6 1px dashed;}
+.user .user_new_action ul li a{ color:#d06e6f}
+.user .user_new_action ul li .avatar{ width:80px; height:80px}
+.user .user_new_action ul li .title,.user .user_new_action ul li .action{ margin-left:15px}
+.user .user_new_action ul li .title{ background-color:#e8e8e8; width:610px; font-size:12px; padding-left:10px}
+.user .user_new_action ul li .action{ font-size:14px; margin-top:10px; width:610px; padding-bottom:5px}
+.user .user_new_action .page a,.user .user_new_action .page font{font-size:14px;padding:2px 5px 2px 5px}
+.user .user_new_action .page a{color:#969696;text-decoration:none;margin:5px 5px 5px 5px}
+.user .user_new_action .page font,.user .user_new_action .page a:hover{color:#FFF;background:#e7999a}
+/*个人设置*/
+.step,.step .step_body,.friend_list,.user_album{ width:590px; margin:10px 0 0 0;}
+.step .step_body{ text-align:center}
+.step .step_body table tr td{ color:#8ad1e9}
+.step .step_body table tr td .text{ border:#d2d2d2 1px solid; width:470px; height:25px; color:#999999}
+.step .step_nav{ width:100%; border-bottom:#dcdcdc 1px solid; height:30px}
+.step .step_nav li{ width:147px; text-align:center; color:#bfbfbf}
+.step .step_nav li a{ color:#cbcbcb; text-decoration:none}
+.step .step_body .style{ color:#8ad1e9; font-size:14px; width:580px; text-align:left; margin:10px 0 0 0}
+.step .step_body .list li{ padding:2px; margin:5px 5px 0 0; font-size:14px; cursor:pointer}
+.step .step_body .list li a{color:#999; text-decoration:none}
+.step .step_body .list li a:hover{color:#d06e6f; text-decoration:none}
+.step .step_body #music_style,.step .step_body #music_srtist{text-align:left; margin:3px 0 0 0;}
+/*好友*/
+.user .left .friend{ margin:20px 0 0 0; font-size:14px}
+.user .left .friend ul{ margin:10px 5px}
+.user .left .friend ul li{ margin:2px;}
+.friend_list{ height:630px}
+.friend_list ul li{width:100%; margin:0 0 10px}
+.friend_list ul li .avatar{ width:100px; height:100px;}
+.friend_list ul li .info{ width:480px}
+.friend_list ul li .info .nick{ width:470px; margin:0 0 0 8px; padding:1px 0 0 5px; background:#e8e8e8; font-size:14px;}
+.friend_list ul li .info .nick #delete_friend{ display:none; margin-left:5px}
+.friend_list ul li .info .nick #delete_friend a{ text-decoration:none; color:#999;}
+.friend_list ul li .info .nick a{color:#d06e6f;text-decoration:none;}
+.friend_list ul li .info .nick a:hover,.friend_list ul li .info .nick #delete_friend a:hover{ text-decoration:underline}
+.friend_list ul li .info .content{ width:470px; font-size:14px; margin:5px 0 0 8px;padding:1px 0 0 5px; }
+.friend_list ul li .info .content ul li{ margin-bottom:1px; width:480px}
+.friend_introduce{  width:370px; margin-left:20px; height:200px;  margin-top:10px;}
+.friend_introduce ul li{ margin:2px; width:70px; height:90px; text-align:center; margin-bottom:10px}
+.friend_introduce ul li a{ font-size:12px; text-decoration:none; color:#d06e6f}
+.friend_introduce ul li a:hover{ text-decoration:underline}
+/*用户自定义专辑*/
+.user_album{ min-height:400px;}
+.user_album .user_album_info{ padding:5px; font-size:14px; float:left; width:100%}
+.user_album .user_album_info .td{ color:#8ad1e9; width:60px}
+.user_album .user_album_info .close{cursor:pointer; font-size:14px;}
+.user_album .user_album_info .close:hover{ color:#8ad1e9}
+.user_album .text{ border:#d2d2d2 1px solid; height:22px; color:#999999}
+.user_album textarea{overflow-x: hidden;overflow-y: hidden;}
+.user_album .input-file {overflow:hidden;position:relative; background:#8ad1e9; font-size:16px; color:#FFF; padding:5px;cursor:pointer; margin:10px 0 0 0}
+.user_album .input-file input{opacity:0;filter:alpha(opacity=0);font-size:100px;position:absolute;top:0;right:0;cursor:pointer;}
+.user_album ul li{ width:100%; margin:3px; font-size:14px; height:150px}
+.user_album ul li a{ color:#969696; text-decoration:none}
+.user_album ul li a:hover{ color:#d06e6f}
+.user_album .others{ float:right; width:250px; height:20px; text-align:right}
+/*版权*/
+.foot{width:960px;margin:20px auto;text-align:center;line-height:20px}
+.foot,.foot a{color:#959595;text-decoration:none;font-size:12px}
+.foot a:hover{color:#000}

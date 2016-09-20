@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>用户修改</title>
+</head>
+
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>用户修改</a></div>
+  <table cellspacing="0">
+    <form action="user_modify_submit.php" method="post">
+      {section loop=$modify name=sec}
+      <tr><input value="{$modify[sec].id}" style="display:none" name="id"/>
+        <td class="table_left">用户名称：</td>
+        <td>{$modify[sec].name}</td>
+      </tr>
+      <tr>
+        <td class="table_left">旧密码：</td>
+        <td>{$modify[sec].pwd}（已加密）</td>
+      </tr>
+      <tr>
+      <tr>
+        <td class="table_left">新密码：</td>
+        <td><input type="password" name="userpassword1" class="text"/></td>
+      </tr>
+      <tr>
+        <td class="table_left">再输一次：</td>
+        <td><input type="password" name="userpassword2" class="text"/><font>（请谨记新密码！）</font></td>
+      </tr>
+      <tr>
+        <td class="table_left"></td>
+        <td><input type="submit" class="button" value="提  交"/></td>
+      </tr>
+      {/section}
+    </form>
+  </table>
+</div>
+</body>
+</html>

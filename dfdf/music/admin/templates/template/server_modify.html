@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>修改服务器信息</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>修改服务器</a></div>
+  <table cellpadding="0">{section loop=$server name=sec}
+    <form action="server_modify_post.php" method="post">
+      <tr><input type="text" value="{$server[sec].id}" style="display:none" name="id"/>
+        <td>服务器地址：</td>
+        <td><input type="text" class="text" name="server_address" value="{$server[sec].server}"/></td>
+      </tr>
+      <tr>
+        <td>服务器名称：</td>
+        <td><input type="text" class="text" name="server_name" value="{$server[sec].name}" /></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><input type="submit" class="button" value="提  交"/></td>
+      </tr>
+    </form>{/section}
+  </table>
+</div>
+</body>
+</html>

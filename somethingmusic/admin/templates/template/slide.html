@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+</head><body>
+<div class="main_right">
+<div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>上传幻灯片图片</a></div>
+<form action="slide.php?action=post" method="post" enctype="multipart/form-data">
+<table cellspacing="0">
+<tr><td>&nbsp;</td><td><a href="website.php" title="前往设置幻灯片图片数量">前往设置幻灯片图片数量</a></td></tr>
+<tr><td align="right" width="150">图片名称：</td><td><input type="text" name="title" class="text"/></td></tr>
+<tr><td align="right">上传图片：(jpeg or png)：<br><font>980*300</font></td><td><input type="file" name="pic" class="text"/></td></tr>
+<tr><td>&nbsp;</td><td><input type="submit" value="提  交" class="button" /></td></tr>
+</table>
+</form>
+</div>
+
+<div class="main_right">
+<div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>图片列表</a></div>
+<table cellspacing="0">
+<tr class="bold" align="center"><td width="100">编号</td><td>图片</td><td width="100">操作</td></tr>
+{foreach from=$pic item=p}
+<tr><td>{$p.id}</td><td><img src="{$base_url}thumbs/thumbs/cache/w930h300/admin/{$p.url}" width="620" height="200"/></td><td>{$p.name}</td><td class="comment"><a href="slide.php?action=delete&id={$p.id}"  onclick="return confirm('你真的要删除吗？')">删除</a></td></tr>
+{/foreach}
+{if $page!=''}
+    <tr><td colspan="4" class="showpage" align="center">{$page}</td></tr>
+    {/if}
+</table>
+</div>
+</body>
+</html>
+<style>
+
+table tr td a {
+
+	color:#09F;
+
+	text-decoration:underline;
+
+	line-height:20px
+
+}
+
+table tr td a:hover {
+
+	color:#F00;
+
+	font-weight:bold;
+
+	text-decoration:none
+
+}
+
+.look {
+
+	text-align:center
+
+}
+
+</style>

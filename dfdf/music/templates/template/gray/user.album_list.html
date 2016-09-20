@@ -1,0 +1,28 @@
+<div class="user_album">
+<div style="color:#d06e6f; font-size:16px; margin-bottom:10px; width:100%;border-bottom:#d6d6d6 1px dashed; line-height:40px">用户专辑列表<input type="button" class="btn" value="我要分享" style=" position:relative; left:410px" title="添加我喜欢的专辑" onclick="window.location='{$base_url}api.php?skin=gray&action=user&mod=album'"/></div>
+<ul style="color:#969696">
+{foreach from=$list item=l}
+<li><div style="width:190px; height:190px; float:left;"><a href="{$base_url}api.php?skin=gray&action=user&mod=album_info&album_id={$l.id}" title="{$l.name}"><img src="{$base_url}thumbs/thumbs/cache/w200h200/{$l.pic}" width="190" width="190" border="0"/></a></div>
+<div style="margin-left:10px; width:390px; float:left; line-height:25px">
+<font color="8ad1e9">添&nbsp;&nbsp;加&nbsp;&nbsp;者：</font>{if $my==$l.uid}我自己<div class="others"><a href="{$base_url}api.php?skin=gray&action=user&mod=album_info&album_id={$l.id}&uid={$l.uid}">修改</a>&nbsp;&nbsp;<a href="{$base_url}api.php?skin=gray&action=user&mod=delete&id={$l.id}&page={$cur_page}" onclick="confirm('你确定要删除《{$l.name}》吗？')">删除</a></div>{else}<a href="{$base_url}api.php?skin=gray&action=user&mod=index&look=true&uid={$l.uid}" title="点击查看{$l.nick}的主页">{$l.nick}</a>{/if}<br/>
+<font color="8ad1e9">专辑名称：</font>{$l.name}<br/>
+<font color="8ad1e9">音乐风格：</font>{$l.category}<br/>
+<font color="8ad1e9">专辑介绍：</font>{$l.text|truncate:54}
+</div></li>
+{/foreach}
+</ul>
+{if $page}<div class="page">{$page}</div>{/if}
+</div>
+{include file="ad.html"}
+{if $friend_introduce}
+<div class="friend_introduce">
+<div style="color:#d06e6f; font-size:16px; margin-bottom:10px; width:100%;border-bottom:#d6d6d6 1px dashed; line-height:40px">好友推荐
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" style="color:#d06e6f; text-decoration:none; cursor:pointer;font-size:14px;" id="next_friend_introduce">换一批</a>
+</div>
+<ul>
+{foreach from=$friend_introduce item=f}
+<li><a href="{$base_url}api.php?skin=gray&action=user&mod=index&look=true&uid={$f.id}" title="点击查看{$f.nick}的主页"><img src="{$f.avatar}" width="70" height="70" border="0"/></a><br/><a href="{$base_url}api.php?skin=gray&action=user&mod=add_friend&uid={$f.id}&from=album_list" title="加为{$f.nick}好友">加好友</a></li>
+{/foreach}
+</ul>
+</div>
+{/if}

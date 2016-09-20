@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+</head><body>
+<div class="main_right">
+<div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>查看表信息</a></div>
+<table cellspacing="0">
+<tr class="bold" align="center"><td>表名</td><td>行数</td><td>类型</td><td>大小</td><td>操作</td></tr>
+{foreach from=$table item=t}
+<tr align="center"><td class="table_left"><strong>{$t.Name}</strong></td><td>{$t.Rows}</td><td>{$t.Engine}</td><td>{$t.Data_length|size}</td><td class="comment"><a href="youhua.php?table={$t.Name}">优化表</a></td></tr>
+{/foreach}
+<tr><td class="comment" align="center" colspan="5"><a href="youhua.php?table=all">优化所有表</a></td></tr>
+</table>
+</div>
+</body>
+</html>

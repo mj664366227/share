@@ -1,0 +1,51 @@
+<?php
+session_start();
+include "config.php";//载入系统配置文件
+$login=$_SESSION['login'];
+if($login=="")
+{
+	header("location:index.php");
+}
+else
+{
+	$title=$_POST['title'];
+	if($title=='')
+	{
+		tips('文章题目未填写！');
+		exit();
+	}
+	$pic=upload_pic();
+	if($pic=='')
+	{
+		tips('图片未上传！');
+		exit();
+	}
+	$time=date("Y-m-d H:i:s");
+	$content=$_POST['content'];
+	if($content=='')
+		{
+			tips('文章内容未填写！');
+			exit();
+		}
+	$conn->Execute("insert into `somethingmusic_music_introduce` (`title`,`pic`,`time`,`content`,`click`) values ('$title','$pic','$time','$content','0')")or die('error!');
+	//tips('文章发表成功！');
+	/*$phpThumb=new phpThumb();
+	$thumb='admin/'.$pic;
+	$w=575;$h=270;$q=85;
+	$image=$_SERVER['DOCUMENT_ROOT'].'/music/'.$thumb;
+    $phpThumb->setSourceFilename($image);   
+    $phpThumb->setParameter('w',$w);   
+    $phpThumb->setParameter('h',$h);  
+	$phpThumb->setParameter('q',$q); 
+	$cache=$_SERVER['DOCUMENT_ROOT'].'/music/thumbs/cache/w'.$w.'h'.$h.'/'.$thumb;
+    if($phpThumb->GenerateThumbnail()) 
+	{
+        @mkdir(dirname($cache),0777,true);   
+        if($phpThumb->RenderToFile($cache))
+		{
+			tips('文章发表成功！');
+		}
+	}*/
+	header('Location:http://lovemusic.cc/thumbs/?thumb=admin/'.$pic.'&w=575&h=270&q=70');
+}
+?>

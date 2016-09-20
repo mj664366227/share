@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>修改首卷语</title>
+</head>
+<body>
+<script type="text/javascript" src="templates/template/jquery-1.4a2.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+$('.button').click(function(){
+	var a=$('#text').val().length;
+	if(a<=1)
+	{
+		alert('1个字都写不出吗！');
+		return false;
+	}
+	})
+})
+</script>
+<div class="main_right">
+<div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>修改首卷语</a></div>
+<table cellspacing="0">
+<form action="shoujuanyu.php?action=modifying" method="post">
+{section loop=$sjy name=sec}
+<tr><td class="table_left">首卷语内容：</td><td><textarea cols="80" rows="12"  name="text">{$sjy[sec].text}</textarea><input type="text" value="{$sjy[sec].id}" name="id" style="display:none"/></td></tr>
+<tr><td class="table_left"></td><td><input type="submit" class="button" value="提  交"/></td></tr>
+{/section}
+</table>
+</form>
+</div>
+</body>
+</html>
