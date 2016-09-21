@@ -32,7 +32,7 @@ $smarty->caching=false;
 //连接数据库
 global $conn;
 $conn=ADONewConnection($sql);
-$conn->PConnect($host,$user,$password,$database)or die('connect database error!');
+$conn->PConnect($host,$user,$password,$database)or die('connect database error! host: '.$host.', user: '.$user.', database: '.$database);
 $conn->Execute('set names '.$char);
 /*获取网站信息*/
 $system=get_my_array($conn,"select * from `somethingmusic_system` where `id`='1'");
@@ -61,18 +61,21 @@ if(!empty($_GET['skin'])){
 }
 
 //自动登录实现
+/*
 $decode = uc_authcode($_COOKIE['libmill']);
 $decode = $decode ? $decode : '';
 global $uc_user_data;
 $uc_user_data = uc_get_user($decode);
 define('UID',$uc_user_data[0] ? intval($uc_user_data[0]) : 0);
 $smarty->assign('uid', UID);
+*/
 
 //3个平台的登录
+/*
 $smarty->assign('libmill', $decode);
 $smarty->assign('qq', $_COOKIE['qq']);
 $smarty->assign('sina', $_SESSION['weibo_token']);
-
+*/
 //sina自动登录
 /*if($_SESSION['weibo_token']){
 	$sina = new SaeTClientV2(WB_AKEY,WB_SKEY,$_SESSION['weibo_token']);

@@ -35,7 +35,7 @@ $smarty->assign('base_url',BASE_URL);
 
 //连接数据库
 $conn=ADONewConnection($sql);
-$conn->PConnect($host,$user,$password,$database)or die('connect database error!');
+$conn->PConnect($host,$user,$password,$database)or die('connect database error! host: '.$host.', user: '.$user.', database: '.$database);
 $conn->Execute('set names '.$char);
 
 $ForceEnter=0;
