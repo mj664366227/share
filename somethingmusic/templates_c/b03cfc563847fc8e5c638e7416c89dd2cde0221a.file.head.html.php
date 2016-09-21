@@ -1,16 +1,16 @@
-<?php /* Smarty version Smarty3-b8, created on 2016-09-20 21:21:14
+<?php /* Smarty version Smarty3-b8, created on 2016-09-21 15:41:41
          compiled from "D:\nginx/www/share.git/somethingmusic/templates/template/gray\head.html" */ ?>
-<?php /*%%SmartyHeaderCode:415357e137ca66fe02-36397434%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
+<?php /*%%SmartyHeaderCode:2377557e2aa35ea58c3-34192804%%*/if(!defined('SMARTY_DIR')) exit('no direct access allowed');
 $_smarty_tpl->decodeProperties(array (
   'file_dependency' => 
   array (
     'b03cfc563847fc8e5c638e7416c89dd2cde0221a' => 
     array (
       0 => 'D:\\nginx/www/share.git/somethingmusic/templates/template/gray\\head.html',
-      1 => 1343982380,
+      1 => 1474472499,
     ),
   ),
-  'nocache_hash' => '415357e137ca66fe02-36397434',
+  'nocache_hash' => '2377557e2aa35ea58c3-34192804',
   'function' => 
   array (
   ),
@@ -68,17 +68,7 @@ templates/template/gray/images/search.png" width="24" height="24" id="search_sub
 </div>
 <!--顶部链接-->
 <div class="top">
-<ul>
-      <a href="http://vod.libmill.com" target="_blank">
-      <li class="vod" title="视频点播">视频点播</li>
-      </a> <a href="http://libmill.com" target="_blank">
-      <li class="dh" title="校内导航">校内导航</li>
-      </a> <a href="http://lib.gcu.edu.cn" target="_blank">
-      <li class="lib" title="图书馆">图书馆</li>
-      </a> <a href="http://www.gcu.edu.cn" target="_blank">
-      <li class="gzauto" title="学院主页">学院主页</li>
-      </a>
-    </ul>
+
 </div>
 </div>
 <!--导航-->
