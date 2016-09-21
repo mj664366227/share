@@ -173,7 +173,6 @@ $(".album_like_on").click(function(){
 	if(uid <= 0){
 		alert('你还没有登录，不能标记喜欢，快去登录吧！');
 		var url = location.href.substring(0, location.href.indexOf('album.php'));
-		window.location = url + 'login.php?skin=gray';
 		return false;
 	}
 	var id = $('.album_detail').attr('album_id');
@@ -204,7 +203,6 @@ $(".artist_like_on").click(function(){
 	if(uid <= 0){
 		alert('你还没有登录，不能标记喜欢，快去登录吧！');
 		var url = location.href.substring(0, location.href.indexOf('album.php'));
-		window.location = url + 'login.php?skin=gray';
 		return false;
 	}
 	var id = $('.artist_details').attr('id');
