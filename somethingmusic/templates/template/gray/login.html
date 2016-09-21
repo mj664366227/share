@@ -1,10 +1,6 @@
 <!--登录部分-->
 <div class="login" uid="{$uid}">
-{if $libmill}{if $active!='api'}<a href="{$base_url}api.php?skin=gray&action=user&mod=index" title="进入我的后台">进入后台</a>&nbsp;<a href="{$base_url}logout.php?skin=gray" title="退出" onclick="return confirm('亲，你真的要退出吗？')">退出</a>{/if}{else}{if $active!='reg'}<a href="{$base_url}reg.php?skin=gray" title="亲！你还没有somethingmusic的帐号吗？赶快注册一个吧！">注册</a>{else}<font color="#d06e6f">注册</font>{/if}
-&nbsp;
-{if $active!='login'}<a href="{$base_url}login.php?skin=gray" title="使用本站帐号登录">登录</a>{else}<font color="#d06e6f">登录</font>{/if}
 
-{/if}
 
 {if $active=='api'}
 <a href="{$base_url}api.php?skin=gray&action=user&mod=index" title="个人主页">个人主页</a>
