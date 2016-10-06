@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,7 +29,6 @@ import com.share.core.interfaces.DSuper;
 import com.share.core.util.FileSystem;
 import com.share.core.util.StringUtil;
 import com.share.core.util.SystemUtil;
-import com.share.core.util.Time;
 
 /**
  * jdbc抽象类
@@ -110,8 +110,8 @@ public abstract class AbstractJDBC {
 			// 根据表结构，生成pojo类
 			makePojoClass(classPath);
 		}
-		System.exit(0);
-		System.err.println("根据数据库表结构，初始化T对象");
+
+		logger.info("make pojo object finish!");
 	}
 
 	/**
@@ -122,21 +122,23 @@ public abstract class AbstractJDBC {
 		// 从文件名转成表名(虽然有点蛋疼，但是保证了程序的优雅，反正程序init阶段不需要考虑性能)
 		String[] arr = classPath.split("/");
 		String className = StringUtil.getString(arr[arr.length - 1].replaceAll(".java", "")).substring(1);
-		className = fieldNameToColumnName(className);
+		String tableName = fieldNameToColumnName(className);
+
+		// 有3个预留字段不用生成
+		Set<String> reservedColumn = new HashSet<>();
+		reservedColumn.add("id");
+		reservedColumn.add("createTime");
+		reservedColumn.add("lastModifyTime");
 
 		// 换行符
 		String newlineCharacter = "\r\n";
 
 		// 获取表注释
-		String sql = "select `information_schema`.`TABLE_COMMENT` from `information_schema`.`TABLES` where `information_schema`.`TABLE_SCHEMA`='" + dbName + "' and `information_schema`.`TABLE_NAME`='" + className + "'";
+		String sql = "select `TABLE_COMMENT` from `information_schema`.`TABLES` where `TABLE_SCHEMA`='" + dbName + "' and `TABLE_NAME`='" + tableName + "'";
 		String tableComment = queryString(sql);
 
 		// 拼装生成pojo类的代码
 		StringBuilder code = new StringBuilder();
-		code.append("// this class is auto generate!!!");
-		code.append(" create date: ");
-		code.append(Time.date());
-		code.append(newlineCharacter);
 		code.append("package com.share.dao.model;");
 		code.append(newlineCharacter);
 		code.append("import com.share.core.annotation.Pojo;");
@@ -151,28 +153,114 @@ public abstract class AbstractJDBC {
 			code.append(" * ");
 			code.append(tableComment);
 			code.append(newlineCharacter);
-			code.append(" * @author share-java framework");
-			code.append(newlineCharacter);
 			code.append(" */");
 			code.append(newlineCharacter);
 		}
 
 		code.append("@Pojo");
 		code.append(newlineCharacter);
-		code.append("public class DCase extends DSuper {");
+		code.append("public class D");
+		code.append(className);
+		code.append(" extends DSuper {");
 		code.append(newlineCharacter);
 
 		// 获取表结构
-		sql = "show full  columns from `" + className + "`";
+		sql = "show full  columns from `" + tableName + "`";
 		List<Map<String, Object>> createTable = queryList(sql);
 		for (Map<String, Object> column : createTable) {
 			String field = columnNameToFieldName(StringUtil.getString(column.get("Field")));
-			code.append("\t");
-			code.append("private long ");
+
+			// 预留字段不用生成
+			if (reservedColumn.contains(field)) {
+				continue;
+			}
+
+			// 如果有表注释，也当作是字段注释
+			String comment = StringUtil.getString(column.get("Comment"));
+			String type = getType(StringUtil.getString(column.get("Type")));
+			if (!comment.isEmpty()) {
+				code.append("\t/**");
+				code.append(newlineCharacter);
+				code.append("\t * ");
+				code.append(comment);
+				code.append(newlineCharacter);
+				code.append("\t */");
+				code.append(newlineCharacter);
+			}
+
+			code.append("\tprivate ");
+			code.append(type);
+			code.append(" ");
 			code.append(field);
 			code.append(";");
 			code.append(newlineCharacter);
-			System.err.println(column);
+		}
+
+		code.append(newlineCharacter);
+
+		// 生成get set 方法
+		for (Map<String, Object> column : createTable) {
+			String field = columnNameToFieldName(StringUtil.getString(column.get("Field")));
+
+			// 预留字段不用生成
+			if (reservedColumn.contains(field)) {
+				continue;
+			}
+
+			// 如果有表注释，也当作是方法注释
+			String comment = StringUtil.getString(column.get("Comment"));
+			String type = getType(StringUtil.getString(column.get("Type")));
+			if (!comment.isEmpty()) {
+				code.append("\t/**");
+				code.append(newlineCharacter);
+				code.append("\t * 获取");
+				code.append(comment);
+				code.append(newlineCharacter);
+				code.append("\t */");
+				code.append(newlineCharacter);
+			}
+
+			code.append("\tpublic ");
+			code.append(type);
+			code.append(" ");
+			code.append(getGetter(field));
+			code.append("() {");
+			code.append(newlineCharacter);
+			code.append("\t\treturn ");
+			code.append(field);
+			code.append(";");
+			code.append(newlineCharacter);
+			code.append("\t}");
+			code.append(newlineCharacter);
+			code.append(newlineCharacter);
+
+			if (!comment.isEmpty()) {
+				code.append("\t/**");
+				code.append(newlineCharacter);
+				code.append("\t * 设置");
+				code.append(comment);
+				code.append(newlineCharacter);
+				code.append("\t */");
+				code.append(newlineCharacter);
+			}
+
+			code.append("\tpublic void ");
+			code.append(getSetter(field));
+			code.append("(");
+			code.append(type);
+			code.append(" ");
+			code.append(field);
+			code.append(") {");
+			code.append(newlineCharacter);
+			code.append("\t\tthis.");
+			code.append(field);
+			code.append(" = ");
+			code.append(field);
+			code.append(";");
+			code.append(newlineCharacter);
+			code.append("\t}");
+			code.append(newlineCharacter);
+			code.append(newlineCharacter);
 		}
 
 		// 文件尾部
@@ -181,7 +269,6 @@ public abstract class AbstractJDBC {
 
 		// 写入文件
 		FileSystem.write(classPath, code.toString(), false);
-		System.exit(0);
 	}
 
 	/**
@@ -840,9 +927,11 @@ public abstract class AbstractJDBC {
 		StringBuilder fieldName = new StringBuilder();
 		String[] arr = columnName.split("_");
 		for (int i = 0; i < arr.length; i++) {
-			fieldName.append(StringUtil.getString(arr[i]));
+			fieldName.append(StringUtil.firstUpperCase(arr[i]));
 		}
-		return fieldName.toString();
+		String field = fieldName.toString();
+		field = field.substring(0, 1).toLowerCase() + field.substring(1);
+		return field;
 	}
 
 	/**
@@ -877,5 +966,51 @@ public abstract class AbstractJDBC {
 			className.append(StringUtil.firstUpperCase(arr[i]));
 		}
 		return className.toString();
+	}
+
+	/**
+	 * 根据属性名，获取Getter方法名
+	 * @param field
+	 */
+	private final String getGetter(String field) {
+		return "get" + field.substring(0, 1).toUpperCase() + field.substring(1);
+	}
+
+	/**
+	 * 根据属性名，获取setter方法名
+	 * @param field
+	 */
+	private final String getSetter(String field) {
+		return "set" + field.substring(0, 1).toUpperCase() + field.substring(1);
+	}
+
+	/**
+	 * 把数据库的类型，转成java的类型
+	 * @param type 数据类型
+	 */
+	private final String getType(String type) {
+		int index = type.indexOf("(");
+		if (index > -1) {
+			type = type.substring(0, type.indexOf("("));
+		}
+		switch (type) {
+		case "tinyint":
+			return "byte";
+		case "int":
+			return "int";
+		case "bigint":
+			return "long";
+		case "decimal":
+			return "double";
+		case "varchar":
+			return "String";
+		case "char":
+			return "String";
+		case "mediumtext":
+			return "String";
+		case "text":
+			return "String";
+		}
+		return "String";
 	}
 }

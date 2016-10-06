@@ -13,11 +13,11 @@ public abstract class DSuper {
 	/**
 	 * 记录创建时间
 	 */
-	private int createTime;
+	private long createTime;
 	/**
 	 * 最后修改时间
 	 */
-	private int lastModifyTime;
+	private long lastModifyTime;
 
 	/**
 	 * toString方法
@@ -51,7 +51,7 @@ public abstract class DSuper {
 	/**
 	 * 获取记录创建时间
 	 */
-	public int getCreateTime() {
+	public long getCreateTime() {
 		return createTime;
 	}
 
@@ -59,14 +59,14 @@ public abstract class DSuper {
 	 * 设置记录创建时间
 	 * @param createTime 记录创建时间
 	 */
-	public void setCreateTime(int createTime) {
+	public void setCreateTime(long createTime) {
 		this.createTime = createTime;
 	}
 
 	/**
 	 * 获取最后修改时间
 	 */
-	public int getLastModifyTime() {
+	public long getLastModifyTime() {
 		return lastModifyTime;
 	}
 
@@ -74,7 +74,7 @@ public abstract class DSuper {
 	 * 设置最后修改时间
 	 * @param lastModifyTime 最后修改时间
 	 */
-	public void setLastModifyTime(int lastModifyTime) {
+	public void setLastModifyTime(long lastModifyTime) {
 		this.lastModifyTime = lastModifyTime;
 	}
 }
