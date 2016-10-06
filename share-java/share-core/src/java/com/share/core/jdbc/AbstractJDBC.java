@@ -28,6 +28,7 @@ import com.share.core.interfaces.DSuper;
 import com.share.core.util.FileSystem;
 import com.share.core.util.StringUtil;
 import com.share.core.util.SystemUtil;
+import com.share.core.util.Time;
 
 /**
  * jdbc抽象类
@@ -46,6 +47,10 @@ public abstract class AbstractJDBC {
 	 */
 	@Autowired
 	private PojoProcessor pojoProcessor;
+	/**
+	 * 数据库名
+	 */
+	private String dbName;
 
 	/**
 	 * 注入数据源
@@ -64,6 +69,13 @@ public abstract class AbstractJDBC {
 			System.exit(0);
 		}
 		update("set names utf8mb4");
+
+		// 获取数据库名(我们这个框架就一定用druid的了)
+		com.alibaba.druid.pool.DruidDataSource dataSource = (com.alibaba.druid.pool.DruidDataSource) jdbc.getDataSource();
+		String jdbcUrl = dataSource.getUrl();
+		jdbcUrl = jdbcUrl.split("\\?")[0];
+		String[] arr = jdbcUrl.split("\\/");
+		dbName = StringUtil.getString(arr[arr.length - 1]);
 
 		// 根据数据库表结构，初始化T对象
 		initT();
@@ -112,13 +124,64 @@ public abstract class AbstractJDBC {
 		String className = StringUtil.getString(arr[arr.length - 1].replaceAll(".java", "")).substring(1);
 		className = fieldNameToColumnName(className);
 
+		// 换行符
+		String newlineCharacter = "\r\n";
+
+		// 获取表注释
+		String sql = "select `information_schema`.`TABLE_COMMENT` from `information_schema`.`TABLES` where `information_schema`.`TABLE_SCHEMA`='" + dbName + "' and `information_schema`.`TABLE_NAME`='" + className + "'";
+		String tableComment = queryString(sql);
+
+		// 拼装生成pojo类的代码
+		StringBuilder code = new StringBuilder();
+		code.append("// this class is auto generate!!!");
+		code.append(" create date: ");
+		code.append(Time.date());
+		code.append(newlineCharacter);
+		code.append("package com.share.dao.model;");
+		code.append(newlineCharacter);
+		code.append("import com.share.core.annotation.Pojo;");
+		code.append(newlineCharacter);
+		code.append("import com.share.core.interfaces.DSuper;");
+		code.append(newlineCharacter);
+
+		// 如果有表注释，也当作是类注释
+		if (!tableComment.isEmpty()) {
+			code.append("/**");
+			code.append(newlineCharacter);
+			code.append(" * ");
+			code.append(tableComment);
+			code.append(newlineCharacter);
+			code.append(" * @author share-java framework");
+			code.append(newlineCharacter);
+			code.append(" */");
+			code.append(newlineCharacter);
+		}
+
+		code.append("@Pojo");
+		code.append(newlineCharacter);
+		code.append("public class DCase extends DSuper {");
+		code.append(newlineCharacter);
+
 		// 获取表结构
-		String sql = "show columns from `" + className + "`";
+		sql = "show full  columns from `" + className + "`";
 		List<Map<String, Object>> createTable = queryList(sql);
 		for (Map<String, Object> column : createTable) {
+			String field = columnNameToFieldName(StringUtil.getString(column.get("Field")));
+			code.append("\t");
+			code.append("private long ");
+			code.append(field);
+			code.append(";");
+			code.append(newlineCharacter);
 			System.err.println(column);
 		}
 
+		// 文件尾部
+		code.append(newlineCharacter);
+		code.append("}");
+
+		// 写入文件
+		FileSystem.write(classPath, code.toString(), false);
+		System.exit(0);
 	}
 
 	/**
@@ -406,7 +469,7 @@ public abstract class AbstractJDBC {
 			return StringUtil.getString(jdbc.queryForObject(sql, args, String.class));
 		} catch (Exception e) {
 			logger.error("", e);
-			return null;
+			return "";
 		}
 	}
 
@@ -753,7 +816,6 @@ public abstract class AbstractJDBC {
 	/**
 	 * 程序字段->数据库字段(adminPhoneId->admin_phone_id)
 	 * @param fieldName 程序字段 
-	 * @return columnName 数据库字段
 	 */
 	public final String fieldNameToColumnName(String fieldName) {
 		StringBuilder columnName = new StringBuilder();
@@ -768,6 +830,19 @@ public abstract class AbstractJDBC {
 			}
 		}
 		return columnName.toString().toLowerCase();
+	}
+
+	/**
+	 * 数据库字段->程序字段(admin_phone_id->adminPhoneId)
+	 * @param columnName 程序字段 
+	 */
+	public final String columnNameToFieldName(String columnName) {
+		StringBuilder fieldName = new StringBuilder();
+		String[] arr = columnName.split("_");
+		for (int i = 0; i < arr.length; i++) {
+			fieldName.append(StringUtil.getString(arr[i]));
+		}
+		return fieldName.toString();
 	}
 
 	/**
