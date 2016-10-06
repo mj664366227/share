@@ -904,7 +904,7 @@ public abstract class AbstractJDBC {
 	 * 程序字段->数据库字段(adminPhoneId->admin_phone_id)
 	 * @param fieldName 程序字段 
 	 */
-	public final String fieldNameToColumnName(String fieldName) {
+	private final String fieldNameToColumnName(String fieldName) {
 		StringBuilder columnName = new StringBuilder();
 		int l = fieldName.length();
 		for (int i = 0; i < l; i++) {
@@ -923,7 +923,7 @@ public abstract class AbstractJDBC {
 	 * 数据库字段->程序字段(admin_phone_id->adminPhoneId)
 	 * @param columnName 程序字段 
 	 */
-	public final String columnNameToFieldName(String columnName) {
+	private final String columnNameToFieldName(String columnName) {
 		StringBuilder fieldName = new StringBuilder();
 		String[] arr = columnName.split("_");
 		for (int i = 0; i < arr.length; i++) {

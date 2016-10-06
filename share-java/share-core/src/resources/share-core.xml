@@ -15,6 +15,12 @@
 
 	<!-- 首先加载spring获取bean类 -->
 	<bean class="com.share.core.util.SpringUtil" />
+	
+	<!--扫描注解 -->
+	<context:component-scan base-package="com.share" />
+
+	<!-- 加载properties文件 -->
+	<context:property-placeholder location="classpath:config.properties" />
 
 	<aop:aspectj-autoproxy />
 	<context:annotation-config />
@@ -27,10 +33,4 @@
 
 	<!-- 启动Mongodb -->
 	<bean class="com.share.core.mongo.Mongodb" init-method="init" destroy-method="close" />
-
-	<!--扫描注解 -->
-	<context:component-scan base-package="com.share" />
-
-	<!-- 加载properties文件 -->
-	<context:property-placeholder location="classpath:config.properties" />
 </beans>
