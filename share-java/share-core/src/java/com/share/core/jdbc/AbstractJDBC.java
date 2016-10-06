@@ -732,7 +732,7 @@ public abstract class AbstractJDBC {
 				if (j == 0) {
 					// 生成sql insert头
 					sql = new StringBuilder();
-					sql.append("replace into `");
+					sql.append("insert into `");
 					sql.append(classNameToTableName(clazz));
 					sql.append("` (");
 					methodMap = pojoProcessor.getGetMethodMapByClass(clazz);
@@ -798,7 +798,7 @@ public abstract class AbstractJDBC {
 		// 生成sql insert头
 		Class<?> clazz = t.getClass();
 		StringBuilder sql = new StringBuilder();
-		sql.append("replace into `");
+		sql.append("insert into `");
 		sql.append(classNameToTableName(clazz));
 		sql.append("` (");
 
