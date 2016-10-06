@@ -25,6 +25,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import com.google.common.base.Joiner;
 import com.share.core.annotation.processor.PojoProcessor;
 import com.share.core.interfaces.DSuper;
+import com.share.core.util.FileSystem;
 import com.share.core.util.StringUtil;
 import com.share.core.util.SystemUtil;
 
@@ -63,6 +64,61 @@ public abstract class AbstractJDBC {
 			System.exit(0);
 		}
 		update("set names utf8mb4");
+
+		// 根据数据库表结构，初始化T对象
+		initT();
+	}
+
+	/**
+	 * 根据数据库表结构，初始化T对象
+	 */
+	private final void initT() {
+		if (!FileSystem.isWindows()) {
+			// 本程序只为了windows开发方便，自动生成pojo类；在linux系统不执行
+			return;
+		}
+
+		// 约定好pojo类的目录，就在dao工程内
+		// 所以如果有数据库功能，一定要有dao工程
+		// 如果没有目标文件夹，则自动创建，但不会创建dao工程
+		String modelPath = FileSystem.getSystemDir() + "../../share-dao/src/java/com/share/dao/model/";
+		FileSystem.mkdir(modelPath);
+
+		String sql = "show tables";
+		List<Map<String, Object>> tableList = queryList(sql);
+		for (Map<String, Object> table : tableList) {
+			// 生成类名
+			String tableName = StringUtil.getString(table.entrySet().iterator().next().getValue());
+			String className = tableNameToClassName(tableName);
+
+			// 删除旧的类
+			String classPath = modelPath + className + ".java";
+			FileSystem.delete(classPath);
+
+			// 根据表结构，生成pojo类
+			makePojoClass(classPath);
+		}
+		System.exit(0);
+		System.err.println("根据数据库表结构，初始化T对象");
+	}
+
+	/**
+	 * 根据表结构，生成pojo类
+	 * @param classPath pojo类要保存的目标地址
+	 */
+	private final void makePojoClass(String classPath) {
+		// 从文件名转成表名(虽然有点蛋疼，但是保证了程序的优雅，反正程序init阶段不需要考虑性能)
+		String[] arr = classPath.split("/");
+		String className = StringUtil.getString(arr[arr.length - 1].replaceAll(".java", "")).substring(1);
+		className = fieldNameToColumnName(className);
+
+		// 获取表结构
+		String sql = "show columns from `" + className + "`";
+		List<Map<String, Object>> createTable = queryList(sql);
+		for (Map<String, Object> column : createTable) {
+			System.err.println(column);
+		}
+
 	}
 
 	/**
@@ -733,5 +789,18 @@ public abstract class AbstractJDBC {
 			}
 		}
 		return tableName.toString().toLowerCase();
+	}
+
+	/**
+	 * 表名转成类名(user_detail => DUserDetail)
+	 * @param tableName 表名
+	 */
+	private final String tableNameToClassName(String tableName) {
+		StringBuilder className = new StringBuilder("D");
+		String[] arr = tableName.split("_");
+		for (int i = 0; i < arr.length; i++) {
+			className.append(StringUtil.firstUpperCase(arr[i]));
+		}
+		return className.toString();
 	}
 }

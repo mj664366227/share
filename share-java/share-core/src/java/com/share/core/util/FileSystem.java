@@ -47,12 +47,12 @@ public final class FileSystem {
 	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
 	private final static boolean isMacOSX = System.getProperty("os.name").indexOf("Mac OS X") != -1;
 	private static Properties property = new Properties();
-	private final static String systemDir = classLoader.getResource("").toString().replace("file:", "").replace("/etc", "").trim() + (StringUtil.getString(projectName).isEmpty() ? "" : projectName + "/");
+	private final static String systemDir = (classLoader.getResource("").toString().replace("file:", "").replace("/etc", "").trim() + (StringUtil.getString(projectName).isEmpty() ? "" : projectName + "/")).substring(isWindows() ? 1 : 0);
 
 	static {
 		// 初始化项目名
-		if (FileSystem.isWindows() || FileSystem.isMacOSX()) {
-			projectName = FileSystem.getSystemDir().replace("/bin/", "");
+		if (isWindows() || isMacOSX()) {
+			projectName = getSystemDir().replace("/bin/", "");
 			projectName = projectName.substring(projectName.lastIndexOf("/") + 1);
 		} else {
 			projectName = StringUtil.getString(System.getProperty("project"));
@@ -195,6 +195,26 @@ public final class FileSystem {
 		} else {
 			return -1;
 		}
+	}
+
+	/**
+	 * 判断文件或者文件夹是否存在
+	 * @param path 文件或者文件夹的完整路径
+	 */
+	public final static boolean exists(String filename) {
+		return new File(filename).exists();
+	}
+
+	/**
+	 * 创建文件夹
+	 * @param path 文件夹地址
+	 */
+	public final static void mkdir(String path) {
+		File file = new File(path);
+		if (file.exists()) {
+			return;
+		}
+		file.mkdirs();
 	}
 
 	/**

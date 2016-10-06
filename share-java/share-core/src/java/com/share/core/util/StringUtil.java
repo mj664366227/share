@@ -344,4 +344,13 @@ public final class StringUtil {
 		}
 		return "";
 	}
+	
+	/**
+	 * 首字母大写
+	 * @param str 字符串
+	 */
+	public final static String firstUpperCase(String str) {
+		str = getString(str);
+		return str.substring(0, 1).toUpperCase() + str.substring(1);
+	}
 }
