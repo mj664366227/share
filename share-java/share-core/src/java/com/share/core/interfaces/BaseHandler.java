@@ -1,7 +1,7 @@
 package com.share.core.interfaces;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * handler基类
@@ -12,5 +12,5 @@ public abstract class BaseHandler {
 	/**
 	 * logger
 	 */
-	protected Logger logger = LogManager.getLogger(getClass());
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 }

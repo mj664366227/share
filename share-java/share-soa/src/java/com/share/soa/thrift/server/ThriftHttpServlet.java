@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.protocol.TProtocolFactory;
@@ -22,7 +22,7 @@ import org.apache.thrift.transport.TTransport;
  */
 public class ThriftHttpServlet extends HttpServlet {
 	private static final long serialVersionUID = -2355023383614264213L;
-	private static final Logger logger = LogManager.getLogger(ThriftHttpServlet.class);
+	private static final Logger logger = LoggerFactory.getLogger(ThriftHttpServlet.class);
 	private TProcessor processor;
 	private TProtocolFactory protocolFactory;
 	private Class<?> serviceClass;

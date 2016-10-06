@@ -6,8 +6,8 @@ import java.util.Properties;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.THttpClient;
@@ -18,7 +18,7 @@ import com.google.common.collect.Maps;
 import com.share.core.client.HttpClient;
 
 public final class ThriftHttpClient implements InitializingBean {
-	private static final Logger logger = LogManager.getLogger(ThriftHttpClient.class);
+	private static final Logger logger = LoggerFactory.getLogger(ThriftHttpClient.class);
 	private Map<String, ThreadLocal<Object>> clientMap = Maps.newHashMap();
 	private ReadWriteLock lock = new ReentrantReadWriteLock();
 	private Properties properties = new Properties();

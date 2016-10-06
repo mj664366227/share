@@ -4,14 +4,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ThriftHttpClientFactory implements FactoryBean<Object>, InitializingBean {
-	private static final Logger logger = LogManager.getLogger(ThriftHttpClientFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(ThriftHttpClientFactory.class);
 	private Class<?> ifaceClass;
 	private Class<?> clientClass;
 	private String className;

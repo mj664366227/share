@@ -26,8 +26,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.CsvListWriter;
@@ -41,7 +41,7 @@ import com.share.core.util.SortUtil.Order;
 public final class FileSystem {
 	private static String projectName = "";
 	private final static ClassLoader classLoader = FileSystem.class.getClassLoader();
-	private final static Logger logger = LogManager.getLogger(FileSystem.class);
+	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
@@ -637,7 +637,7 @@ public final class FileSystem {
 }
 
 final class DownThread extends Thread {
-	private final static Logger logger = LogManager.getLogger(DownThread.class);
+	private final static Logger logger = LoggerFactory.getLogger(DownThread.class);
 	private int id; // 线程id
 	private File file;// 目标文件
 	private int block;// 每个线程下载文件的大小

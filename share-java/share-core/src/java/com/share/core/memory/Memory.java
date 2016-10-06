@@ -5,8 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.share.core.util.StringUtil;
@@ -20,7 +20,7 @@ public final class Memory extends DMap {
 	/**
 	 * logger
 	 */
-	private Logger logger = LogManager.getLogger(getClass());
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	private Memory() {
 	}
