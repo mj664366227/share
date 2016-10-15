@@ -140,7 +140,7 @@ if [ ! -d $php_install_path/pcre ]; then
 fi
 
 # 安装curl
-curl='curl-7.50.0'
+curl='curl-7.50.3'
 if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then
@@ -220,7 +220,7 @@ fi
 # 安装GD库
 # # libpng
 if [ ! -d $php_install_path/libpng ]; then
-	libpng='1.6.23'
+	libpng='1.6.25'
 	if [ ! -f $base_path/libpng-$libpng.tar.gz ]; then
 		wget -O $base_path/libpng-$libpng.tar.gz http://install.ruanzhijun.cn/libpng-$libpng.tar.gz || exit
 	fi
@@ -241,7 +241,7 @@ if [ ! -d $php_install_path/jpeg ]; then
 fi
 # freetype
 if [ ! -d $php_install_path/freetype ]; then
-	freetype='freetype-2.6.5'
+	freetype='freetype-2.7'
 	if [ ! -f $base_path/$freetype.tar.gz ]; then
 		wget -O $base_path/$freetype.tar.gz http://install.ruanzhijun.cn/$freetype.tar.gz || exit
 	fi
