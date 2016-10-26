@@ -112,12 +112,12 @@ class markdown{
 	 */
 	private function parse_title($buffer){
 		$buffer = trim($buffer);
-		if(!$this->is_title($buffer) || $buffer{0} === '!') {
+		if(!$this->is_title($buffer) || $buffer{0} === '!' || $buffer{0} !== '#') {
 			return;
 		}
 		$h = intval(substr_count($buffer, '#'));
 		$buffer = trim(str_replace('#', '', $buffer));
-		$id = md5($buffer.uniqid());
+		$id = md5($buffer);
 		$this->html .= '<h'.$h.' id="'.$id.'" onMouseOver="$(\'#'.$id.' .anchor\').css(\'display\',\'block\')" onMouseOut="$(\'#'.$id.' .anchor\').css(\'display\',\'none\')"><a href="#'.$id.'"><div class="anchor"></div></a><div style="margin-left:25px">'.$this->parse_link($buffer).'</div></h'.$h.'>';
 	}
 	
