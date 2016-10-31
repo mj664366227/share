@@ -177,7 +177,7 @@ class markdown{
 	 */
 	private function parse_table($buffer){
 		$buffer = trim($buffer);
-		if($buffer{0} === '!' || $buffer{0} !== '-'){
+		if($buffer{0} === '!'){
 			return;
 		}
 		$td_num = intval(substr_count($buffer, '|'));

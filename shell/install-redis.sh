@@ -1,5 +1,5 @@
 #linux mongodb自动安装程序 
-#运行例子：sh install-redis.sh 3.2.4 /usr/local
+#运行例子：sh install-redis.sh 3.2.5 /usr/local
  
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ redis_version=$1
 redis_install_path=$2
 if [ ! $redis_version ] || [ ! $redis_install_path ] ; then
 	echo 'error command!!! you must input redis version and install path...'
-	echo 'for example: sh install-redis.sh 3.2.4 /usr/local'
+	echo 'for example: sh install-redis.sh 3.2.5 /usr/local'
 	exit
 fi
 
