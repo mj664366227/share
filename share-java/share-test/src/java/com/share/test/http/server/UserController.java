@@ -2,13 +2,11 @@ package com.share.test.http.server;
 
 import java.io.PrintWriter;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.share.core.annotation.Menu;
 
-@Controller
 public class UserController {
 	@RequestMapping(value = "/user/1", method = RequestMethod.GET)
 	@Menu(menu = "user1", parentMenu = "user")
