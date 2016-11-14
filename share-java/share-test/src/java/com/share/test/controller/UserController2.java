@@ -7,14 +7,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.share.protocol.ReqUserReg;
 import com.share.protocol.ResUserReg;
 
-@Controller("demo模块")
-public class DemoController {
+@Controller("哈哈哈模块")
+public class UserController2 {
 	/**
-	 * demo xcxcc 注册
-	 * @param reqUserReg
-	 * @return
+	 * 用户注册
 	 */
-	@PostMapping("/demo/reg")
+	@PostMapping("/user2/reg")
 	public ResUserReg userReg(ReqUserReg reqUserReg) {
 		ResUserReg resUserReg = new ResUserReg();
 		resUserReg.setUserId(12);
@@ -22,9 +20,9 @@ public class DemoController {
 	}
 
 	/**
-	 * demo登录
+	 * 用户登录
 	 */
-	@PostMapping("/demo/login")
+	@PostMapping("/user2/login")
 	public ResUserReg userLogin(ReqUserReg reqUserReg) {
 		ResUserReg resUserReg = new ResUserReg();
 		resUserReg.setUserId(12);
@@ -32,9 +30,9 @@ public class DemoController {
 	}
 
 	/**
-	 * demo列表
+	 * 用户列表
 	 */
-	@GetMapping("/demo/list")
+	@GetMapping("/user2/list")
 	public ResUserReg userList(ReqUserReg reqUserReg) {
 		ResUserReg resUserReg = new ResUserReg();
 		resUserReg.setUserId(12);

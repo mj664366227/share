@@ -1,11 +1,13 @@
 package com.share.core.general;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import com.share.core.annotation.Require;
 import com.share.core.util.FileSystem;
+import com.share.core.util.JSONObject;
 import com.share.core.util.StringUtil;
 import com.share.core.util.SystemUtil;
 
@@ -23,6 +27,10 @@ import com.share.core.util.SystemUtil;
  */
 @Component
 public class ApiDoc {
+	/**
+	 * logger
+	 */
+	private final static Logger logger = LoggerFactory.getLogger(ApiDoc.class);
 	/**
 	 * 文档根目录
 	 */
@@ -68,14 +76,88 @@ public class ApiDoc {
 		html.append(head());
 		html.append(category(classSet, controller));
 
+		// 模块说明
+		Controller controllerAnnotation = controller.getAnnotation(Controller.class);
+		String moduleName = StringUtil.getString(controllerAnnotation.value());
+		if (moduleName.isEmpty()) {
+			moduleName = controller.getSimpleName();
+			moduleName = moduleName.replaceAll("Controller", "").toLowerCase() + "模块";
+		}
+		html.append("<header>");
+		html.append("<h1>");
+		html.append(moduleName);
+		html.append("</h1>");
+		html.append("<hr>");
+		html.append("</header>");
+
 		for (Method method : controller.getDeclaredMethods()) {
-			for (Annotation annotation : method.getAnnotations()) {
-				//System.err.println(annotation);
-			}
+			html.append(method(controller, method));
 		}
 
 		html.append(foot());
 		FileSystem.write(basePath + "/" + controller2FileName(controller), html.toString(), true);
+	}
+
+	private String method(Class<?> controller, Method method) {
+		StringBuilder html = new StringBuilder();
+		html.append(apiTitle(controller, method));
+		html.append(param(method));
+		html.append(returns(method));
+		return html.toString();
+	}
+
+	private String returns(Method method) {
+		try {
+			StringBuilder html = new StringBuilder();
+			html.append("<pre class=\"sh_sourceCode\">");
+			Class<?> responseObject = method.getReturnType();
+			Object obj = responseObject.newInstance();
+			//String comment = responseObject2FileContent(responseObject);
+			//`System.err.println(JSONObject.encode(responseObject.newInstance()));
+			html.append(JSONObject.encode(obj));
+			html.append("</pre>");
+			return html.toString();
+		} catch (Exception e) {
+			logger.error("", e);
+			System.exit(0);
+		}
+		return "";
+	}
+
+	private String param(Method method) {
+		StringBuilder html = new StringBuilder();
+		html.append("<table width=\"100%\"><tr><th width=\"150\">参数</th><th width=\"40\">必选</th><th width=\"80\">类型</th><th>说明</th></tr>");
+		Class<?> requestObject = method.getParameters()[0].getType();
+		for (Field field : requestObject.getDeclaredFields()) {
+			Require require = field.getAnnotation(Require.class);
+			html.append("<tr>");
+			html.append("<td>" + field.getName() + "</td>");
+			html.append("<td>" + (require == null ? true : require.require()) + "</td>");
+			html.append("<td>" + field.getType().getSimpleName().toLowerCase() + "</td>");
+
+			String comment = requestObject2FileContent(requestObject);
+			comment = comment.substring(0, comment.indexOf(field.getName()));
+			comment = comment.substring(comment.lastIndexOf("/**"));
+			comment = StringUtil.getString(comment.split("\\*")[3]);
+			html.append("<td>" + comment + "</td>");
+			html.append("</tr>");
+		}
+		html.append("</table>");
+		return html.toString();
+	}
+
+	private String apiTitle(Class<?> controller, Method method) {
+		StringBuilder html = new StringBuilder();
+		String url = getMethodUrl(method).toLowerCase().replaceAll("[^a-zA-Z0-9]+", "");
+		html.append("<h3>");
+		html.append(getMethodName(controller, method));
+		html.append("<span>");
+		html.append("<a class=\"mark\" href=\"#" + url + "\" id=\"" + url + "\">");
+		html.append("#");
+		html.append("</a>");
+		html.append("</span>");
+		html.append("</h3>");
+		return html.toString();
 	}
 
 	private String head() {
@@ -108,29 +190,36 @@ public class ApiDoc {
 		html.append("<ul>");
 		for (Class<?> controller : classSet) {
 			Controller controllerAnnotation = controller.getAnnotation(Controller.class);
+			if (controllerAnnotation == null) {
+				continue;
+			}
+			String moduleName = StringUtil.getString(controllerAnnotation.value());
+			if (moduleName.isEmpty()) {
+				moduleName = controller.getSimpleName();
+				moduleName = moduleName.replaceAll("Controller", "").toLowerCase() + "模块";
+			}
 			if (currentController != null && currentController.equals(controller)) {
-				html.append("<li><a class=\"active\" href=\"" + controller2FileName(controller) + "\" title=\"" + controllerAnnotation.value() + "\">" + controllerAnnotation.value() + "</a></li>");
+				html.append("<li><a class=\"active\" href=\"" + controller2FileName(controller) + "\" title=\"" + moduleName + "\">" + moduleName + "</a></li>");
 				html.append(" <ul class=\"sub\">");
 				for (Method method : controller.getDeclaredMethods()) {
-					String java = controller2FileContent(controller);
 					String url = getMethodUrl(method);
-					java = java.substring(java.indexOf(url) - 100);
-					java = java.substring(java.indexOf("/**"), java.indexOf(url));
-					String title = StringUtil.getString(java.split("\\*")[3]);
-					html.append("<li><a href=\"" + controller2FileName(controller) + "#" + method.getName().toLowerCase() + "\" title=\"" + title + "\">" + title + "</a></li>");
+					String title = getMethodName(controller, method);
+					html.append("<li><a href=\"" + controller2FileName(controller) + "#" + url.toLowerCase().replaceAll("[^a-zA-Z0-9]+", "") + "\" title=\"" + title + "\">" + title + "</a></li>");
 				}
 				html.append("</ul>");
 			} else {
-				html.append("<li><a href=\"" + controller2FileName(controller) + "\" title=\"" + controllerAnnotation.value() + "\">" + controllerAnnotation.value() + "</a></li>");
+				html.append("<li><a href=\"" + controller2FileName(controller) + "\" title=\"" + moduleName + "\">" + moduleName + "</a></li>");
 			}
 		}
 		html.append("</ul>");
 		html.append("</div>");
+		html.append("<div id=\"column1\" class=\"interior\">");
 		return html.toString();
 	}
 
 	private String foot() {
 		StringBuilder html = new StringBuilder();
+		html.append("</div>");
 		html.append("</div>");
 		html.append("</body>");
 		html.append("</html>");
@@ -143,6 +232,14 @@ public class ApiDoc {
 
 	private String controller2FileContent(Class<?> controller) {
 		return FileSystem.read(FileSystem.getSystemDir() + "../src/java/" + controller.getName().replaceAll("\\.", "/") + ".java");
+	}
+
+	private String requestObject2FileContent(Class<?> requestObject) {
+		return FileSystem.read(FileSystem.getSystemDir() + "../../share-protocol/src/java/" + requestObject.getName().replaceAll("\\.", "/") + ".java");
+	}
+
+	private String responseObject2FileContent(Class<?> responseObject) {
+		return FileSystem.read(FileSystem.getSystemDir() + "../../share-protocol/src/java/" + responseObject.getName().replaceAll("\\.", "/") + ".java");
 	}
 
 	private String getMethodUrl(Method method) {
@@ -168,5 +265,13 @@ public class ApiDoc {
 			url = patchMapping.value()[0];
 		}
 		return url;
+	}
+
+	private String getMethodName(Class<?> controller, Method method) {
+		String java = controller2FileContent(controller);
+		String url = getMethodUrl(method);
+		java = java.substring(java.indexOf(url) - 100);
+		java = java.substring(java.indexOf("/**"), java.indexOf(url));
+		return StringUtil.getString(java.split("\\*")[3]);
 	}
 }

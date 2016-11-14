@@ -166,6 +166,7 @@ project(':share-test') {
 	   compile project(':share-dao')
 	   compile project(':share-service')
 	   compile project(':share-soa')
+	   compile project(':share-protocol')
 	   compile fileTree( dir: "lib", include: '*.jar' )
 	}
 	task deploy(dependsOn: [copyLib, copyWebapp])
@@ -185,6 +186,13 @@ project(':share-service') {
 	task deploy(dependsOn: [copyLib, copyWebapp])
 }
 project(':share-soa') {
+	dependencies{
+		compile fileTree( dir: "lib", include: '*.jar' )
+		compile project(':share-core')
+	}
+	task deploy(dependsOn: [copyLib, copyWebapp])
+}
+project(':share-protocol') {
 	dependencies{
 		compile fileTree( dir: "lib", include: '*.jar' )
 		compile project(':share-core')
