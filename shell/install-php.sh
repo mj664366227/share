@@ -27,7 +27,7 @@ yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Em
 if [ ! -d $php_install_path/m4 ]; then
 	m4='m4-1.4.17'
 	if [ ! -f $base_path/$m4.tar.gz ]; then
-		wget -O $base_path/$m4.tar.gz http://ftp.gnu.org/gnu/m4/$m4.tar.gz || exit
+		wget -O $base_path/$m4.tar.gz http://install.ruanzhijun.cn/$m4.tar.gz || exit
 	fi
 	tar zxvf $base_path/$m4.tar.gz -C $install_path || exit
 	cd $install_path/$m4
@@ -66,7 +66,7 @@ if [ ! -d $php_install_path/zlib ]; then
 	echo 'installing '$zlib' ...'
 	if [ ! -f $base_path/$zlib.tar.gz ]; then
 		echo $zlib'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$zlib.tar.gz http://zlib.net/$zlib.tar.gz || exit
+		wget -O $base_path/$zlib.tar.gz http://install.ruanzhijun.cn/$zlib.tar.gz || exit
 		echo 'download '$zlib' finished...'
 	fi
 	tar zxvf $base_path/$zlib.tar.gz -C $install_path || exit
