@@ -70,7 +70,7 @@ if [ ! -d $install_path/$libatomic ]; then
 fi
 
 #安装jemalloc
-jemalloc='jemalloc-4.2.1'
+jemalloc='jemalloc-4.3.1'
 echo 'installing '$jemalloc' ...'
 if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
 	echo $jemalloc'.tar.bz2 is not exists, system will going to download it...'
@@ -115,7 +115,7 @@ if [ ! -d $tengine_install_path/tengine ]; then
 	
 	cd $install_path/$tengine
 	#patch -f -p1 < $install_path/nginx_tcp_proxy_module/tcp.patch
-	./configure --prefix=$tengine_install_path/tengine --with-http_concat_module --with-http_stub_status_module --with-http_image_filter_module --with-http_ssl_module --with-select_module --with-poll_module --with-file-aio --with-ipv6 --with-http_gzip_static_module --with-http_sub_module --with-http_ssl_module --with-pcre=$install_path/$pcre --with-zlib=$install_path/$zlib --with-openssl=$install_path/$openssl --with-md5=/usr/lib --with-sha1=/usr/lib --with-md5-asm --with-sha1-asm --with-mail --with-mail_ssl_module --with-http_spdy_module --with-http_realip_module --with-http_addition_module --with-http_dyups_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_reqstat_module=shared --with-http_mp4_module --with-http_gunzip_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_concat_module=shared --with-http_stub_status_module --with-jemalloc=$install_path/jemalloc --with-libatomic=$install_path/$libatomic --add-module=$install_path/nginx-http-concat && make && make install || exit
+	./configure --prefix=$tengine_install_path/tengine --with-http_concat_module --with-http_stub_status_module --with-http_image_filter_module --with-http_ssl_module --with-select_module --with-poll_module --with-file-aio --with-ipv6 --with-http_gzip_static_module --with-http_sub_module --with-http_ssl_module --with-http_lua_module --with-http_v2_module --with-pcre=$install_path/$pcre --with-zlib=$install_path/$zlib --with-openssl=$install_path/$openssl --with-md5=/usr/lib --with-sha1=/usr/lib --with-md5-asm --with-sha1-asm --with-mail --with-mail_ssl_module --with-http_spdy_module --with-http_realip_module --with-http_addition_module --with-http_dyups_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_reqstat_module=shared --with-http_mp4_module --with-http_gunzip_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_concat_module=shared --with-http_stub_status_module --with-jemalloc=$install_path/jemalloc --with-libatomic=$install_path/$libatomic --add-module=$install_path/nginx-http-concat && make && make install || exit
 fi
 
 #添加nginx用户组
