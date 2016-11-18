@@ -15,7 +15,7 @@ public class ResUserReg {
 	/**
 	 * 富动感风格豆腐干地方
 	 */
-	private String dfrgg;
+	private String dfrgg = "保护规划更改";
 	/**
 	 * xxxxxxxxxxxxx
 	 */
