@@ -112,10 +112,12 @@ public class ApiDoc {
 			html.append("<pre class=\"sh_sourceCode\">");
 			Class<?> responseObject = method.getReturnType();
 			Object obj = responseObject.newInstance();
-			//String comment = responseObject2FileContent(responseObject);
-			//`System.err.println(JSONObject.encode(responseObject.newInstance()));
-			html.append(JSONObject.encode(obj));
+			String comment = responseObject2FileContent(responseObject);
+			System.err.println(comment);
+			System.err.println(JSONObject.encode(responseObject.newInstance()));
+			html.append(JSONObject.encode(obj).replaceAll("\",", "\"<br>,"));
 			html.append("</pre>");
+			//System.exit(0);
 			return html.toString();
 		} catch (Exception e) {
 			logger.error("", e);
