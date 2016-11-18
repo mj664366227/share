@@ -27,10 +27,6 @@ import com.share.core.util.SystemUtil;
  */
 @Component
 public class ApiDoc {
-	/** 
-	 * 单位缩进字符串。 
-	 */
-	private final static String SPACE = "\t";
 	/**
 	 * logger
 	 */
@@ -134,11 +130,11 @@ public class ApiDoc {
 		StringBuilder html = new StringBuilder();
 		String json = JSONObject.encode(obj);
 		json = formatJson(json);
-//		json = json.replaceAll("\\:\\s+\\{", "\\:\\{").trim();
-//		json = json.replaceAll("\\:\\s+\\[", "\\:\\[").trim();
-//		json = json.replaceAll("\\[\\s+\\{", "\\[\\{").trim();
-//		json = json.replaceAll("\\s+\\}\\s+\\]", "\\}\\]").trim();
-//		json = json.replaceAll("\\}\\s+\\}", "\\}\r\\}").trim();
+		json = json.replaceAll("\\:\\s+\\{", "\\:\\{").trim();
+		json = json.replaceAll("\\:\\s+\\[", "\\:\\[").trim();
+		json = json.replaceAll("\\[\\s+\\{", "\\[\\{").trim();
+		json = json.replaceAll("\\s+\\}\\s+\\]", "\\}\\]").trim();
+		//json = json.replaceAll("\\}\\s+\\}", "\\}\r\\}").trim();
 		html.append(json);
 		return html.toString();
 	}
@@ -370,14 +366,13 @@ public class ApiDoc {
 
 	/** 
 	 * 返回指定次数的缩进字符串。每一次缩进三个空格，即SPACE。 
-	 *  
 	 * @param number 缩进次数。 
 	 * @return 指定缩进次数的字符串。 
 	 */
 	private String indent(int number) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < number; i++) {
-			result.append(SPACE);
+			result.append("\t");
 		}
 		return result.toString();
 	}
