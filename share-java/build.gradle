@@ -127,7 +127,7 @@ project(':share-core') {
 		compile 'org.eclipse.jetty:jetty-util:9.4.0.RC2'
 		compile 'javax.mail:mail:1.4.7'
 		compile 'org.mongodb:mongo-java-driver:3.3.0'
-		compile 'mysql:mysql-connector-java:6.0.4'
+		compile 'mysql:mysql-connector-java:6.0.5'
 		compile 'io.netty:netty:3.10.6.Final'
 		compile 'io.netty:netty-all:5.0.0.Alpha2'
 		compile 'net.sf.supercsv:super-csv:2.4.0'

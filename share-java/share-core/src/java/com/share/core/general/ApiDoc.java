@@ -113,8 +113,9 @@ public class ApiDoc {
 			Class<?> responseObject = method.getReturnType();
 			Object obj = responseObject.newInstance();
 			String comment = responseObject2FileContent(responseObject);
-			System.err.println(comment);
-			System.err.println(JSONObject.encode(responseObject.newInstance()));
+			//System.err.println(comment);
+			//System.err.println(JSONObject.encode(responseObject.newInstance()));
+			System.err.println(JSONObject.encode(obj).replaceAll("\",", "\"<br>,"));
 			html.append(JSONObject.encode(obj).replaceAll("\",", "\"<br>,"));
 			html.append("</pre>");
 			//System.exit(0);
