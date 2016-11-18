@@ -40,6 +40,9 @@ public class ApiDoc {
 	 */
 	private final static String title = FileSystem.getPropertyString("apidoc.title");
 
+	/**
+	 * 私有化构造函数
+	 */
 	private ApiDoc() {
 		FileSystem.delete(basePath);
 		FileSystem.mkdir(basePath);
