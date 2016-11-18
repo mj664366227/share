@@ -1,5 +1,8 @@
 package com.share.protocol;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ResUserReg {
 	/**
 	 * 用户id
@@ -13,6 +16,18 @@ public class ResUserReg {
 	 * 富动感风格豆腐干地方
 	 */
 	private String dfrgg;
+	/**
+	 * xxxxxxxxxxxxx
+	 */
+	private List<ResXXX> dfrggList = new ArrayList<>();
+	/**
+	 * object xxxx
+	 */
+	private ResXXX ccc = new ResXXX();
+
+	public ResUserReg() {
+		dfrggList.add(new ResXXX());
+	}
 
 	public long getUserId() {
 		return userId;
@@ -36,5 +51,21 @@ public class ResUserReg {
 
 	public void setDfrgg(String dfrgg) {
 		this.dfrgg = dfrgg;
+	}
+
+	public ResXXX getCcc() {
+		return ccc;
+	}
+
+	public void setCcc(ResXXX ccc) {
+		this.ccc = ccc;
+	}
+
+	public List<ResXXX> getDfrggList() {
+		return dfrggList;
+	}
+
+	public void setDfrggList(List<ResXXX> dfrggList) {
+		this.dfrggList = dfrggList;
 	}
 }
