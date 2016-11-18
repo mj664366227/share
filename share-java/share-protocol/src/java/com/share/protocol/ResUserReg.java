@@ -1,6 +1,5 @@
 package com.share.protocol;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ResUserReg {
@@ -15,19 +14,15 @@ public class ResUserReg {
 	/**
 	 * 富动感风格豆腐干地方
 	 */
-	private String dfrgg = "保护规划更改";
+	private String dfrgg;
 	/**
 	 * xxxxxxxxxxxxx
 	 */
-	private List<ResXXX> dfrggList = new ArrayList<>();
+	private List<ResXXX> dfrggList;
 	/**
 	 * object xxxx
 	 */
 	private ResXXX ccc = new ResXXX();
-
-	public ResUserReg() {
-		dfrggList.add(new ResXXX());
-	}
 
 	public long getUserId() {
 		return userId;
