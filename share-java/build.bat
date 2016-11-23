@@ -1,5 +1,8 @@
 @echo off
 
+:开启gradle daemon模式
+del /s/q %USERPROFILE%\.gradle\gradle.properties
+echo org.gradle.daemon=false > %USERPROFILE%\.gradle\gradle.properties
 
 rd /s /q %cd%\share-core\src\java\com\share\core\protocol\protobuf
 %cd%\protobuf\protoc\protoc.exe --java_out=%cd%\share-core\src\java\ --proto_path=%cd%\protobuf\pb\ %cd%\protobuf\pb\demo.proto
