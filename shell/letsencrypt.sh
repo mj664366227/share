@@ -23,5 +23,6 @@ echo '#LIGHTTPD=TRUE' >> letsencrypt.conf
 
 # 生成证书
 ./letsencrypt.sh letsencrypt.conf
+openssl dhparam -out dhparam.lifution.pem 2048
 
 # https://www.ssllabs.com/ssltest
