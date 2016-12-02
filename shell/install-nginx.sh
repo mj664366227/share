@@ -247,18 +247,28 @@ server {
 echo 'create 443.conf...'
 
 #首先自己生成证书，可以实现https，但是不受浏览器信任
-echo '
+echo "
 #https
 #server {
 	#listen  443;
 	#server_name _;
-	#root  '$web_root';
+	#root  "$web_root";
 	#index index.html index.php;
 	
 	#ssl on;
-	#ssl_certificate security.crt;
-	#ssl_certificate_key security.key;
-#}' > $nginx_install_path/nginx/conf/web/443.conf
+	#ssl_certificate /letsencrypt/letsencrypt/trustdream.chained.crt;
+	#ssl_certificate_key /letsencrypt/letsencrypt/trustdream.com.key;
+	#ssl_ciphers \"ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA\";
+	#ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+	#ssl_dhparam /letsencrypt/letsencrypt/dhparam.lifution.pem;
+	#ssl_prefer_server_ciphers on;
+	#ssl_session_cache shared:SSL:10m;
+	
+	#ssl_stapling on;
+	#ssl_stapling_verify on;
+
+	#add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains; preload;';
+#}" > $nginx_install_path/nginx/conf/web/443.conf
 
 #安装代理服务器
 echo '
