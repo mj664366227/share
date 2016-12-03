@@ -1,5 +1,5 @@
 #linux php自动安装程序
-#运行例子：sh install-php.sh 7.0.12 /usr/local
+#运行例子：sh install-php.sh 7.1.0 /usr/local
  
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ php_version=$1
 php_install_path=$2 
 if [ ! $php_version ] || [ ! $php_install_path ]; then
 	echo 'error command!!! you must input php version and install path...'
-	echo 'for example: sh install-php.sh 7.0.12 /usr/local'
+	echo 'for example: sh install-php.sh 7.1.0 /usr/local'
 	exit
 fi
 
@@ -108,7 +108,7 @@ if [ ! -d $php_install_path/libxml2 ]; then
 fi
 
 # 安装OpenSSL
-openssl='openssl-1.0.2j'
+openssl='openssl-1.1.0c'
 if [ ! -d $php_install_path/openssl ]; then
 	echo 'installing '$openssl' ...'
 	if [ ! -f $base_path/$openssl.tar.gz ]; then
