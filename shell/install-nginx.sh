@@ -77,7 +77,7 @@ if [ ! -d $nginx_install_path/python ]; then
 fi
 
 # 安装libxml2
-libxml='libxml2-2.9.3'
+libxml='libxml2-2.9.4'
 if [ ! -d $nginx_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
 	if [ ! -f $base_path/$libxml.tar.gz ]; then
