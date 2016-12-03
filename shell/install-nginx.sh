@@ -28,7 +28,7 @@ if [ ! -d $install_path/$zlib ]; then
 	echo 'installing '$zlib' ...'
 	if [ ! -f $base_path/$zlib.tar.gz ]; then
 		echo $zlib'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$zlib.tar.gz http://zlib.net/$zlib.tar.gz || exit
+		wget -O $base_path/$zlib.tar.gz http://install.ruanzhijun.cn/$zlib.tar.gz || exit
 		echo 'download '$zlib' finished...'
 	fi
 	tar zxvf $base_path/$zlib.tar.gz -C $install_path || exit
@@ -40,7 +40,7 @@ if [ ! -d $install_path/$pcre ]; then
 	echo 'installing '$pcre' ...'
 	if [ ! -f $base_path/$pcre.tar.gz ]; then
 		echo $pcre'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$pcre.tar.gz ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$pcre.tar.gz || exit
+		wget -O $base_path/$pcre.tar.gz http://install.ruanzhijun.cn/$pcre.tar.gz || exit
 		echo 'download '$pcre' finished...'
 	fi
 	tar zxvf $base_path/$pcre.tar.gz -C $install_path || exit
@@ -50,7 +50,7 @@ fi
 if [ ! -d $nginx_install_path/libiconv ]; then
 	libiconv='libiconv-1.14'
 	if [ ! -f $base_path/$libiconv.tar.gz ]; then
-		wget -O $base_path/$libiconv.tar.gz http://ftp.gnu.org/pub/gnu/libiconv/$libiconv.tar.gz || exit
+		wget -O $base_path/$libiconv.tar.gz http://install.ruanzhijun.cn/$libiconv.tar.gz || exit
 	fi
 	tar zxvf $base_path/$libiconv.tar.gz -C $install_path || exit
 	cd $install_path/$libiconv/srclib
@@ -66,7 +66,7 @@ if [ ! -d $nginx_install_path/python ]; then
 	echo 'installing '$python' ...'
 	if [ ! -f $base_path/$python.tgz ]; then
 		echo $python'.tgz is not exists, system will going to download it...'
-		wget -O $base_path/$python.tgz --no-check-certificate http://www.python.org/ftp/python/3.4.0/$python.tgz || exit
+		wget -O $base_path/$python.tgz --no-check-certificate http://install.ruanzhijun.cn/3.4.0/$python.tgz || exit
 		echo 'download '$python' finished...'
 	fi
 	tar xvf $base_path/$python.tgz -C $install_path || exit
@@ -82,7 +82,7 @@ if [ ! -d $nginx_install_path/libxml2 ]; then
 	echo 'installing '$libxml' ...'
 	if [ ! -f $base_path/$libxml.tar.gz ]; then
 		echo $libxml'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.tar.gz http://xmlsoft.org/sources/$libxml.tar.gz || exit
+		wget -O $base_path/$libxml.tar.gz http://install.ruanzhijun.cn/$libxml.tar.gz || exit
 		echo 'download '$libxml' finished...'
 	fi
 	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
@@ -97,7 +97,7 @@ openssl='openssl-1.1.0c'
 echo 'installing '$openssl' ...'
 if [ ! -f $base_path/$openssl.tar.gz ]; then
 	echo $openssl'.tar.gz is not exists, system will going to download it...'
-	wget -O $base_path/$openssl.tar.gz http://www.openssl.org/source/$openssl.tar.gz || exit
+	wget -O $base_path/$openssl.tar.gz http://install.ruanzhijun.cn/$openssl.tar.gz || exit
 	echo 'download '$openssl' finished...'
 fi
 tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
@@ -108,7 +108,7 @@ if [ ! -d $install_path/$libatomic ]; then
 	echo 'installing '$libatomic' ...'
 	if [ ! -f $base_path/$libatomic.tar.gz ]; then
 		echo $libatomic'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libatomic.tar.gz http://www.hpl.hp.com/research/linux/atomic_ops/download/$libatomic.tar.gz || exit
+		wget -O $base_path/$libatomic.tar.gz http://install.ruanzhijun.cn/$libatomic.tar.gz || exit
 		echo 'download '$libatomic' finished...'
 	fi
 	tar zxvf $base_path/$libatomic.tar.gz -C $install_path || exit
@@ -120,7 +120,7 @@ echo 'installing '$nginx' ...'
 if [ ! -d $nginx_install_path/nginx ]; then
 	if [ ! -f $base_path/$nginx.tar.gz ]; then
 		echo $nginx'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$nginx.tar.gz http://nginx.org/download/$nginx.tar.gz || exit
+		wget -O $base_path/$nginx.tar.gz http://install.ruanzhijun.cn/$nginx.tar.gz || exit
 		echo 'download '$nginx' finished...'
 	fi
 	tar zxvf $base_path/$nginx.tar.gz -C $install_path || exit
@@ -128,7 +128,7 @@ fi
 cd $install_path/$nginx
 ./configure --prefix=$nginx_install_path/nginx --with-http_stub_status_module --with-ld-opt="-Wl,-E" --with-http_ssl_module --with-http_v2_module --with-select_module --with-poll_module --with-file-aio --with-ipv6 --with-http_gzip_static_module --with-http_image_filter_module --with-http_sub_module --with-http_ssl_module --with-pcre=$install_path/$pcre --with-zlib=$install_path/$zlib --with-openssl=$install_path/$openssl --with-md5=/usr/lib --with-sha1=/usr/lib --with-md5-asm --with-sha1-asm --with-mail --with-mail_ssl_module --with-http_realip_module --with-http_perl_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_stub_status_module --with-stream --with-stream_ssl_module --with-libatomic=$install_path/$libatomic && make && make install || exit
 
-#添加nginx用户组
+#添加nginx用户组 
 user='www'
 group='www'
 user_exists=$(id -nu $user)
