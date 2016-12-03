@@ -21,7 +21,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #因为有些系统可能安装的类库不全，先给补上
-yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip vim iptables-services
+yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip vim iptables-services httpd-tools
 
 # 方便以后安装扩展，安装必备的工具
 if [ ! -d $php_install_path/m4 ]; then
@@ -118,7 +118,7 @@ if [ ! -d $php_install_path/openssl ]; then
 	fi
 	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
 	cd $install_path/$openssl
-	./config --prefix=$php_install_path/openssl && $install_path/$openssl/config -t && make && make test && make install || exit
+	./config shared zlib --prefix=$php_install_path/openssl && $install_path/$openssl/config -t && make && make install || exit
 	yes|cp $php_install_path/openssl/bin/* /usr/bin/
 	echo $openssl' install finished...'
 fi

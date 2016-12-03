@@ -19,7 +19,7 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz ncurses-devel perl bzip2 unzip vim iptables-services
+yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz ncurses-devel perl bzip2 unzip vim iptables-services httpd-tools
 
 #安装cmake
 cmake='cmake-3.7.1'
