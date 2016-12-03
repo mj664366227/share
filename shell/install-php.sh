@@ -119,7 +119,12 @@ if [ ! -d $php_install_path/openssl ]; then
 	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
 	cd $install_path/$openssl
 	./config shared zlib --prefix=$php_install_path/openssl && $install_path/$openssl/config -t && make && make install || exit
-	yes|cp $php_install_path/openssl/bin/* /usr/bin/
+	rm -rf /usr/bin/openssl && ln -s $install_path/$openssl/bin/openssl /usr/bin/openssl
+	rm -rf /usr/include/openssl && ln -s $install_path/$openssl/include/openssl /usr/include/openssl
+	rm -rf /usr/lib64/libssl.so.1.1 && ln -s $install_path/$openssl/lib/libssl.so.1.1 /usr/lib64/libssl.so.1.1
+	rm -rf /usr/lib64/libcrypto.so.1.1 && ln -s $install_path/$openssl/lib/libcrypto.so.1.1 /usr/lib64/libcrypto.so.1.1
+	echo "/usr/local/ssl/lib" >> /etc/ld.so.conf
+	ldconfig -v
 	echo $openssl' install finished...'
 fi
 
