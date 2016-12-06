@@ -266,7 +266,11 @@ echo "
 	
 	#ssl_stapling on;
 	#ssl_stapling_verify on;
+	#resolver 8.8.4.4 8.8.8.8 valid=300s;
+    #resolver_timeout 10s;
 
+	#add_header x-Content-Type-Options nosniff;
+	#add_header X-Frame-Options deny;
 	#add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains; preload;';
 #}" > $nginx_install_path/nginx/conf/web/443.conf
 
