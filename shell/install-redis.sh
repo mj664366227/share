@@ -35,6 +35,20 @@ if [ ! -d $install_path/$jemalloc ]; then
 	mv $install_path/$jemalloc $install_path/jemalloc 
 fi 
 
+#安装ruby(用于搭建集群)
+ruby_version='ruby-2.3.3'
+if [ ! -d $redis_install_path/ruby ]; then
+	if [ ! -f $base_path/$ruby_version.tar.gz ]; then
+		echo $ruby_version'.tar.gz is not exists, system will going to download it...'
+		wget -O $base_path/$ruby_version.tar.gz http://install.ruanzhijun.cn/$ruby_version.tar.gz || exit
+		echo 'download '$ruby_version'.tar.gz finished...'
+	fi
+	tar zxvf $base_path/$ruby_version.tar.gz -C $redis_install_path || exit
+	cd $redis_install_path
+	./configure --prefix=$redis_install_path/ruby && make && make install || exit
+	yes|cp $redis_install_path/ruby/bin/* /usr/bin/
+fi
+
 #安装redis
 if [ ! -d $redis_install_path/redis ]; then
 	if [ ! -f $base_path/redis-$redis_version.tar.gz ]; then
