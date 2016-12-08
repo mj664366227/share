@@ -127,7 +127,25 @@ max_connections = 100
 back_log = 100
 join_buffer_size = 200K
 thread_cache_size = 1024
-server-id  = 1
+
+#mysql主从配置(主)
+#server-id = 1
+#log-bin = master-bin
+#log-bin-index = master-bin.index
+#replicate-ignore-db = sys
+#replicate-ignore-db = mysql
+#replicate-ignore-db = information_schema
+#replicate-ignore-db = performance_schema
+
+#mysql主从配置(从)
+#server-id = 2
+#relay-log = slave-relay-bin 
+#relay-log-index = slave-relay-bin.index
+#replicate-ignore-db = sys
+#replicate-ignore-db = mysql
+#replicate-ignore-db = information_schema
+#replicate-ignore-db = performance_schema
+
 innodb_buffer_pool_size = 200K
 innodb_log_file_size = 200K
 innodb_log_buffer_size = 200K
@@ -191,3 +209,18 @@ source /etc/rc.d/rc.local
 
 #输出版本
 mysql -uroot -proot -e "select VERSION();" || exit
+
+#mysql主从配置命令
+#主：GRANT REPLICATION SLAVE ON *.* to 'slave-user'@'mysql.slave.com' identified by 'slave-password'; 
+#    show master status;
+#    执行完此步骤后不要再操作主服务器MYSQL，防止主服务器状态值变化
+#    复制 File 和 Position 的值到slave
+#    
+#    
+#    
+#从：change master to master_host='mysql.master.com',master_user='slave-user',master_password='slave-password',master_log_file='mysql-bin.000004',master_log_pos=308;
+#     start slave;
+#	  show slave status;
+#     出现下面的信息，证明主从同步成功
+#     Slave_IO_Running: Yes    //此状态必须YES     
+#     Slave_SQL_Running: Yes    //此状态必须YES
