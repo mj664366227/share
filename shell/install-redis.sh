@@ -14,7 +14,7 @@ if [ ! $redis_version ] || [ ! $redis_install_path ] ; then
 	exit
 fi
 
-yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip iptables-services ruby ruby-devel rubygems rpm-build
+yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip iptables-services ruby ruby-devel rubygems rpm-build httpd-tools bc
 
 #建立临时安装目录
 echo 'preparing working path...'
@@ -60,15 +60,28 @@ syslog-enabled no
 slowlog-log-slower-than -1 	
 appendonly no
 auto-aof-rewrite-percentage 0
+cluster-enabled yes
+cluster-config-file nodes_7000.conf
+cluster-node-timeout 15000 
 requirepass admin" > $redis_install_path/redis/redis.conf
 fi
+
+#设置ruby gem源为淘宝
+$ gem source -r https://rubygems.org/
+$ gem source -a http://ruby.taobao.org/
+gem install redis
 
 #关闭防火墙
 systemctl stop firewalld
 systemctl disable firewalld.service
 
-#开机启动redis
+#redis全局命令
 yes|cp -rf $redis_install_path'/redis/src/redis-server' /usr/bin/
 yes|cp -rf $redis_install_path'/redis/src/redis-cli' /usr/bin/
-echo 'redis-server '$redis_install_path'/redis/redis.conf' >> /etc/rc.local
+yes|cp -rf $redis_install_path'/redis/src/redis-trib.rb' /usr/bin/
 source /etc/rc.local
+
+#默认创建一个3个节点的集群
+mkdir -p $redis_install_path/redis/cluster/7000
+mkdir -p $redis_install_path/redis/cluster/7001
+mkdir -p $redis_install_path/redis/cluster/7002
