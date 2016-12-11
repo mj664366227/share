@@ -4522,5 +4522,145 @@ public class Redis {
 	public class HyperLogLog {
 		private HyperLogLog() {
 		}
+
+		/**
+		 * 将指定元素添加到HyperLogLog
+		 * @param key 键
+		 * @param elements 要统计的元素
+		 */
+		public Long pfadd(String key, String... elements) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.pfadd(key, elements);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		/**
+		 * 将指定元素添加到HyperLogLog
+		 * @param key 键
+		 * @param elements 要统计的元素
+		 */
+		public Long pfadd(final byte[] key, final byte[]... elements) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.pfadd(key, elements);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		/**
+		 * 返回存储在HyperLogLog结构体的该变量的近似基数
+		 * @param key 键
+		 */
+		public long pfcount(String key) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.pfcount(key);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return 0;
+		}
+
+		/**
+		 * 返回存储在HyperLogLog结构体的该变量的近似基数
+		 * @param key 键的集合
+		 */
+		public long pfcount(String... key) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.pfcount(key);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return 0;
+		}
+
+		/**
+		* 返回存储在HyperLogLog结构体的该变量的近似基数
+		* @param key 键
+		*/
+		public long pfcount(byte[] key) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.pfcount(key);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return 0;
+		}
+
+		/**
+		* 返回存储在HyperLogLog结构体的该变量的近似基数
+		* @param key 键的集合
+		*/
+		public long pfcount(byte[]... key) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.pfcount(key);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return 0;
+		}
+
+		/**
+		 * 将多个 HyperLogLog 合并为一个 HyperLogLog 
+		 * @param destkey 目标结合
+		 * @param sourcekeys 源集合
+		 */
+		public String pfmerge(String destkey, String... sourcekeys) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.pfmerge(destkey, sourcekeys);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		/**
+		 * 将多个 HyperLogLog 合并为一个 HyperLogLog 
+		 * @param destkey 目标结合
+		 * @param sourcekeys 源集合
+		 */
+		public String pfmerge(final byte[] destkey, final byte[]... sourcekeys) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.pfmerge(destkey, sourcekeys);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
 	}
 }
