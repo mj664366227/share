@@ -2,6 +2,7 @@ package com.share.core.redis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,7 +18,12 @@ import org.springframework.beans.factory.annotation.Value;
 import com.share.core.util.StringUtil;
 
 import redis.clients.jedis.BinaryClient.LIST_POSITION;
+import redis.clients.jedis.GeoCoordinate;
+import redis.clients.jedis.GeoRadiusResponse;
+import redis.clients.jedis.GeoUnit;
+import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.Pipeline;
@@ -26,6 +32,7 @@ import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.SortingParams;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.ZParams;
+import redis.clients.jedis.params.geo.GeoRadiusParam;
 import redis.clients.util.SafeEncoder;
 
 /**
@@ -44,6 +51,10 @@ public class Redis {
 	 * jedisPool
 	 */
 	private JedisPool jedisPool = null;
+	/**
+	 * jedisCluster
+	 */
+	private JedisCluster jedisCluster = null;
 	/** 
 	 * 操作Key的方法 
 	 */
@@ -88,6 +99,18 @@ public class Redis {
 	 * 服务 
 	 */
 	public Server SERVER = new Server();
+	/**
+	 * 集群
+	 */
+	public Cluster CLUSTER = new Cluster();
+	/**
+	 * 地理位置
+	 */
+	public Geo GEO = new Geo();
+	/**
+	 * 基数统计
+	 */
+	public HyperLogLog HYPERLOGLOG = new HyperLogLog();
 	/**
 	 * 最小空闲连接数
 	 */
@@ -154,7 +177,7 @@ public class Redis {
 		} else {
 			jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
 		}
-		logger.warn("redis init " + host + ":" + port);
+		logger.warn("redis single init " + host + ":" + port);
 
 		// 检查连接
 		try {
@@ -164,19 +187,45 @@ public class Redis {
 			System.exit(0);
 		}
 	}
-	
+
 	/**
 	 * 初始化(cluster)
 	 */
 	public void cluster() {
-		
+		Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
+		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7000));
+		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7001));
+		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7002));
+		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7003));
+		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7004));
+		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7005));
+
+		jedisCluster = new JedisCluster(jedisClusterNodes);
+		logger.warn("redis cluster init " + host + ":" + port);
+
+		// 检查连接
+		try {
+			jedisCluster.del("test");
+		} catch (Exception e) {
+			logger.error("", e);
+			System.exit(0);
+		}
 	}
 
 	/**
 	 * 关闭方法
 	 */
 	public void close() {
-		jedisPool.close();
+		try {
+			if (jedisPool != null) {
+				jedisPool.close();
+			}
+			if (jedisCluster != null) {
+				jedisCluster.close();
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 		logger.warn("redis closed");
 	}
 
@@ -4050,6 +4099,290 @@ public class Redis {
 				jedis.close();
 			}
 			return null;
+		}
+	}
+
+	/**
+	 * 集群
+	 */
+	public class Cluster {
+		private Cluster() {
+		}
+	}
+
+	/**
+	 * 地理位置
+	 */
+	public class Geo {
+		private Geo() {
+		}
+
+		public Long geoadd(String key, double longitude, double latitude, String member) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geoadd(key, longitude, latitude, member);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public Long geoadd(byte[] key, double longitude, double latitude, byte[] member) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geoadd(key, longitude, latitude, member);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public Long geoadd(String key, Map<String, GeoCoordinate> memberCoordinateMap) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geoadd(key, memberCoordinateMap);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public Long geoadd(byte[] key, Map<byte[], GeoCoordinate> memberCoordinateMap) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geoadd(key, memberCoordinateMap);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public Double geodist(String key, String member1, String member2) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geodist(key, member1, member2);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public Double geodist(byte[] key, byte[] member1, byte[] member2) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geodist(key, member1, member2);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public Double geodist(String key, String member1, String member2, GeoUnit unit) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geodist(key, member1, member2, unit);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public Double geodist(byte[] key, byte[] member1, byte[] member2, GeoUnit unit) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geodist(key, member1, member2, unit);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<String> geohash(String key, String... members) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geohash(key, members);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<byte[]> geohash(byte[] key, byte[]... members) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geohash(key, members);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<GeoCoordinate> geopos(String key, String... members) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geopos(key, members);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<GeoCoordinate> geopos(byte[] key, byte[]... members) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.geopos(key, members);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<GeoRadiusResponse> georadius(String key, double longitude, double latitude, double radius, GeoUnit unit) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.georadius(key, longitude, latitude, radius, unit);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<GeoRadiusResponse> georadius(byte[] key, double longitude, double latitude, double radius, GeoUnit unit) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.georadius(key, longitude, latitude, radius, unit);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<GeoRadiusResponse> georadius(String key, double longitude, double latitude, double radius, GeoUnit unit, GeoRadiusParam param) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.georadius(key, longitude, latitude, radius, unit, param);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<GeoRadiusResponse> georadius(byte[] key, double longitude, double latitude, double radius, GeoUnit unit, GeoRadiusParam param) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.georadius(key, longitude, latitude, radius, unit, param);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<GeoRadiusResponse> georadiusByMember(String key, String member, double radius, GeoUnit unit) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.georadiusByMember(key, member, radius, unit);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<GeoRadiusResponse> georadiusByMember(byte[] key, byte[] member, double radius, GeoUnit unit) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.georadiusByMember(key, member, radius, unit);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<GeoRadiusResponse> georadiusByMember(String key, String member, double radius, GeoUnit unit, GeoRadiusParam param) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.georadiusByMember(key, member, radius, unit, param);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		public List<GeoRadiusResponse> georadiusByMember(byte[] key, byte[] member, double radius, GeoUnit unit, GeoRadiusParam param) {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.georadiusByMember(key, member, radius, unit, param);
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * 基数统计
+	 */
+	public class HyperLogLog {
+		private HyperLogLog() {
 		}
 	}
 }
