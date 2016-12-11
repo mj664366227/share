@@ -1,6 +1,28 @@
 #linux mongodb自动安装程序 
 #运行例子：sh install-redis.sh 3.2.6 /usr/local
- 
+
+function cluster(){ 
+	port=$1;
+	mkdir -p $redis_install_path/redis/cluster/$port
+	cd $redis_install_path/redis/cluster/$port
+	echo "daemonize yes 	
+pidfile "$redis_install_path"/redis/redis-"$port".pid 
+port "$port"
+timeout 5
+databases 16
+maxclients 1000
+dir "$redis_install_path"/cluster/"$port"
+syslog-enabled no
+slowlog-log-slower-than -1
+appendonly no
+auto-aof-rewrite-percentage 0
+cluster-enabled yes
+cluster-config-file nodes_"$port".conf
+cluster-node-timeout 15000 
+requirepass admin" > redis.conf
+	redis-server $redis_install_path/redis/cluster/$port/redis.conf
+}
+
 #定义本程序的当前目录
 base_path=$(pwd)
 ntpdate ntp.api.bz
@@ -51,18 +73,15 @@ if [ ! -d $redis_install_path/redis ]; then
 	make
 	echo "daemonize yes 	
 pidfile "$redis_install_path"/redis/redis.pid 
-port 6379 				
-timeout 5	 				
-databases 16 						
-maxclients 1000 					
-dir "$redis_install_path"/redis/ 		
-syslog-enabled no 					
-slowlog-log-slower-than -1 	
+port 6379
+timeout 5
+databases 16
+maxclients 1000
+dir "$redis_install_path"/redis/
+syslog-enabled no
+slowlog-log-slower-than -1
 appendonly no
 auto-aof-rewrite-percentage 0
-cluster-enabled yes
-cluster-config-file nodes_7000.conf
-cluster-node-timeout 15000 
 requirepass admin" > $redis_install_path/redis/redis.conf
 fi
 
@@ -81,6 +100,6 @@ yes|cp -rf $redis_install_path'/redis/src/redis-trib.rb' /usr/bin/
 source /etc/rc.local
 
 #默认创建一个3个节点的集群
-mkdir -p $redis_install_path/redis/cluster/7000
-mkdir -p $redis_install_path/redis/cluster/7001
-mkdir -p $redis_install_path/redis/cluster/7002
+cluster 7000
+cluster 7001
+cluster 7002
