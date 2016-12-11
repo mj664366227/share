@@ -66,9 +66,8 @@ cluster-node-timeout 15000
 requirepass admin" > $redis_install_path/redis/redis.conf
 fi
 
-#设置ruby gem源为淘宝
-$ gem source -r https://rubygems.org/
-$ gem source -a http://ruby.taobao.org/
+#设置ruby gem源为Ruby China
+gem sources --add https://gems.ruby-china.org/
 gem install redis
 
 #关闭防火墙
