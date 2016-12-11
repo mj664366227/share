@@ -2,24 +2,25 @@
 #运行例子：sh install-redis.sh 3.2.6 /usr/local
 
 function cluster(){ 
-	port=$1;
+	redis_install_path=$1;
+	port=$2;
 	mkdir -p $redis_install_path/redis/cluster/$port
 	cd $redis_install_path/redis/cluster/$port
 	echo "daemonize yes 	
-pidfile "$redis_install_path"/redis/redis-"$port".pid 
+pidfile "$redis_install_path"/redis/cluster/"$port"/redis-"$port".pid 
 port "$port"
+bind 0.0.0.0
 timeout 5
 databases 16
 maxclients 1000
-dir "$redis_install_path"/cluster/"$port"
+dir "$redis_install_path"/redis/cluster/"$port"/
 syslog-enabled no
 slowlog-log-slower-than -1
 appendonly no
 auto-aof-rewrite-percentage 0
 cluster-enabled yes
-cluster-config-file nodes_"$port".conf
-cluster-node-timeout 15000 
-requirepass admin" > redis.conf
+cluster-config-file "$redis_install_path"/redis/cluster/"$port"/nodes_"$port".conf
+cluster-node-timeout 15000" > redis.conf
 	redis-server $redis_install_path/redis/cluster/$port/redis.conf
 }
 
@@ -74,6 +75,7 @@ if [ ! -d $redis_install_path/redis ]; then
 	echo "daemonize yes 	
 pidfile "$redis_install_path"/redis/redis.pid 
 port 6379
+bind 0.0.0.0
 timeout 5
 databases 16
 maxclients 1000
@@ -87,6 +89,7 @@ fi
 
 #设置ruby gem源为Ruby China
 gem sources --add https://gems.ruby-china.org/
+gem update --system
 gem install redis
 
 #关闭防火墙
@@ -99,7 +102,13 @@ yes|cp -rf $redis_install_path'/redis/src/redis-cli' /usr/bin/
 yes|cp -rf $redis_install_path'/redis/src/redis-trib.rb' /usr/bin/
 source /etc/rc.local
 
-#默认创建一个3个节点的集群
-cluster 7000
-cluster 7001
-cluster 7002
+#默认创建一个6个节点(3主3从)的集群
+ip=$(sh ip.sh)
+cluster $redis_install_path 7000
+cluster $redis_install_path 7001
+cluster $redis_install_path 7002
+cluster $redis_install_path 7003
+cluster $redis_install_path 7004
+cluster $redis_install_path 7005
+redis-trib.rb create --replicas  1 $ip:7000 $ip:7001 $ip:7002 $ip:7003 $ip:7004 $ip:7005
+yes yes | head -1
