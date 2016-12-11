@@ -4117,6 +4117,13 @@ public class Redis {
 		private Geo() {
 		}
 
+		/**
+		 * 将指定的地理空间位置添加到指定的key中
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param member 位置名称
+		 */
 		public Long geoadd(String key, double longitude, double latitude, String member) {
 			Jedis jedis = null;
 			try {
@@ -4130,6 +4137,13 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 将指定的地理空间位置添加到指定的key中
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param member 位置名称
+		 */
 		public Long geoadd(byte[] key, double longitude, double latitude, byte[] member) {
 			Jedis jedis = null;
 			try {
@@ -4143,6 +4157,11 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 将指定的地理空间位置添加到指定的key中
+		 * @param key 键
+		 * @param memberCoordinateMap 经纬度集合
+		 */
 		public Long geoadd(String key, Map<String, GeoCoordinate> memberCoordinateMap) {
 			Jedis jedis = null;
 			try {
@@ -4156,6 +4175,11 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 将指定的地理空间位置添加到指定的key中
+		 * @param key 键
+		 * @param memberCoordinateMap 经纬度集合
+		 */
 		public Long geoadd(byte[] key, Map<byte[], GeoCoordinate> memberCoordinateMap) {
 			Jedis jedis = null;
 			try {
@@ -4169,6 +4193,12 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 返回两个给定位置之间的距离(使用米作为单位)
+		 * @param key 键
+		 * @param member1 位置名称1
+		 * @param member2 位置名称2
+		 */
 		public Double geodist(String key, String member1, String member2) {
 			Jedis jedis = null;
 			try {
@@ -4182,6 +4212,12 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 返回两个给定位置之间的距离(使用米作为单位)
+		 * @param key 键
+		 * @param member1 位置名称1
+		 * @param member2 位置名称2
+		 */
 		public Double geodist(byte[] key, byte[] member1, byte[] member2) {
 			Jedis jedis = null;
 			try {
@@ -4195,6 +4231,13 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 返回两个给定位置之间的距离
+		 * @param key 键
+		 * @param member1 位置名称1
+		 * @param member2 位置名称2
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
 		public Double geodist(String key, String member1, String member2, GeoUnit unit) {
 			Jedis jedis = null;
 			try {
@@ -4208,6 +4251,13 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 返回两个给定位置之间的距离
+		 * @param key 键
+		 * @param member1 位置名称1
+		 * @param member2 位置名称2
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
 		public Double geodist(byte[] key, byte[] member1, byte[] member2, GeoUnit unit) {
 			Jedis jedis = null;
 			try {
@@ -4221,6 +4271,11 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 返回一个或多个标准的地理空间的Geohash字符串
+		 * @param key 键
+		 * @param members 位置名称
+		 */
 		public List<String> geohash(String key, String... members) {
 			Jedis jedis = null;
 			try {
@@ -4234,6 +4289,11 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 返回一个或多个标准的地理空间的Geohash字符串
+		 * @param key 键
+		 * @param members 位置名称
+		 */
 		public List<byte[]> geohash(byte[] key, byte[]... members) {
 			Jedis jedis = null;
 			try {
@@ -4247,6 +4307,11 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 返回地理空间的经纬度
+		 * @param key 键
+		 * @param members 位置名称
+		 */
 		public List<GeoCoordinate> geopos(String key, String... members) {
 			Jedis jedis = null;
 			try {
@@ -4260,6 +4325,11 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 返回地理空间的经纬度
+		 * @param key 键
+		 * @param members 位置名称
+		 */
 		public List<GeoCoordinate> geopos(byte[] key, byte[]... members) {
 			Jedis jedis = null;
 			try {
@@ -4273,6 +4343,14 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 查询指定半径内所有的地理空间元素的集合
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
 		public List<GeoRadiusResponse> georadius(String key, double longitude, double latitude, double radius, GeoUnit unit) {
 			Jedis jedis = null;
 			try {
@@ -4286,6 +4364,14 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 查询指定半径内所有的地理空间元素的集合
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
 		public List<GeoRadiusResponse> georadius(byte[] key, double longitude, double latitude, double radius, GeoUnit unit) {
 			Jedis jedis = null;
 			try {
@@ -4299,6 +4385,15 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 查询指定半径内所有的地理空间元素的集合
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 * @param param 额外参数
+		 */
 		public List<GeoRadiusResponse> georadius(String key, double longitude, double latitude, double radius, GeoUnit unit, GeoRadiusParam param) {
 			Jedis jedis = null;
 			try {
@@ -4312,6 +4407,15 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 查询指定半径内所有的地理空间元素的集合
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 * @param param 额外参数
+		 */
 		public List<GeoRadiusResponse> georadius(byte[] key, double longitude, double latitude, double radius, GeoUnit unit, GeoRadiusParam param) {
 			Jedis jedis = null;
 			try {
@@ -4325,6 +4429,14 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 查询指定半径内匹配到的最大距离的一个地理空间元素
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
 		public List<GeoRadiusResponse> georadiusByMember(String key, String member, double radius, GeoUnit unit) {
 			Jedis jedis = null;
 			try {
@@ -4338,6 +4450,14 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 查询指定半径内匹配到的最大距离的一个地理空间元素
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
 		public List<GeoRadiusResponse> georadiusByMember(byte[] key, byte[] member, double radius, GeoUnit unit) {
 			Jedis jedis = null;
 			try {
@@ -4351,6 +4471,15 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 查询指定半径内匹配到的最大距离的一个地理空间元素
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 * @param param 额外参数
+		 */
 		public List<GeoRadiusResponse> georadiusByMember(String key, String member, double radius, GeoUnit unit, GeoRadiusParam param) {
 			Jedis jedis = null;
 			try {
@@ -4364,6 +4493,15 @@ public class Redis {
 			return null;
 		}
 
+		/**
+		 * 查询指定半径内匹配到的最大距离的一个地理空间元素
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 * @param param 额外参数
+		 */
 		public List<GeoRadiusResponse> georadiusByMember(byte[] key, byte[] member, double radius, GeoUnit unit, GeoRadiusParam param) {
 			Jedis jedis = null;
 			try {
