@@ -540,7 +540,6 @@ public final class FileSystem {
 	public final static String getPropertyString(String key) {
 		String value = property.getProperty(key);
 		if (value == null) {
-			logger.error("can not found property: " + key);
 			return "";
 		}
 		return value.trim();

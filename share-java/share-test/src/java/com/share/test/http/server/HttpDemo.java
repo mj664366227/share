@@ -7,6 +7,5 @@ public class HttpDemo {
 	public static void main(String[] a) throws Exception {
 		HttpServer s = new HttpServer(FileSystem.getPropertyInt("http.port"));
 		s.start();
-		//System.exit(0);
 	}
 }

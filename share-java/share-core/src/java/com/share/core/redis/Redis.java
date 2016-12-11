@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.share.core.util.FileSystem;
 import com.share.core.util.StringUtil;
 
 import redis.clients.jedis.BinaryClient.LIST_POSITION;
@@ -159,9 +160,9 @@ public class Redis {
 	}
 
 	/**
-	 * 初始化(single)
+	 * 初始化jedis连接池
 	 */
-	public void single() {
+	private GenericObjectPoolConfig initPoolConfig() {
 		GenericObjectPoolConfig jedisPoolConfig = new GenericObjectPoolConfig();
 		jedisPoolConfig.setMinIdle(minIdle);
 		jedisPoolConfig.setMaxIdle(maxIdle);
@@ -171,13 +172,20 @@ public class Redis {
 		jedisPoolConfig.setTestOnReturn(true);
 		jedisPoolConfig.setMaxWaitMillis(maxWait);
 		jedisPoolConfig.setMaxTotal(maxTotal);
+		return jedisPoolConfig;
+	}
 
+	/**
+	 * 初始化(single)
+	 */
+	public void single() {
+		GenericObjectPoolConfig jedisPoolConfig = initPoolConfig();
 		if (password.isEmpty()) {
 			jedisPool = new JedisPool(jedisPoolConfig, host, port);
 		} else {
 			jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
 		}
-		logger.warn("redis single init " + host + ":" + port);
+		logger.warn("redis single init {}:{}", host, port);
 
 		// 检查连接
 		try {
@@ -193,19 +201,22 @@ public class Redis {
 	 */
 	public void cluster() {
 		Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
-		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7000));
-		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7001));
-		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7002));
-		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7003));
-		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7004));
-		jedisClusterNodes.add(new HostAndPort("192.168.1.105", 7005));
+		for (int i = 1; i < 1000; i++) {
+			String hostAndPort = FileSystem.getPropertyString("redis.node" + i);
+			if (hostAndPort.isEmpty()) {
+				break;
+			}
+			jedisClusterNodes.add(HostAndPort.parseString(hostAndPort));
+			logger.warn("redis cluster connect to {}", hostAndPort);
+		}
 
-		jedisCluster = new JedisCluster(jedisClusterNodes);
-		logger.warn("redis cluster init " + host + ":" + port);
+		GenericObjectPoolConfig jedisPoolConfig = initPoolConfig();
+		jedisCluster = new JedisCluster(jedisClusterNodes, timeout, jedisPoolConfig);
+		logger.warn("redis cluster init success!");
 
 		// 检查连接
 		try {
-			jedisCluster.del("test");
+			KEYS.del("test");
 		} catch (Exception e) {
 			logger.error("", e);
 			System.exit(0);
@@ -527,16 +538,20 @@ public class Redis {
 		 * @return 删除的记录数
 		 * */
 		public long del(String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.del(keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.del(keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.del(keys);
 			}
-			return 0;
 		}
 
 		/**
@@ -2209,16 +2224,20 @@ public class Redis {
 		 * @param key
 		 * */
 		public String get(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.get(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.get(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return "";
+			} else {
+				return jedisCluster.get(key);
 			}
-			return "";
 		}
 
 		/**
@@ -2227,16 +2246,20 @@ public class Redis {
 		 * @return 值
 		 * */
 		public byte[] get(byte[] key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.get(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.get(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.get(key);
 			}
-			return null;
 		}
 
 		/**
@@ -2323,16 +2346,20 @@ public class Redis {
 		 * @return 状态码
 		 * */
 		public String set(byte[] key, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.set(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.set(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.set(key, value);
 			}
-			return null;
 		}
 
 		/**
@@ -4140,120 +4167,6 @@ public class Redis {
 			}
 			return null;
 		}
-
-		//		public String clusterMeet(final String ip, final int port) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterMeet(ip, port);
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public String clusterReset(final Reset resetType) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterReset(resetType);
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public String clusterAddSlots(final int... slots) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterAddSlots(slots);
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public String clusterDelSlots(final int... slots) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterDelSlots(slots);
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public String clusterInfo() {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterInfo();
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public List<String> clusterGetKeysInSlot(final int slot, final int count) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterGetKeysInSlot(slot, count);
-		//			return client.getMultiBulkReply();
-		//		}
-		//
-		//		public String clusterSetSlotNode(final int slot, final String nodeId) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterSetSlotNode(slot, nodeId);
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public String clusterSetSlotMigrating(final int slot, final String nodeId) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterSetSlotMigrating(slot, nodeId);
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public String clusterSetSlotImporting(final int slot, final String nodeId) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterSetSlotImporting(slot, nodeId);
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public String clusterSetSlotStable(final int slot) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterSetSlotStable(slot);
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public String clusterForget(final String nodeId) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterForget(nodeId);
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public String clusterFlushSlots() {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterFlushSlots();
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public Long clusterKeySlot(final String key) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterKeySlot(key);
-		//			return client.getIntegerReply();
-		//		}
-		//
-		//		public Long clusterCountKeysInSlot(final int slot) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterCountKeysInSlot(slot);
-		//			return client.getIntegerReply();
-		//		}
-		//
-		//		public String clusterSaveConfig() {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterSaveConfig();
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public String clusterReplicate(final String nodeId) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterReplicate(nodeId);
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public List<String> clusterSlaves(final String nodeId) {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterSlaves(nodeId);
-		//			return client.getMultiBulkReply();
-		//		}
-		//
-		//		public String clusterFailover() {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterFailover();
-		//			return client.getStatusCodeReply();
-		//		}
-		//
-		//		public List<Object> clusterSlots() {
-		//			checkIsInMultiOrPipeline();
-		//			client.clusterSlots();
-		//			return client.getObjectMultiBulkReply();
-		//		}
 
 	}
 
