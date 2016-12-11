@@ -43,8 +43,8 @@ if [ ! -d $redis_install_path/ruby ]; then
 		wget -O $base_path/$ruby_version.tar.gz http://install.ruanzhijun.cn/$ruby_version.tar.gz || exit
 		echo 'download '$ruby_version'.tar.gz finished...'
 	fi
-	tar zxvf $base_path/$ruby_version.tar.gz -C $redis_install_path || exit
-	cd $redis_install_path
+	tar zxvf $base_path/$ruby_version.tar.gz -C $install_path || exit
+	cd $install_path/$ruby_version
 	./configure --prefix=$redis_install_path/ruby && make && make install || exit
 	yes|cp $redis_install_path/ruby/bin/* /usr/bin/
 fi
