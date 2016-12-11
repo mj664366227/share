@@ -145,7 +145,7 @@ if [ ! -d $php_install_path/pcre ]; then
 fi
 
 # 安装curl
-curl='curl-7.50.3'
+curl='curl-7.51.0'
 if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then

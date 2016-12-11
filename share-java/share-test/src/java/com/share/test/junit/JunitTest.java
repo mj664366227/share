@@ -16,8 +16,6 @@ public class JunitTest {
 
 	@Test
 	public void junitTest() throws Exception {
-		while (true) {
-			System.err.println(redis.STRINGS.get("00043cff-3f1f-4a09-b908-a1b050189930"));
-		}
+		redis.KEYS.restore("11", 1, new byte[] {});
 	}
 }

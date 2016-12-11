@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.share.core.exception.RedisCommandNotSupportException;
 import com.share.core.util.FileSystem;
 import com.share.core.util.StringUtil;
 
@@ -176,6 +177,14 @@ public class Redis {
 	}
 
 	/**
+	 * 抛出redis命令不支持的异常
+	 */
+	private void throwRedisCommandNotSupportException() {
+		String command = Thread.currentThread().getStackTrace()[3].getMethodName();
+		throw new RedisCommandNotSupportException(String.format("it does't support '%s' command in cluster mode...", command));
+	}
+
+	/**
 	 * 初始化(single)
 	 */
 	public void single() {
@@ -253,16 +262,20 @@ public class Redis {
 			if (seconds <= 0) {
 				return 0;
 			}
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.expire(key, seconds);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.expire(key, seconds);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.expire(key, seconds);
 			}
-			return 0;
 		}
 
 		/**
@@ -280,16 +293,20 @@ public class Redis {
 		 * @param newkey 新key
 		 * */
 		public long renamenx(String oldkey, String newkey) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.renamenx(oldkey, newkey);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.renamenx(oldkey, newkey);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.renamenx(oldkey, newkey);
 			}
-			return 0;
 		}
 
 		/**
@@ -298,16 +315,20 @@ public class Redis {
 		 * @param newkey 新key
 		 */
 		public String rename(byte[] oldkey, byte[] newkey) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.rename(oldkey, newkey);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.rename(oldkey, newkey);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.rename(oldkey, newkey);
 			}
-			return null;
 		}
 
 		/**
@@ -317,16 +338,20 @@ public class Redis {
 		 * @return 影响的记录数
 		 */
 		public long expireAt(String key, long timestamp) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.expireAt(key, timestamp);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.expireAt(key, timestamp);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.expireAt(key, timestamp);
 			}
-			return 0;
 		}
 
 		/**
@@ -335,16 +360,20 @@ public class Redis {
 		 * @return 以秒为单位的时间表示
 		 */
 		public long ttl(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.ttl(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.ttl(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.ttl(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -353,16 +382,20 @@ public class Redis {
 		 * @return 以毫秒为单位的时间表示
 		 */
 		public long pttl(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.pttl(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pttl(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.pttl(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -372,16 +405,21 @@ public class Redis {
 		 * @return
 		 */
 		public long move(String key, int dbIndex) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.move(key, dbIndex);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.move(key, dbIndex);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				throwRedisCommandNotSupportException();
+				return 0;
 			}
-			return 0;
 		}
 
 		/**
@@ -389,16 +427,21 @@ public class Redis {
 		 * @param key 键
 		 */
 		public String objectEncoding(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.objectEncoding(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.objectEncoding(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -406,16 +449,21 @@ public class Redis {
 		 * @param key 键
 		 */
 		public long objectRefcount(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.objectRefcount(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.objectRefcount(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				throwRedisCommandNotSupportException();
+				return 0;
 			}
-			return 0;
 		}
 
 		/**
@@ -424,16 +472,21 @@ public class Redis {
 		 * @return 以10秒为单位的秒级别时间
 		 */
 		public long objectIdletime(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.objectIdletime(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.objectIdletime(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				throwRedisCommandNotSupportException();
+				return 0;
 			}
-			return 0;
 		}
 
 		/**
@@ -444,16 +497,21 @@ public class Redis {
 		 * @return
 		 */
 		public String restore(String key, int ttl, byte[] serializedValue) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.restore(key, ttl, serializedValue);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.restore(key, ttl, serializedValue);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -464,16 +522,21 @@ public class Redis {
 		 * @return
 		 */
 		public String restore(byte[] key, int ttl, byte[] serializedValue) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.restore(key, ttl, serializedValue);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.restore(key, ttl, serializedValue);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
