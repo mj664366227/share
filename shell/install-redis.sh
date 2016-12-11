@@ -87,9 +87,11 @@ auto-aof-rewrite-percentage 0
 requirepass admin" > $redis_install_path/redis/redis.conf
 fi
 
+#启动单点的redis
+redis-server $redis_install_path/redis/redis.conf
+
 #设置ruby gem源为Ruby China
 gem sources --add https://gems.ruby-china.org/
-gem update --system
 gem install redis
 
 #关闭防火墙
@@ -103,7 +105,7 @@ yes|cp -rf $redis_install_path'/redis/src/redis-trib.rb' /usr/bin/
 source /etc/rc.local
 
 #默认创建一个6个节点(3主3从)的集群
-ip=$(sh ip.sh)
+ip=$(sh $base_path/ip.sh)
 cluster $redis_install_path 7000
 cluster $redis_install_path 7001
 cluster $redis_install_path 7002
@@ -111,4 +113,3 @@ cluster $redis_install_path 7003
 cluster $redis_install_path 7004
 cluster $redis_install_path 7005
 redis-trib.rb create --replicas  1 $ip:7000 $ip:7001 $ip:7002 $ip:7003 $ip:7004 $ip:7005
-yes yes | head -1

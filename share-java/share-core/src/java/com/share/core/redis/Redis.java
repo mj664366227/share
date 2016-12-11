@@ -136,9 +136,9 @@ public class Redis {
 	}
 
 	/**
-	 * 初始化
+	 * 初始化(single)
 	 */
-	public void init() {
+	public void single() {
 		GenericObjectPoolConfig jedisPoolConfig = new GenericObjectPoolConfig();
 		jedisPoolConfig.setMinIdle(minIdle);
 		jedisPoolConfig.setMaxIdle(maxIdle);
@@ -163,6 +163,13 @@ public class Redis {
 			logger.error("", e);
 			System.exit(0);
 		}
+	}
+	
+	/**
+	 * 初始化(cluster)
+	 */
+	public void cluster() {
+		
 	}
 
 	/**
