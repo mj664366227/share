@@ -1,5 +1,5 @@
 #linux mongodb自动安装程序 
-#运行例子：sh install-redis.sh 3.2.5 /usr/local
+#运行例子：sh install-redis.sh 3.2.6 /usr/local
  
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,11 +10,11 @@ redis_version=$1
 redis_install_path=$2
 if [ ! $redis_version ] || [ ! $redis_install_path ] ; then
 	echo 'error command!!! you must input redis version and install path...'
-	echo 'for example: sh install-redis.sh 3.2.5 /usr/local'
+	echo 'for example: sh install-redis.sh 3.2.6 /usr/local'
 	exit
 fi
 
-yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip iptables-services
+yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip iptables-services ruby ruby-devel rubygems rpm-build
 
 #建立临时安装目录
 echo 'preparing working path...'
@@ -34,20 +34,6 @@ if [ ! -d $install_path/$jemalloc ]; then
 	tar xvf $base_path/$jemalloc.tar.bz2 -C $install_path || exit
 	mv $install_path/$jemalloc $install_path/jemalloc 
 fi 
-
-#安装ruby(用于搭建集群)
-ruby_version='ruby-2.3.3'
-if [ ! -d $redis_install_path/ruby ]; then
-	if [ ! -f $base_path/$ruby_version.tar.gz ]; then
-		echo $ruby_version'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$ruby_version.tar.gz http://install.ruanzhijun.cn/$ruby_version.tar.gz || exit
-		echo 'download '$ruby_version'.tar.gz finished...'
-	fi
-	tar zxvf $base_path/$ruby_version.tar.gz -C $install_path || exit
-	cd $install_path/$ruby_version
-	./configure --prefix=$redis_install_path/ruby && make && make install || exit
-	yes|cp $redis_install_path/ruby/bin/* /usr/bin/
-fi
 
 #安装redis
 if [ ! -d $redis_install_path/redis ]; then
