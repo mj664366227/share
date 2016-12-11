@@ -4108,6 +4108,153 @@ public class Redis {
 	public class Cluster {
 		private Cluster() {
 		}
+
+		/**
+		 * 返回redis集群的所有节点
+		 */
+		public String clusterNodes() {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.clusterNodes();
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		/**
+		 * 返回该节点是否为只读模式
+		 */
+		public String readonly() {
+			Jedis jedis = null;
+			try {
+				jedis = jedisPool.getResource();
+				return jedis.readonly();
+			} catch (Exception e) {
+				logger.error("", e);
+			} finally {
+				jedis.close();
+			}
+			return null;
+		}
+
+		//		public String clusterMeet(final String ip, final int port) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterMeet(ip, port);
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public String clusterReset(final Reset resetType) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterReset(resetType);
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public String clusterAddSlots(final int... slots) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterAddSlots(slots);
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public String clusterDelSlots(final int... slots) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterDelSlots(slots);
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public String clusterInfo() {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterInfo();
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public List<String> clusterGetKeysInSlot(final int slot, final int count) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterGetKeysInSlot(slot, count);
+		//			return client.getMultiBulkReply();
+		//		}
+		//
+		//		public String clusterSetSlotNode(final int slot, final String nodeId) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterSetSlotNode(slot, nodeId);
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public String clusterSetSlotMigrating(final int slot, final String nodeId) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterSetSlotMigrating(slot, nodeId);
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public String clusterSetSlotImporting(final int slot, final String nodeId) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterSetSlotImporting(slot, nodeId);
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public String clusterSetSlotStable(final int slot) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterSetSlotStable(slot);
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public String clusterForget(final String nodeId) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterForget(nodeId);
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public String clusterFlushSlots() {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterFlushSlots();
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public Long clusterKeySlot(final String key) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterKeySlot(key);
+		//			return client.getIntegerReply();
+		//		}
+		//
+		//		public Long clusterCountKeysInSlot(final int slot) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterCountKeysInSlot(slot);
+		//			return client.getIntegerReply();
+		//		}
+		//
+		//		public String clusterSaveConfig() {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterSaveConfig();
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public String clusterReplicate(final String nodeId) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterReplicate(nodeId);
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public List<String> clusterSlaves(final String nodeId) {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterSlaves(nodeId);
+		//			return client.getMultiBulkReply();
+		//		}
+		//
+		//		public String clusterFailover() {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterFailover();
+		//			return client.getStatusCodeReply();
+		//		}
+		//
+		//		public List<Object> clusterSlots() {
+		//			checkIsInMultiOrPipeline();
+		//			client.clusterSlots();
+		//			return client.getObjectMultiBulkReply();
+		//		}
+
 	}
 
 	/**
