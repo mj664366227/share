@@ -1,6 +1,6 @@
 #linux git
 #运行例子：sh install-gitlab.sh /usr/local
- 
+#http://www.centoscn.com/image-text/install/2015/0320/4929.html
 #定义本程序的当前目录
 base_path=$(pwd)
 ntpdate ntp.api.bz
