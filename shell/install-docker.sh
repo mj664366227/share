@@ -21,6 +21,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #旧版本的docker
+rm -rf /var/lib/docker
 rm -rf $docker_install_path/docker
 rm -rf /usr/bin/docker
 rm -rf /usr/bin/docker-containerd
