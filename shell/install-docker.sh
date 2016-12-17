@@ -49,7 +49,7 @@ ln -s $docker_install_path/docker/docker-runc /usr/bin/docker-runc && chmod 777 
 rm -rf /etc/init.d/dockerd
 yes|cp -rf $docker_install_path/docker/dockerd /etc/init.d/dockerd || exit
 chmod 755 /etc/init.d/dockerd
-service dockerd
+service dockerd &
 
 #使docker开机自启动
 echo 'service dockerd' >> /etc/rc.local || exit
