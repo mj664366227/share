@@ -50,6 +50,9 @@ yes|cp -rf $docker_install_path/docker/dockerd /etc/init.d/dockerd || exit
 chmod 755 /etc/init.d/dockerd
 service dockerd
 
+#使docker开机自启动
+echo 'service dockerd' >> /etc/rc.local || exit
+
 #打印docker版本
 echo 'install docker-'$docker_version' finish ...'
 docker -v
