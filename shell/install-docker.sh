@@ -56,3 +56,6 @@ echo 'service dockerd' >> /etc/rc.local || exit
 #打印docker版本
 echo 'install docker-'$docker_version' finish ...'
 docker -v
+
+#国内docker镜像网站
+#https://hub.tenxcloud.com/
