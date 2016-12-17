@@ -24,6 +24,7 @@ mkdir -p $install_path
 rm -rf /var/lib/docker
 rm -rf $docker_install_path/docker
 rm -rf /usr/bin/docker
+rm -rf /usr/bin/dockerd
 rm -rf /usr/bin/docker-containerd
 rm -rf /usr/bin/docker-containerd-ctr
 rm -rf /usr/bin/docker-containerd-shim
@@ -39,6 +40,7 @@ fi
 tar xvf $base_path/docker-$docker_version.tgz -C $docker_install_path || exit
 cd $docker_install_path/docker && chmod 777 *
 ln -s $docker_install_path/docker/docker /usr/bin/docker && chmod 777 /usr/bin/docker
+ln -s $docker_install_path/docker/dockerd /usr/bin/docker && chmod 777 /usr/bin/dockerd
 ln -s $docker_install_path/docker/docker-containerd /usr/bin/docker-containerd && chmod 777 /usr/bin/docker-containerd
 ln -s $docker_install_path/docker/docker-containerd-ctr /usr/bin/docker-containerd-ctr && chmod 777 /usr/bin/docker-containerd-ctr
 ln -s $docker_install_path/docker/docker-containerd-shim /usr/bin/docker-containerd-shim && chmod 777 /usr/bin/docker-containerd-shim
@@ -47,16 +49,17 @@ ln -s $docker_install_path/docker/docker-runc /usr/bin/docker-runc && chmod 777 
 
 #把docker安装成服务
 rm -rf /etc/init.d/dockerd
-yes|cp -rf $docker_install_path/docker/dockerd /etc/init.d/dockerd || exit
-chmod 755 /etc/init.d/dockerd
-service dockerd &
+yes|cp -rf $docker_install_path/docker/docker /etc/init.d/docker || exit
+chmod 755 /etc/init.d/docker
+service docker daemon
 
 #使docker开机自启动
-echo 'service dockerd' >> /etc/rc.local || exit
+echo 'service docker daemon' >> /etc/rc.local || exit
 
 #打印docker版本
 echo 'install docker-'$docker_version' finish ...'
 docker -v
+docker info
 
 #国内docker镜像网站
 #https://hub.tenxcloud.com/
