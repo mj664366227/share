@@ -184,6 +184,7 @@ rm -rf $mysql_data_path
 $mysql_install_path/mysql/bin/mysqld --initialize --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path
 
 #启动mysql服务
+rm -rf /etc/init.d/mysqld
 yes|cp -rf $mysql_install_path/mysql/support-files/mysql.server /etc/init.d/mysqld || exit
 chmod 755 /etc/init.d/mysqld
 yes|cp -rf $mysql_install_path/mysql/bin/* /usr/bin/ || exit

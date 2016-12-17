@@ -28,7 +28,6 @@ rm -rf /usr/bin/docker-containerd-ctr
 rm -rf /usr/bin/docker-containerd-shim
 rm -rf /usr/bin/docker-proxy
 rm -rf /usr/bin/docker-runc
-rm -rf /usr/bin/dockerd
 
 #下载docker
 if [ ! -f $base_path/docker-$docker_version.tgz ]; then
@@ -37,14 +36,20 @@ if [ ! -f $base_path/docker-$docker_version.tgz ]; then
 	echo 'download docker-'$docker_version'.tgz finished...'
 fi
 tar xvf $base_path/docker-$docker_version.tgz -C $docker_install_path || exit
-cd $docker_install_path/docker
-ln -s $docker_install_path/docker/docker /usr/bin/docker
-ln -s $docker_install_path/docker/docker-containerd /usr/bin/docker-containerd
-ln -s $docker_install_path/docker/docker-containerd-ctr /usr/bin/docker-containerd-ctr
-ln -s $docker_install_path/docker/docker-containerd-shim /usr/bin/docker-containerd-shim
-ln -s $docker_install_path/docker/docker-proxy /usr/bin/docker-proxy
-ln -s $docker_install_path/docker/docker-runc /usr/bin/docker-runc
-ln -s $docker_install_path/docker/dockerd /usr/bin/dockerd
+cd $docker_install_path/docker && chmod 777 *
+ln -s $docker_install_path/docker/docker /usr/bin/docker && chmod 777 /usr/bin/docker
+ln -s $docker_install_path/docker/docker-containerd /usr/bin/docker-containerd && chmod 777 /usr/bin/docker-containerd
+ln -s $docker_install_path/docker/docker-containerd-ctr /usr/bin/docker-containerd-ctr && chmod 777 /usr/bin/docker-containerd-ctr
+ln -s $docker_install_path/docker/docker-containerd-shim /usr/bin/docker-containerd-shim && chmod 777 /usr/bin/docker-containerd-shim
+ln -s $docker_install_path/docker/docker-proxy /usr/bin/docker-proxy && chmod 777 /usr/bin/docker-proxy
+ln -s $docker_install_path/docker/docker-runc /usr/bin/docker-runc && chmod 777 /usr/bin/docker-runc
+
+#把docker安装成服务
+rm -rf /etc/init.d/dockerd
+yes|cp -rf $docker_install_path/docker/dockerd /etc/init.d/dockerd || exit
+chmod 755 /etc/init.d/dockerd
+service dockerd
 
 #打印docker版本
+echo 'install docker-'$docker_version' finish ...'
 docker -v
