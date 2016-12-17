@@ -1,5 +1,5 @@
 #linux nginx自动安装程序 
-#运行例子：sh install-nginx.sh 1.11.6 /usr/local
+#运行例子：sh install-nginx.sh 1.11.7 /usr/local
 ntpdate ntp.api.bz
  
 #定义本程序的当前目录
@@ -10,7 +10,7 @@ nginx_version=$1
 nginx_install_path=$2
 if [ ! $nginx_version ] || [ ! $nginx_install_path ]; then
 	echo 'error command!!! you must input nginx version and install path...'
-	echo 'for example: sh install-nginx.sh 1.11.6 /usr/local'
+	echo 'for example: sh install-nginx.sh 1.11.7 /usr/local'
 	exit
 fi
 
