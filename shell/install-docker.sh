@@ -40,7 +40,7 @@ fi
 tar xvf $base_path/docker-$docker_version.tgz -C $docker_install_path || exit
 cd $docker_install_path/docker && chmod 777 *
 ln -s $docker_install_path/docker/docker /usr/bin/docker && chmod 777 /usr/bin/docker
-ln -s $docker_install_path/docker/dockerd /usr/bin/docker && chmod 777 /usr/bin/dockerd
+ln -s $docker_install_path/docker/dockerd /usr/bin/dockerd && chmod 777 /usr/bin/dockerd
 ln -s $docker_install_path/docker/docker-containerd /usr/bin/docker-containerd && chmod 777 /usr/bin/docker-containerd
 ln -s $docker_install_path/docker/docker-containerd-ctr /usr/bin/docker-containerd-ctr && chmod 777 /usr/bin/docker-containerd-ctr
 ln -s $docker_install_path/docker/docker-containerd-shim /usr/bin/docker-containerd-shim && chmod 777 /usr/bin/docker-containerd-shim
