@@ -19,7 +19,7 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-#下载
+#下载java
 jdk='jdk-8u111-linux-x64'
 echo 'installing '$jdk' ...'
 if [ ! -f $base_path/$jdk.tar.gz ]; then
