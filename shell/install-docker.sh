@@ -47,11 +47,8 @@ ln -s $docker_install_path/docker/docker-containerd-shim /usr/bin/docker-contain
 ln -s $docker_install_path/docker/docker-proxy /usr/bin/docker-proxy && chmod 777 /usr/bin/docker-proxy
 ln -s $docker_install_path/docker/docker-runc /usr/bin/docker-runc && chmod 777 /usr/bin/docker-runc
 
-#把docker安装成服务
-rm -rf /etc/init.d/dockerd
-yes|cp -rf $docker_install_path/docker/docker /etc/init.d/docker || exit
-chmod 755 /etc/init.d/docker
-service docker daemon
+#启动docker
+service docker daemon 
 
 #使docker开机自启动
 echo 'service docker daemon' >> /etc/rc.local || exit
