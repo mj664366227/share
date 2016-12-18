@@ -47,11 +47,14 @@ ln -s $docker_install_path/docker/docker-containerd-shim /usr/bin/docker-contain
 ln -s $docker_install_path/docker/docker-proxy /usr/bin/docker-proxy && chmod 777 /usr/bin/docker-proxy
 ln -s $docker_install_path/docker/docker-runc /usr/bin/docker-runc && chmod 777 /usr/bin/docker-runc
 
+#使docker支持远程管理
+echo 'DOCKER_OPTS="-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock"' > /etc/default/docker
+
 #启动docker
 docker daemon > /dev/null &
 
 #使docker开机自启动
-echo 'service docker daemon' >> /etc/rc.local || exit
+echo 'docker daemon > /dev/null &' >> /etc/rc.local || exit
 
 #打印docker版本
 echo 'install docker-'$docker_version' finish ...'
@@ -61,3 +64,4 @@ docker info
 #国内docker镜像网站
 #https://hub.tenxcloud.com/
 #https://hub.daocloud.io/
+#https://c.163.com/hub
