@@ -48,7 +48,7 @@ ln -s $docker_install_path/docker/docker-proxy /usr/bin/docker-proxy && chmod 77
 ln -s $docker_install_path/docker/docker-runc /usr/bin/docker-runc && chmod 777 /usr/bin/docker-runc
 
 #启动docker
-service docker daemon 
+docker daemon > /dev/null &
 
 #使docker开机自启动
 echo 'service docker daemon' >> /etc/rc.local || exit
