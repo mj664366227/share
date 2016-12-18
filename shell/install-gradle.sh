@@ -20,7 +20,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #下载gradle
-gradle='gradle-3.2'
+gradle='gradle-3.2.1'
 if [ ! -d $install_path/$gradle ]; then
 	echo 'installing '$gradle' ...'
 	if [ ! -f $base_path/$gradle.zip ]; then
@@ -41,6 +41,7 @@ if [ ! -d $install_path/$gradle ]; then
 	rm -rf $gradle_install_path/gradle/*.txt
 	rm -rf $gradle
 	cd /usr/bin/
+	chmod 777 $gradle_install_path/gradle/bin/gradle
 	ln -s $gradle_install_path/gradle/bin/gradle gradle
 fi
 
