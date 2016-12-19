@@ -1,0 +1,15 @@
+<div class="msg"><a href="{$url}" title="你可以点此链接直接跳转">{$msg}页面在<span>{$second}</span>秒后自动跳转！</a></div>
+<script>
+var start = 0;
+function count()
+{
+	$('.msg span').html({$second}-start);
+	start += 1;
+	if(start >= {$second}){
+		window.location='{$url}';
+	}
+	setTimeout('count()',1000);
+}
+window.onload = count;
+</script>
+{include file="foot.html"}

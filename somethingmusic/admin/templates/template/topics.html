@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<script type="text/javascript" src="../kindeditor/kindeditor.js"></script>
+<title>专题文章</title>
+</head>
+{section loop=$topic name=sec}
+<script type="text/javascript">
+KE.show({
+				id : 'text',
+				items : [
+		'source',  'undo', 'redo', 'cut', 'copy', 'paste',
+		'plainpaste', 'wordpaste','justifyleft', 'justifycenter', 'justifyright',
+		'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+		'superscript', 
+		'title', 'fontname', 'fontsize','textcolor', 'bgcolor', 'bold',
+		'italic', 'underline', 'strikethrough', 'removeformat','image',
+		'flash', 'media'
+	],
+				 
+				afterCreate : function(id) {
+					KE.event.ctrl(document, 13, function() {
+						KE.util.setData(id);
+						document.forms['example'].submit();
+					});
+					KE.event.ctrl(KE.g[id].iframeDoc, 13, function() {
+						KE.util.setData(id);
+						document.forms['example'].submit();
+					});
+				}
+			});
+
+</script>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>专题《{$topic[sec].name}》</a></div>
+  <table cellspacing="0">
+    <form action="topic.php?action=add_content" method="post">
+      <tr>
+        <td align="right">添加文章：</td>
+        <td><input type="hidden" class="text" name="id" value="{$topic[sec].id}"/>
+          <input type="text" class="text" name="title"/></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><input type="submit" class="button" value="编辑文章"/></td>
+      </tr>
+    </form>
+  </table>
+</div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>专题介绍</a></div>
+  <form action="topic.php?action=modify_topic_introduce" method="post">
+    <table cellspacing="0">
+      <tr>
+        <td class="table_left">专题介绍：</td>
+        <td><input type="hidden" class="text" value="{$topic[sec].id}" name="id_id"/>
+          <textarea name="text" style="width:100%;height:170px;display:block;">{$topic[sec].introduce}</textarea>
+          {/section}</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><input type="submit" class="button" value="修改"/></td>
+      </tr>
+    </table>
+  </form>
+</div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>专题文章列表</a></div>
+  <table cellspacing="0">
+    <tr class="bold" align="center">
+      <td>文章编号</td>
+      <td>文章标题</td>
+      <td>浏览次数</td>
+      <td>发布时间</td>
+      <td>操作</td>
+    </tr>
+    {section loop=$topics name=sec}
+    <tr align="center" class="comment">
+      <td>{$topics[sec].topic_id}</td>
+      <td><a href="topic.php?action=look_content&topic_id={$topics[sec].topic_id}">{$topics[sec].title}</a></td>
+      <td>{$topics[sec].click}</td>
+      <td>{$topics[sec].time}</td>
+      <td><a href="topic.php?action=look_content&topic_id={$topics[sec].topic_id}">查看</a> <a href="topic.php?action=delete_content&topic_id={$topics[sec].topic_id}" onclick="return confirm('你真的要删除此文章吗？')">删除</a></td>
+    </tr>
+    {/section}
+  </table>
+</div>
+</body>
+</html>

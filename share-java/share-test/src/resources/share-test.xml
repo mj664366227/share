@@ -36,14 +36,6 @@
 		<property name="annotationClass" value="com.share.core.annotation.Config" />
 	</bean>
 
-	<!-- 反射pojo类 -->
-	<bean class="com.share.core.annotation.processor.PojoProcessor" init-method="init">
-		<!-- 定义要扫描的包，可用逗号分割 -->
-		<property name="scanPackage" value="com.share.core.data.data" />
-		<!-- 定义要扫描的注解类名 -->
-		<property name="annotationClass" value="com.share.core.annotation.Pojo" />
-	</bean>
-
 	<!-- 匹配socket协议号 -->
 	<bean class="com.share.core.annotation.processor.SocketHandlerProcessor" init-method="init">
 		<!-- 定义要扫描的包，可用逗号分割 -->

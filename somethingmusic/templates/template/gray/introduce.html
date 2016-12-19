@@ -1,0 +1,15 @@
+<div class="content">
+<div class="title"><img src="{$base_url}templates/template/gray/images/rdtj.png" width="60" height="20"/></div>
+<ul class="ul">
+{foreach from=$content item=s}
+<li>
+<div class="info"><div class="content_title"><a href="{$base_url}content.php?skin=gray&id={$s.id}" title="{$s.title}">{$s.title|trim}</a></div>
+<div class="time">{$s.time}</div></div>
+<a href="{$base_url}content.php?skin=gray&id={$s.id}" title="{$s.title}"><img src="{$base_url}thumbs/thumbs/cache/w575h270/admin/{$s.pic}" border="0" width="550" height="260" alt="{$s.title}"/></a>
+<br/><div  class="sss">{$s.content|truncate:190}</div></li>
+{/foreach}
+</ul>
+<div class="page">{$page}</div>
+</div>
+{include file="right.html"}
+{include file="foot.html"}

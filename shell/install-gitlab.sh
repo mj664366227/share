@@ -1,6 +1,6 @@
 #linux git
 #运行例子：sh install-gitlab.sh /usr/local
- 
+#http://www.centoscn.com/image-text/install/2015/0320/4929.html
 #定义本程序的当前目录
 base_path=$(pwd)
 ntpdate ntp.api.bz
@@ -20,7 +20,7 @@ if [ ! $gitlab_install_path ]; then
 	exit
 fi
 
-yum -y install libtool gcc gcc-c++ make libc6-dev python-devel perl bc
+yum -y install gcc libc6-dev gcc-c++ pcre-devel perl-devel nscd ImageMagick ImageMagick-devel perl-ExtUtils-Embed geoip-database python-devel gd-devel libgeoip-dev make libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev httpd-tools ruby ruby-devel rubygems rpm-build bc
 
 #安装EPEL扩展源
 rpm -ivh http://fr2.rpmfind.net/linux/epel/7/x86_64/e/epel-release-7-5.noarch.rpm

@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<title>添加音乐类型</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>添加一级标题</a></div>
+  <table cellpadding="0">
+    <form action="add_catagory.php" method="post">
+      <tr>
+        <td class="table_left">一级标题名称：</td>
+        <td width="30%"><input class="text" type="text" name="bigcatagory"/></td>
+        <td><input type="submit" class="button" value="添   加"/></td>
+      </tr>
+    </form>
+  </table>
+</div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>添加音乐类型</a></div>
+  <table cellpadding="0">
+    <form action="add_small_catagory.php" method="post">
+      <tr>
+        <td class="table_left">音乐类型：</td>
+        <td><input class="text" type="text" name="smallcatagory"/></td>
+      </tr>
+      <tr>
+        <td class="table_left">一级标题：</td>
+        <td><select name="father" style="width:auto">
+            
+        {section loop=$bigcategory name=sec}
+            <option value="{$bigcategory[sec].bigcategory}">{$bigcategory[sec].bigcategory}</option>
+            
+        {/section}
+          </select></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><input type="submit" class="button" value="添   加"/></td>
+      </tr>
+    </form>
+  </table>
+</div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>音乐类型列表（点击即删除该项！）</a></div>
+  <table cellpadding="0" class="look">
+    <tr style="font-weight:bold">
+      <td>一级标题</td>
+      <td>二级标题</td>
+    </tr>
+    {section loop=$bigcategory name=sec2}
+    <tr>
+      <td width="30%"><a href="category_delete_big.php?bigcategory={$bigcategory[sec2].bigcategory}" onclick="return confirm('你真的要删除本分类及其所有的子分类吗？')">{$bigcategory[sec2].bigcategory}</a></td>
+      <td width="70%" align="left">{section loop=$smallarray name=sec3}{if $smallarray[sec3].bigcategory==$bigcategory[sec2].bigcategory} <a href="category_delete_small.php?smallcategory={$smallarray[sec3].smallcategory}" onclick="return confirm('你真的要删除本分类吗？')">{$smallarray[sec3].smallcategory}</a> {/if}{/section}</td>
+    </tr>
+    {/section}
+  </table>
+</div>
+</body>
+</html>
+<style>
+table tr td a {
+	color:#09F;
+	text-decoration:underline;
+	line-height:20px
+}
+table tr td a:hover {
+	color:#F00;
+	font-weight:bold;
+	text-decoration:none
+}
+.look {
+	text-align:center
+}
+</style>

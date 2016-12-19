@@ -1,0 +1,25 @@
+<!--登录部分-->
+<div class="login" uid="{$uid}">
+
+
+{if $active=='api'}
+<a href="{$base_url}api.php?skin=gray&action=user&mod=index" title="个人主页">个人主页</a>
+<a href="{$base_url}api.php?skin=gray&action=user&mod=album_list" title="音乐分享">音乐分享</a>
+<a href="{$base_url}logout.php?skin=gray" title="退出" onclick="return confirm('亲，你真的要退出吗？')">退出</a>
+{/if}
+<!--
+{if !$qq && !$libmill && !$sina}
+<a href="{$base_url}qq/oauth/qq_login.php?skin=gray" title="使用QQ帐号登录"><img src="{$base_url}templates/template/gray/images/qq.png" border="0" align="top" width="76" height="23"/></a>
+<a href="{$base_url}sina/?skin=gray" title="使用新浪微博帐号登录"><img src="{$base_url}templates/template/gray/images/sina.png" border="0" align="top" width="105" height="23"/></a>
+{else}
+
+{if !$sync_qq}
+<a href="{$base_url}qq/oauth/qq_login.php?skin=gray" title="同步QQ帐号"><img src="{$base_url}templates/template/gray/images/qq_sync.png" border="0" align="top" width="76" height="23"/></a>
+{/if}
+<a href="{$base_url}sina/?skin=gray" title="同步新浪微博"><img src="{$base_url}templates/template/gray/images/sina_sync.png" border="0" align="top" width="105" height="23"/></a>
+{/if}
+-->
+
+<a href="{$base_url}index.php?skin=deafault">旧版皮肤</a>
+
+</div>

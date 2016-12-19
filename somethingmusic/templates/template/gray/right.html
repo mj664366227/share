@@ -1,0 +1,28 @@
+<div class="maybelike" id="_maybelike" style="height:375px">
+  <div class="title"><img src="{$base_url}templates/template/gray/images/maybelike.png" border="0" width="120" height="20" align="absmiddle"/></div>
+  <div class="next"><a href="javascript:void(0)" id="maybelike_" title="换一批"><img src="{$base_url}templates/template/gray/images/next.png" border="0"/></a></div>
+  <ul><li class="onlyone">加载中...</li></ul>
+</div>
+
+
+{if $comment!=''}
+<div class="comment" id="hot_c">
+<div class="title"><img src="{$base_url}templates/template/gray/images/hot_content.png" border="0" width="60" height="20" align="absmiddle"/></div>
+<ul class="ls">
+{foreach item=s from=$hot}
+<li><a href="{$base_url}content.php?skin=gray&id={$s.id}" title="《{$s.title|trim}》阅读次数：{$s.click}">{$s.title|trim}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;阅读次数：{$s.click}</a></li>
+{/foreach}
+</ul>
+</div>
+{/if}
+
+<div class="comment" id="comment_">
+<div class="title"><img src="{$base_url}templates/template/gray/images/comment.png" border="0" width="60" height="20" align="absmiddle"/></div>
+<ul class="ls">
+{foreach from=$read_comment item=s}
+<li><a href="{$base_url}content.php?skin=gray&id={$s.content_id}#ok{$s.id}" title="{$s.name}说：{$s.text}">{$s.name|trim}：{$s.text|truncate:30|trim}</a></li>
+{/foreach}
+</ul>
+</div>
+
+{include file="ad.html"}

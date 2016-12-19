@@ -13,5 +13,6 @@ public class AdminDbService extends AbstractJDBC {
 	@Resource(name = "dataSource")
 	public void setDataSource(DataSource dataSource) {
 		jdbc = new JdbcTemplate(dataSource);
+		check();
 	}
 }

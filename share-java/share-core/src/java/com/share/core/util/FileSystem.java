@@ -4,18 +4,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.Writer;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +29,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.supercsv.io.CsvListReader;
 import org.supercsv.io.CsvListWriter;
@@ -41,15 +44,28 @@ import com.share.core.util.SortUtil.Order;
 public final class FileSystem {
 	private static String projectName = "";
 	private final static ClassLoader classLoader = FileSystem.class.getClassLoader();
-	private final static Logger logger = LogManager.getLogger(FileSystem.class);
+	private final static Logger logger = LoggerFactory.getLogger(FileSystem.class);
 	private final static String[] sizes = new String[] { "Byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private final static DecimalFormat decimalFormat = new DecimalFormat("0.00");
 	private final static boolean isWindows = System.getProperty("os.name").indexOf("Windows") != -1;
 	private final static boolean isMacOSX = System.getProperty("os.name").indexOf("Mac OS X") != -1;
+	private final static boolean isLinux = !isWindows && !isMacOSX;
 	private static Properties property = new Properties();
 	private final static String systemDir = classLoader.getResource("").toString().replace("file:", "").replace("/etc", "").trim() + (StringUtil.getString(projectName).isEmpty() ? "" : projectName + "/");
+	private static String pid;
+	private static int serverId;
 
 	static {
+		// 自动加载properties文件
+		loadProperties();
+
+		// 限制系统key的长度必须超过32位
+		String systemKey = getPropertyString("system.key");
+		if (systemKey.length() < 32) {
+			logger.error("the ${system.key} length must >= 32!!!");
+			System.exit(0);
+		}
+
 		// 初始化项目名
 		if (FileSystem.isWindows() || FileSystem.isMacOSX()) {
 			projectName = FileSystem.getSystemDir().replace("/bin/", "");
@@ -58,7 +74,29 @@ public final class FileSystem {
 			projectName = StringUtil.getString(System.getProperty("project"));
 		}
 
-		loadProperties();
+		// 初始化进程id
+		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
+		pid = runtime.getName();
+		int index = pid.indexOf("@");
+		if (index != -1) {
+			pid = pid.substring(0, index);
+		}
+
+		// 生成serverId
+		StringBuilder serverString = new StringBuilder();
+		try {
+			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+			while (interfaces.hasMoreElements()) {
+				Enumeration<InetAddress> addresses = interfaces.nextElement().getInetAddresses();
+				while (addresses.hasMoreElements()) {
+					serverString.append(StringUtil.getString(addresses.nextElement().getHostAddress()));
+				}
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+			System.exit(0);
+		}
+		serverId = serverString.toString().hashCode();
 	}
 
 	private FileSystem() {
@@ -68,6 +106,9 @@ public final class FileSystem {
 	 * 获取系统根目录
 	 */
 	public final static String getSystemDir() {
+		if (isWindows) {
+			return systemDir.substring(1);
+		}
 		return systemDir;
 	}
 
@@ -76,6 +117,20 @@ public final class FileSystem {
 	 */
 	public final static String getProjectName() {
 		return projectName;
+	}
+
+	/**
+	 * 获取进程id
+	 */
+	public final static String getPID() {
+		return pid;
+	}
+
+	/**
+	 * 获取本服唯一标识
+	 */
+	public final static int getServerId() {
+		return serverId;
 	}
 
 	/**
@@ -90,6 +145,13 @@ public final class FileSystem {
 	 */
 	public static boolean isMacOSX() {
 		return isMacOSX;
+	}
+
+	/**
+	 * 判断是否为是不是linux系统
+	 */
+	public static boolean isLinux() {
+		return isLinux;
 	}
 
 	/**
@@ -154,12 +216,14 @@ public final class FileSystem {
 			file.mkdirs();
 		}
 		try {
-			FileWriter fw = new FileWriter(filename, flag);
-			fw.write(data);
-			fw.flush();
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			FileOutputStream fileOutputStream = new FileOutputStream(filename, flag);
+			Writer writer = new OutputStreamWriter(fileOutputStream, "utf-8");
+			writer.write(data);
+			writer.flush();
+			writer.close();
+			fileOutputStream.close();
+		} catch (Exception e) {
+			logger.error("", e);
 			return false;
 		}
 		return true;
@@ -195,6 +259,14 @@ public final class FileSystem {
 		} else {
 			return -1;
 		}
+	}
+
+	/**
+	 * 判断文件或者文件夹是否存在
+	 * @param path 文件或者文件夹的完整路径
+	 */
+	public final static boolean exists(String filename) {
+		return new File(filename).exists();
 	}
 
 	/**
@@ -283,11 +355,86 @@ public final class FileSystem {
 	/**
 	 * 根据传进来的大小选择最适合的单位
 	 * @param size
-	 * @return
 	 */
 	public final static String getSize(double size) {
 		int i = (int) Math.floor(Math.log(size) / Math.log(1024));
 		return decimalFormat.format(size / Math.pow(1024, i)) + " " + sizes[i];
+	}
+
+	/**
+	 * 保存文件
+	 * @param stream 文件流
+	 * @param filename 文件保存路径
+	 */
+	public final static boolean saveFileFromInputStream(InputStream stream, String filename) {
+		try {
+			FileOutputStream fs = new FileOutputStream(filename);
+			byte[] buffer = new byte[1024];
+			int byteread = 0;
+			while ((byteread = stream.read(buffer)) != -1) {
+				fs.write(buffer, 0, byteread);
+				fs.flush();
+			}
+			fs.close();
+			stream.close();
+		} catch (Exception e) {
+			logger.error("", e);
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 创建文件夹
+	 * @param path 文件夹地址
+	 */
+	public final static void mkdir(String path) {
+		File file = new File(path);
+		if (file.exists()) {
+			return;
+		}
+		file.mkdirs();
+	}
+
+	/**
+	 * 重命名文件
+	 * @param file 原文件
+	 * @param newname 新文件名
+	 * @return 新文件全路径
+	 */
+	public final static String rename(File file, String newname) {
+		if (file == null) {
+			return null;
+		}
+		if (file.getName().equals(newname)) {
+			return file.getAbsolutePath().trim();
+		}
+
+		String suffix = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
+		File newFile = new File(file.getParent() + "/" + newname + "." + suffix);
+		file.renameTo(newFile);
+		return newFile.getAbsolutePath().trim();
+	}
+
+	/**
+	 * 复制文件
+	 * @param file1  源文件
+	 * @param file2  目标文件
+	 */
+	public final static void copy(String file1, String file2) {
+		try {
+			int byteread = 0;
+			InputStream inStream = new FileInputStream(file1); //读入原文件
+			FileOutputStream fs = new FileOutputStream(file2);
+			byte[] buffer = new byte[1024];
+			while ((byteread = inStream.read(buffer)) != -1) {
+				fs.write(buffer, 0, byteread);
+			}
+			fs.close();
+			inStream.close();
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 	}
 
 	/**
@@ -351,11 +498,12 @@ public final class FileSystem {
 			logger.error("can not find config.properties", e);
 			System.exit(0);
 		}
+		String path;
 		if (isWindows) {
-			String path = classLoader.getResource("config.properties").toString().replace("file:", "").replace("config.properties", "").trim();
-			loadProperties0(path);
+			path = classLoader.getResource("config.properties").toString().replace("file:", "").replace("config.properties", "").trim();
+		} else {
+			path = classLoader.getResource("").toString().replace("file:", "");
 		}
-		String path = classLoader.getResource("").toString().replace("file:", "");
 		loadProperties0(path);
 
 	}
@@ -392,7 +540,6 @@ public final class FileSystem {
 	public final static String getPropertyString(String key) {
 		String value = property.getProperty(key);
 		if (value == null) {
-			logger.error("can not found property: " + key);
 			return "";
 		}
 		return value.trim();
@@ -462,56 +609,36 @@ public final class FileSystem {
 	/**
 	 * 自动发现spring配置文件并自动加载
 	 */
+	@SuppressWarnings("resource")
 	public final static synchronized void loadSpringConfig() {
-		String[] fileList = ls(getSystemDir());
-		List<String> jarList = lsJAR(getSystemDir());
-		for (String file : jarList) {
-			List<String> list = readFileTypeInJAR(file, ".xml");
-			if (list == null || list.isEmpty()) {
-				continue;
-			}
-			int size = list.size();
-			fileList = Arrays.copyOf(fileList, fileList.length + size);
-			for (int i = 0; i < size; i++) {
-				fileList[fileList.length - size - i] = list.get(i);
-			}
-		}
-		if (fileList.length <= 0) {
-			return;
-		}
-		for (String file : fileList) {
-			if (file.lastIndexOf(".xml") <= -1) {
-				continue;
-			}
-			logger.warn("load spring config: {}", file);
-			new ClassPathXmlApplicationContext("classpath:" + file).registerShutdownHook();
-		}
+		String file = FileSystem.getProjectName() + ".xml";
+		logger.warn("load spring config: {}", file);
+		new ClassPathXmlApplicationContext("classpath:" + file).registerShutdownHook();
 	}
 
 	/**
-	 * 下载文件
-	 * @author ruan
-	 * @param path 文件网络路径
-	 * @param file 文件存放路径
-	 * @param threadnum 下载线程数
-	 * @throws Exception
+	 * 加载pem文件
+	 * @param filename pem文件名
 	 */
-	public final static void downFile(String path, File file, int threadnum) throws Exception {
-		URL url = new URL(path);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setConnectTimeout(10 * 1000);
-		conn.setRequestMethod("GET");
-		// 获得网络文件的长度
-		int length = conn.getContentLength();
-		// 每个线程负责下载的文件大小
-		int block = (length % threadnum) == 0 ? length / threadnum : length / threadnum + 1;
-		// 从http相应消息获取的状态码，200:OK;401:Unauthorized
-		if (conn.getResponseCode() == 200) {
-			for (int i = 0; i < threadnum; i++) {
-				// 开启线程下载
-				new DownThread(i, file, block, url).start();
+	public static String loadPem(String filename) {
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream(filename);
+		StringBuilder sb = new StringBuilder();
+		try {
+			InputStreamReader in = new InputStreamReader(inputStream);
+			BufferedReader br = new BufferedReader(in);
+			br.readLine();
+			String s = br.readLine();
+			while (s.charAt(0) != '-') {
+				sb.append(s);
+				s = br.readLine();
 			}
+			inputStream.close();
+			in.close();
+			br.close();
+		} catch (Exception e) {
+			logger.error("", e);
 		}
+		return sb.toString();
 	}
 
 	/**
@@ -605,7 +732,7 @@ public final class FileSystem {
 	  * @param header 头部
 	  * @param content 内容
 	  */
-	public final static void writeCsv(String path, String[] header, List<String[]> content) {
+	public final static void writeCSV(String path, String[] header, List<String[]> content) {
 		FileWriter fileWriter = null;
 		CsvListWriter writer = null;
 		try {
@@ -632,48 +759,6 @@ public final class FileSystem {
 			} catch (IOException e) {
 				logger.error("", e);
 			}
-		}
-	}
-}
-
-final class DownThread extends Thread {
-	private final static Logger logger = LogManager.getLogger(DownThread.class);
-	private int id; // 线程id
-	private File file;// 目标文件
-	private int block;// 每个线程下载文件的大小
-	private URL url;
-
-	public DownThread(int id, File file, int block, URL url) {
-		this.id = id;
-		this.file = file;
-		this.block = block;
-		this.url = url;
-	}
-
-	@Override
-	public void run() {
-		int start = (id * block);// 当前线程开始下载处
-		int end = (id + 1) * block - 1;// 当前线程结束下载处
-		// 建立随机操作文件对象
-		try {
-			RandomAccessFile accessFile = new RandomAccessFile(file, "rwd");
-			accessFile.seek(start);// 设置操作文件的入点
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setConnectTimeout(5 * 1000);
-			conn.setRequestMethod("GET");
-			// 指定网络位置从什么位置开始下载,到什么位置结束
-			conn.setRequestProperty("Range", "bytes=" + start + "-" + end + "");
-			InputStream in = conn.getInputStream();// 获得输入流
-			byte[] data = new byte[1024];
-			int len = 0;
-			while ((len = in.read(data)) != -1) {
-				accessFile.write(data, 0, len);
-			}
-			accessFile.close();
-			in.close();
-			logger.info("线程:" + (id + 1) + "下载完成!");
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 }

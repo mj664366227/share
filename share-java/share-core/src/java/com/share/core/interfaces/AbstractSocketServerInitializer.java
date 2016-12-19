@@ -2,8 +2,8 @@ package com.share.core.interfaces;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,7 +22,7 @@ public abstract class AbstractSocketServerInitializer<SEND, RECV> extends Channe
 	/**
 	 * logger
 	 */
-	protected Logger logger = LogManager.getLogger(getClass());
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	/**
 	 * 单次接收数据最大长度
 	 */

@@ -1,0 +1,36 @@
+<div class="friend_list">
+<div style="color:#d06e6f; font-size:16px; margin-bottom:10px; width:100%;border-bottom:#d6d6d6 1px dashed; line-height:40px">我的好友列表</div>
+<ul>
+{foreach from=$friend_list item=a}
+<li class="li">
+<div class="avatar">
+<a href="{$base_url}api.php?skin=gray&action=user&mod=index&look=true&uid={$a.friendid}" title="点击查看{$a.nick}的主页"><img src="{$a.avatar}" width="100" height="100" title="点击查看{$a.nick}的主页" border="0"/></a>
+</div>
+<div class="info">
+<div class="nick"><div><a href="{$base_url}api.php?skin=gray&action=user&mod=index&look=true&uid={$a.friendid}" title="点击查看{$a.nick}的主页">{$a.nick}</a></div><div id="delete_friend"><a href="{$base_url}api.php?skin=gray&action=user&mod=delete_friend&uid={$a.friendid}&page={$current_page}" title="把{$a.nick}移出好友列表" onClick="return confirm('你真的要把{$a.nick}移出你的好友列表吗？');">删除</a></div></div>
+<div class="content">
+<ul>
+<li>系别：{if $a.xi}{$a.xi}{/if}</li>
+<li>班级：{if $a.classname}{$a.classname}{/if}</li>
+<li{if $a.sign} title="{$a.nick}的个性签名：{$a.sign}"{/if}>个性签名：{if $a.sign}{$a.sign|truncate:30}{else}{$pms.sign}{/if}</li>
+</ul>
+</div>
+</div>
+</li>
+{/foreach}
+</ul>
+{if $page}<div class="page">{$page}</div>{/if}
+</div>
+
+{if $friend_introduce}
+<div class="friend_introduce">
+<div style="color:#d06e6f; font-size:16px; margin-bottom:10px; width:100%;border-bottom:#d6d6d6 1px dashed; line-height:40px">好友推荐
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)" style="color:#d06e6f; text-decoration:none; cursor:pointer;font-size:14px" id="next_friend_introduce">换一批</a>
+</div>
+<ul>
+{foreach from=$friend_introduce item=f}
+<li><a href="{$base_url}api.php?skin=gray&action=user&mod=index&look=true&uid={$f.id}" title="点击查看{$f.nick}的主页"><img src="{$f.avatar}" width="70" height="70" border="0"/></a><br/><a href="{$base_url}api.php?skin=gray&action=user&mod=add_friend&uid={$f.id}&from=friend" title="加为{$f.nick}好友">加好友</a></li>
+{/foreach}
+</ul>
+</div>
+{/if}

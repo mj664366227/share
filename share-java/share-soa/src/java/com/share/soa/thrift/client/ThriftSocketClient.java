@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TFramedTransport;
@@ -23,7 +23,7 @@ public final class ThriftSocketClient {
 	/**
 	 * logger
 	 */
-	private final static Logger logger = LogManager.getLogger(ThriftSocketClient.class);
+	private final static Logger logger = LoggerFactory.getLogger(ThriftSocketClient.class);
 	/**
 	 * 反射方法对象缓存map
 	 */

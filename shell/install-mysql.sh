@@ -19,10 +19,10 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz ncurses-devel perl bzip2 unzip vim iptables-services
+yum -y install libtool sed gcc gcc-c++ make net-snmp net-snmp-devel net-snmp-utils libc6-dev python-devel rsync perl bc libxslt-dev lrzsz ncurses-devel perl bzip2 unzip vim iptables-services httpd-tools
 
 #安装cmake
-cmake='cmake-3.6.1'
+cmake='cmake-3.7.1'
 if [ ! -d $mysql_install_path/cmake ]; then
 	echo 'installing '$cmake'...'
 	if [ ! -f $base_path/$cmake.tar.gz ]; then
@@ -39,7 +39,7 @@ if [ ! -d $mysql_install_path/cmake ]; then
 fi
 
 #安装jemalloc
-jemalloc='jemalloc-4.2.1'
+jemalloc='jemalloc-4.4.0'
 if [ ! -d $mysql_install_path/jemalloc ]; then
 	echo 'installing '$jemalloc' ...'
 	if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
@@ -84,7 +84,7 @@ chown mysql.mysql -R $mysql_data_path || exit
 
 #安装mysql
 echo 'installing mysql...'
-mysql='mysql-5.7.14'
+mysql='mysql-5.7.17'
 if [ ! -d $install_path/$mysql ]; then
 	if [ ! -f $base_path/$mysql.tar.gz ]; then
 		echo $mysql'.tar.gz is not exists, system will going to download it...'
@@ -127,7 +127,25 @@ max_connections = 100
 back_log = 100
 join_buffer_size = 200K
 thread_cache_size = 1024
-server-id  = 1
+
+#mysql主从配置(主)
+#server-id = 1
+#log-bin = master-bin
+#log-bin-index = master-bin.index
+#replicate-ignore-db = sys
+#replicate-ignore-db = mysql
+#replicate-ignore-db = information_schema
+#replicate-ignore-db = performance_schema
+
+#mysql主从配置(从)
+#server-id = 2
+#relay-log = slave-relay-bin 
+#relay-log-index = slave-relay-bin.index
+#replicate-ignore-db = sys
+#replicate-ignore-db = mysql
+#replicate-ignore-db = information_schema
+#replicate-ignore-db = performance_schema
+
 innodb_buffer_pool_size = 200K
 innodb_log_file_size = 200K
 innodb_log_buffer_size = 200K
@@ -166,6 +184,7 @@ rm -rf $mysql_data_path
 $mysql_install_path/mysql/bin/mysqld --initialize --user=mysql --basedir=$mysql_install_path/mysql --datadir=$mysql_data_path
 
 #启动mysql服务
+rm -rf /etc/init.d/mysqld
 yes|cp -rf $mysql_install_path/mysql/support-files/mysql.server /etc/init.d/mysqld || exit
 chmod 755 /etc/init.d/mysqld
 yes|cp -rf $mysql_install_path/mysql/bin/* /usr/bin/ || exit
@@ -191,3 +210,18 @@ source /etc/rc.d/rc.local
 
 #输出版本
 mysql -uroot -proot -e "select VERSION();" || exit
+
+#mysql主从配置命令
+#主：GRANT REPLICATION SLAVE ON *.* to 'slave-user'@'mysql.slave.com' identified by 'slave-password'; 
+#    show master status;
+#    执行完此步骤后不要再操作主服务器MYSQL，防止主服务器状态值变化
+#    复制 File 和 Position 的值到slave
+#    
+#    
+#    
+#从：change master to master_host='mysql.master.com',master_user='slave-user',master_password='slave-password',master_log_file='mysql-bin.000004',master_log_pos=308;
+#     start slave;
+#	  show slave status;
+#     出现下面的信息，证明主从同步成功
+#     Slave_IO_Running: Yes    //此状态必须YES     
+#     Slave_SQL_Running: Yes    //此状态必须YES

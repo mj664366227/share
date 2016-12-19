@@ -140,7 +140,9 @@ public final class SystemUtil {
 	 */
 	public final static String stackTrace2String(Throwable e) {
 		StringWriter sw = new StringWriter();
-		e.printStackTrace(new PrintWriter(sw, true));
+		PrintWriter printWriter = new PrintWriter(sw, true);
+		e.printStackTrace(printWriter);
+		printWriter.close();
 		return sw.toString().trim();
 	}
 
@@ -367,10 +369,20 @@ public final class SystemUtil {
 					// className));
 					// 经过回复同学的提醒，这里用forName有一些不好，会触发static方法，没有使用classLoader的load干净
 					classes.add(Thread.currentThread().getContextClassLoader().loadClass(packageName + '.' + className));
-				} catch (ClassNotFoundException e) {
+				} catch (Exception e) {
 					logger.error("", e);
 				}
 			}
 		}
+	}
+
+	/**
+	 * 打印系统内存信息
+	 */
+	public final static void printSystemMemory() {
+		String totalMemory = FileSystem.getSize(Runtime.getRuntime().totalMemory());
+		String maxMemory = FileSystem.getSize(Runtime.getRuntime().maxMemory());
+		String freeMemory = FileSystem.getSize(Runtime.getRuntime().freeMemory());
+		logger.warn("total memory: {}, max memory: {}, free memory: {}", totalMemory, maxMemory, freeMemory);
 	}
 }

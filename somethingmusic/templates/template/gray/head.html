@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta property="qc:admins" content="121151554313641251446375" />
+<link rel="stylesheet" href="{$base_url}templates/template/gray/css/css.css?20120212" type="text/css" />
+<!--[if IE 6]>
+<link rel="stylesheet" href="{$base_url}templates/template/gray/css/ie6.css?20120212" type="text/css" />
+<script type="text/javascript" src="{$base_url}templates/template/gray/js/DD_belatedPNG_0.0.8a.js?20120212"></script><script type="text/javascript">DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<script type="text/javascript" src="{$base_url}templates/template/gray/js/jquery-1.5.1.min.js?20120212"></script>
+<script type="text/javascript" src="{$base_url}templates/template/gray/js/common.js?20120212"></script>
+<script type="text/javascript" src="{$base_url}templates/template/gray/js/jquery.jplayer.js?20120212"></script>
+<script language="javascript">$(function(){ $('input').attr('autocomplete','off');if(document.location=='{$base_url}?skin=gray'||document.location=='{$base_url}index.php?skin=gray'){ var version=$.browser.version;if(version<=7){ var html='{$pms.browser}';$('.pms').append(html).css({ {$pms.css} })}}})</script>
+<link rel="shortcut icon" href="{$base_url}favicon.ico"/>
+<title>{$web_title}</title>
+</head>
+<body>
+<div id="jquery_jplayer"></div>
+<div class="pms"></div>
+<div class="body">
+<div class="header">
+<!--logo-->
+<div class="logo"><a href="{$base_url}?skin=gray" title="{$web_title}"><img src="{$base_url}templates/template/gray/images/logo.png" border="0"/></a></div>
+<!--搜索框-->
+<div class="search">
+<form action="{$base_url}search.php?skin=gray&action=search" method="post">
+<input type="text" class="search_input" id="search_input" name="search_input" onclick="value=''" autocomplete="off" {if $key_words}value="{$key_words}"{/if} x-webkit-speech lang="zh-CN" x-webkit-grammar="bUIltin:search"/>
+<div id="submit" title="搜！"><input type="image" src="{$base_url}templates/template/gray/images/search.png" width="24" height="24" id="search_submit"/></div>
+<div class="result"></div>
+</form>
+</div>
+<!--顶部链接-->
+<div class="top">
+
+</div>
+</div>
+<!--导航-->
+<div class="nav">
+<ul>
+<a href="{$base_url}?skin=gray" title="网站首页"><li>{if $active=='index'}<font color="#d06e6f">首页</font>{else}首页{/if}</li></a>
+<a href="{$base_url}radio.php?skin=gray" title="音乐电台" target="_blank"><li>{if $active==''}<font color="#d06e6f">电台</font>{else}电台{/if}</li></li></a>
+<a href="{$base_url}resources.php?skin=gray&action=all" title="本站资源"><li>{if $active=='resources' || $active=='album' || $active=='search'}<font color="#d06e6f">资源</font>{else}资源{/if}</li></a>
+<a href="{$base_url}musician.php?skin=gray&action=all" title="音乐人介绍"><li>{if $active=='musician'}<font color="#d06e6f">音乐人</font>{else}音乐人{/if}</li></a>
+<a href="{$base_url}introduce.php?skin=gray&action=all" title="音乐推荐文章"><li>{if $active=='introduce' || $active=='content'}<font color="#d06e6f">推荐</font>{else}推荐{/if}</li></a>
+</ul>
+{include file="login.html"}
+</div>

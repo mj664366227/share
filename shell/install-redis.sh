@@ -1,6 +1,29 @@
 #linux mongodb自动安装程序 
-#运行例子：sh install-redis.sh 3.2.2 /usr/local
- 
+#运行例子：sh install-redis.sh 3.2.6 /usr/local
+
+function cluster(){ 
+	redis_install_path=$1;
+	port=$2;
+	mkdir -p $redis_install_path/redis/cluster/$port
+	cd $redis_install_path/redis/cluster/$port
+	echo "daemonize yes 	
+pidfile "$redis_install_path"/redis/cluster/"$port"/redis-"$port".pid 
+port "$port"
+bind 0.0.0.0
+timeout 5
+databases 16
+maxclients 1000
+dir "$redis_install_path"/redis/cluster/"$port"/
+syslog-enabled no
+slowlog-log-slower-than -1
+appendonly no
+auto-aof-rewrite-percentage 0
+cluster-enabled yes
+cluster-config-file "$redis_install_path"/redis/cluster/"$port"/nodes_"$port".conf
+cluster-node-timeout 15000" > redis.conf
+	redis-server $redis_install_path/redis/cluster/$port/redis.conf
+}
+
 #定义本程序的当前目录
 base_path=$(pwd)
 ntpdate ntp.api.bz
@@ -10,11 +33,11 @@ redis_version=$1
 redis_install_path=$2
 if [ ! $redis_version ] || [ ! $redis_install_path ] ; then
 	echo 'error command!!! you must input redis version and install path...'
-	echo 'for example: sh install-redis.sh 3.2.2 /usr/local'
+	echo 'for example: sh install-redis.sh 3.2.6 /usr/local'
 	exit
 fi
 
-yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip iptables-services
+yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip iptables-services ruby ruby-devel rubygems rpm-build httpd-tools bc
 
 #建立临时安装目录
 echo 'preparing working path...'
@@ -23,7 +46,7 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #安装jemalloc
-jemalloc='jemalloc-4.2.1'
+jemalloc='jemalloc-4.4.0'
 if [ ! -d $install_path/$jemalloc ]; then
 	echo 'installing '$jemalloc' ...'
 	if [ ! -f $base_path/$jemalloc.tar.bz2 ]; then
@@ -51,24 +74,42 @@ if [ ! -d $redis_install_path/redis ]; then
 	make
 	echo "daemonize yes 	
 pidfile "$redis_install_path"/redis/redis.pid 
-port 6379 				
-timeout 5	 				
-databases 16 						
-maxclients 1000 					
-dir "$redis_install_path"/redis/ 		
-syslog-enabled no 					
-slowlog-log-slower-than -1 	
+port 6379
+bind 0.0.0.0
+timeout 5
+databases 16
+maxclients 1000
+dir "$redis_install_path"/redis/
+syslog-enabled no
+slowlog-log-slower-than -1
 appendonly no
 auto-aof-rewrite-percentage 0
 requirepass admin" > $redis_install_path/redis/redis.conf
 fi
 
+#启动单点的redis
+redis-server $redis_install_path/redis/redis.conf
+
+#设置ruby gem源为Ruby China
+gem sources --add https://gems.ruby-china.org/
+gem install redis
+
 #关闭防火墙
 systemctl stop firewalld
 systemctl disable firewalld.service
 
-#开机启动redis
+#redis全局命令
 yes|cp -rf $redis_install_path'/redis/src/redis-server' /usr/bin/
 yes|cp -rf $redis_install_path'/redis/src/redis-cli' /usr/bin/
-echo 'redis-server '$redis_install_path'/redis/redis.conf' >> /etc/rc.local
+yes|cp -rf $redis_install_path'/redis/src/redis-trib.rb' /usr/bin/
 source /etc/rc.local
+
+#默认创建一个6个节点(3主3从)的集群
+ip=$(sh $base_path/ip.sh)
+cluster $redis_install_path 7000
+cluster $redis_install_path 7001
+cluster $redis_install_path 7002
+cluster $redis_install_path 7003
+cluster $redis_install_path 7004
+cluster $redis_install_path 7005
+redis-trib.rb create --replicas  1 $ip:7000 $ip:7001 $ip:7002 $ip:7003 $ip:7004 $ip:7005

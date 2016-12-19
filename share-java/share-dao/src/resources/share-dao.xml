@@ -44,4 +44,13 @@
 		<!-- 配置监控统计拦截的filters -->
 		<property name="filters" value="stat" />
 	</bean>
+	
+	
+	<!-- 反射pojo类 -->
+	<bean class="com.share.core.annotation.processor.PojoProcessor" init-method="init">
+		<!-- 定义要扫描的包，可用逗号分割 -->
+		<property name="scanPackage" value="com.share.dao.model" />
+		<!-- 定义要扫描的注解类名 -->
+		<property name="annotationClass" value="com.share.core.annotation.Pojo" />
+	</bean>
 </beans>

@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<script type="text/javascript" src="templates/template/jquery-1.4a2.js"></script>
+<title>电台频道设置</title>
+</head>
+<body>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>歌曲类别（括号是歌曲总数）</a></div>
+  <table cellspacing="0">
+    <tr>
+      <td> {foreach from=$category item=c} 
+        {if $action==$c.category} <font>{$c.category}({$c.count})</font> {else} <a href="channel.php?action={$c.category}">{$c.category}({$c.count})</a> {/if}
+        {/foreach} </td>
+    </tr>
+  </table>
+</div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>歌曲搜索</a></div>
+  <form action="channel.php?action={$type}&do=search" method="post">
+    <table>
+      <tr>
+        <td width="10%" align="right">搜索关键字：</td><td><input type="text" class="text" name="search" id="search_text"/>&nbsp;<input type="submit" value="搜 索" class="button" id="search_button"/></td>
+      </tr>
+    </table>
+  </form>
+</div>
+<div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>选择频道（已打上勾即是该频道的歌曲，没有则不是。）</a></div>
+  <table cellspacing="0" class="noticelist">
+    <tr align="center" class="bold">
+      <td width="7%">系统编号</td>
+      <td width="30%">歌名</td>
+      <td width="63%">加入的频道</td>
+    </tr>
+    {foreach from=$song item=s}
+    <tr align="center">
+      <td>{$s.id}</td>
+      <td align="left">{$s.artist} - {$s.title}</td>
+      <form>
+        <td align="left"> {foreach from=$radio_channel_set item=r}
+          {if $r.en_name!='new'}
+          <input type="checkbox" songid="{$s.id}" value="{$r.en_name}"{if $s.{$r.en_name}=="1"} checked="checked"{/if} class="check"/>
+          &nbsp;{$r.name}&nbsp;{/if}{/foreach}</td>
+      </form>
+    </tr>
+    {/foreach}
+    {if $page!=''}
+    <tr>
+      <td colspan="5" align="center" class="showpage">{$page}<br/>
+       {if $show==1}
+        <br/>
+        <form action="channel.php?action={$type}" method="post">
+          每页显示&nbsp;
+          <input type="text" name="perpage" style="width:30px" id="perpage"/>
+          &nbsp;页&nbsp;
+          <input type="submit" id="submitperpage" style="cursor:pointer"/>
+        </form>
+        <br/>
+        <br/>
+        {/if}</td>
+    </tr>
+    <tr>
+      <td colspan="5" align="center"><a href="#">返回顶部</a></td>
+    </tr>
+    {/if}
+  </table>
+</div>
+</body>
+</html>
+<style>
+table tr td a {
+	color:#09F;
+	text-decoration:underline;
+	line-height:20px
+}
+table tr td a:hover {
+	color:#F00;
+	font-weight:bold;
+	text-decoration:none
+}
+.look {
+	text-align:center
+}
+input {
+	border:1px solid #CCC
+}
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#search_button').click(function(){
+		if($('#search_text').val().trim()=='')
+		{
+			alert('搜索关键字为空！');
+			return false;
+		}
+	})
+	
+	$('#submitperpage').click(function(){
+		var length=$('.showpage a').length;
+		var str=$('.showpage a:eq('+(length-1)+')').attr('href');
+		var the_max=str.slice(str.indexOf('page=')+5,str.length);
+		if($('#perpage').val()=='') 
+		{
+			alert('输入为空！');
+			return false;
+		}
+		if(isFinite($('#perpage').val())==false) 
+		{
+			alert('输入的必须为数字！');
+			return false;
+		}
+	})
+	
+	$('.check').click(function(){
+	var action=$(this).attr('value');	
+	var songid=$(this).attr('songid');
+	var checked=$(this).attr('checked');
+	if(checked)
+		{
+			$.ajax({
+				type:'post',
+				url:'radio.php',
+				data:'action='+action+'&type=true&id='+songid,
+				success:function(){}
+			})
+		}
+		else
+		{
+			$.ajax({
+				type:'post',
+				url:'radio.php',
+				data:'action='+action+'&type=false&id='+songid,
+				success:function(){}
+			})
+		}
+	})
+})
+</script>

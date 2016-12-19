@@ -1,0 +1,78 @@
+.login ul li {
+	width:270px;
+}
+.album_card .album_pic {
+	margin:20px 10px;
+}
+.album_card .album_detail {
+	width:290px
+}
+.album_card {
+	width:590px
+}
+.album .album_like_out, .album .album_like {
+	position:relative;
+	top:0px;
+	right:-20px;
+}
+.album .album_like_on {
+	position:relative;
+	top:-42px;
+	right:-20px;
+}
+.publish .zhuanji ul li {
+	margin:4px
+}
+.artist .artist_like_out, .artist .artist_like_on, .artist .artist_like {
+	top:20px;
+	left:490px;
+}
+.otherlike, .maybelike {
+	margin-left:12px;
+}
+.maybelike .ul li {
+	margin:2px;
+}
+.content .ul {
+	margin-left:-10px
+}
+.content .ul li .info .content_title {
+	width:425px;
+}
+.content .sss {
+	margin-left:5px
+}
+.contents {
+	width:600px
+}
+.comment {
+	margin-left:5px;
+}
+#slide_ {
+	margin-left:10px;
+}
+.radio .radio_body {
+	height:160px
+}
+.radio .channel #close {
+	margin-top:-15px
+}
+.user .left,.user .left .user_card {
+	width:160px
+}
+.user .left .user_card img {
+	margin-left:20px
+}
+.user .left .edit_sign, .user .edit_sign_submit {
+	position:relative;
+	right:-65px
+}
+.user .left .user_card .username {
+	margin-left:10px
+}
+.login { width:390px; 
+}
+.friend_list ul li .info .nick,.friend_list ul li .info .content{ margin:0 0 0 2px;}
+.friend_introduce{margin-left:10px}
+.friend_introduce ul li{ margin:1px}
+.user_album ul li{margin:2px}

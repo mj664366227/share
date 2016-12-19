@@ -1,5 +1,5 @@
 #linux php自动安装程序
-#运行例子：sh install-php.sh 7.0.9 /usr/local
+#运行例子：sh install-php.sh 7.1.0 /usr/local
  
 #定义本程序的当前目录
 base_path=$(pwd)
@@ -10,7 +10,7 @@ php_version=$1
 php_install_path=$2 
 if [ ! $php_version ] || [ ! $php_install_path ]; then
 	echo 'error command!!! you must input php version and install path...'
-	echo 'for example: sh install-php.sh 7.0.9 /usr/local'
+	echo 'for example: sh install-php.sh 7.1.0 /usr/local'
 	exit
 fi
 
@@ -21,13 +21,13 @@ rm -rf $install_path
 mkdir -p $install_path
 
 #因为有些系统可能安装的类库不全，先给补上
-yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip vim iptables-services
+yum -y install gcc libc6-dev gcc-c++ pcre-devel nscd perl-devel perl-ExtUtils-Embed geoip-database libgeoip-dev make gd-devel libxslt-dev rsync lrzsz libxml2 libxml2-dev libxslt-dev libgd2-xpm libgd2-xpm-dev libpcre3 libpcre3-dev libtool sed gcc gcc-c++ make net-snmp libxml2 libxml2-devel net-snmp-devel libxslt-devel nscd net-snmp-utils python-devel libc6-dev python-devel rsync perl bc lrzsz bzip2 unzip vim iptables-services httpd-tools
 
 # 方便以后安装扩展，安装必备的工具
 if [ ! -d $php_install_path/m4 ]; then
 	m4='m4-1.4.17'
 	if [ ! -f $base_path/$m4.tar.gz ]; then
-		wget -O $base_path/$m4.tar.gz http://ftp.gnu.org/gnu/m4/$m4.tar.gz || exit
+		wget -O $base_path/$m4.tar.gz http://install.ruanzhijun.cn/$m4.tar.gz || exit
 	fi
 	tar zxvf $base_path/$m4.tar.gz -C $install_path || exit
 	cd $install_path/$m4
@@ -66,7 +66,7 @@ if [ ! -d $php_install_path/zlib ]; then
 	echo 'installing '$zlib' ...'
 	if [ ! -f $base_path/$zlib.tar.gz ]; then
 		echo $zlib'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$zlib.tar.gz http://zlib.net/$zlib.tar.gz || exit
+		wget -O $base_path/$zlib.tar.gz http://install.ruanzhijun.cn/$zlib.tar.gz || exit
 		echo 'download '$zlib' finished...'
 	fi
 	tar zxvf $base_path/$zlib.tar.gz -C $install_path || exit
@@ -108,7 +108,7 @@ if [ ! -d $php_install_path/libxml2 ]; then
 fi
 
 # 安装OpenSSL
-openssl='openssl-1.0.2h'
+openssl='openssl-1.1.0c'
 if [ ! -d $php_install_path/openssl ]; then
 	echo 'installing '$openssl' ...'
 	if [ ! -f $base_path/$openssl.tar.gz ]; then
@@ -118,7 +118,13 @@ if [ ! -d $php_install_path/openssl ]; then
 	fi
 	tar zxvf $base_path/$openssl.tar.gz -C $install_path || exit
 	cd $install_path/$openssl
-	./config --prefix=$php_install_path/openssl && $install_path/$openssl/config -t && make && make test && make install || exit
+	./config shared zlib --prefix=$php_install_path/openssl && $install_path/$openssl/config -t && make && make install || exit
+	rm -rf /usr/bin/openssl && ln -s $php_install_path/openssl/bin/openssl /usr/bin/openssl
+	rm -rf /usr/include/openssl && ln -s $php_install_path/openssl/include/openssl /usr/include/openssl
+	rm -rf /usr/lib64/libssl.so.1.1 && ln -s $php_install_path/openssl/lib/libssl.so.1.1 /usr/lib64/libssl.so.1.1
+	rm -rf /usr/lib64/libcrypto.so.1.1 && ln -s $php_install_path/openssl/lib/libcrypto.so.1.1 /usr/lib64/libcrypto.so.1.1
+	echo $php_install_path"/openssl/lib" >> /etc/ld.so.conf
+	ldconfig -v
 	yes|cp $php_install_path/openssl/bin/* /usr/bin/
 	echo $openssl' install finished...'
 fi
@@ -140,7 +146,7 @@ if [ ! -d $php_install_path/pcre ]; then
 fi
 
 # 安装curl
-curl='curl-7.50.0'
+curl='curl-7.51.0'
 if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then
@@ -220,7 +226,7 @@ fi
 # 安装GD库
 # # libpng
 if [ ! -d $php_install_path/libpng ]; then
-	libpng='1.6.23'
+	libpng='1.6.25'
 	if [ ! -f $base_path/libpng-$libpng.tar.gz ]; then
 		wget -O $base_path/libpng-$libpng.tar.gz http://install.ruanzhijun.cn/libpng-$libpng.tar.gz || exit
 	fi
@@ -241,7 +247,7 @@ if [ ! -d $php_install_path/jpeg ]; then
 fi
 # freetype
 if [ ! -d $php_install_path/freetype ]; then
-	freetype='freetype-2.6.5'
+	freetype='freetype-2.7'
 	if [ ! -f $base_path/$freetype.tar.gz ]; then
 		wget -O $base_path/$freetype.tar.gz http://install.ruanzhijun.cn/$freetype.tar.gz || exit
 	fi

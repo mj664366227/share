@@ -83,7 +83,7 @@ public final class PojoProcessor extends AnnotationProcessor {
 					pojoClassSetMethodMap.put(pojoClass, methodMap);
 				}
 				methodMap.put(field.getName(), pojoClass.getMethod(getSetter(field), field.getType()));
-			} catch (NoSuchMethodException | SecurityException e) {
+			} catch (Exception e) {
 				logger.error("", e);
 				System.exit(0);
 			}
@@ -98,7 +98,7 @@ public final class PojoProcessor extends AnnotationProcessor {
 					pojoClassGetMethodMap.put(pojoClass, methodMap);
 				}
 				methodMap.put(field.getName(), pojoClass.getMethod(getGetter(field)));
-			} catch (NoSuchMethodException | SecurityException e) {
+			} catch (Exception e) {
 				logger.error("", e);
 				System.exit(0);
 			}

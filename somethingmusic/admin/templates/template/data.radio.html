@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="templates/template/css.css" type="text/css" />
+<script type="text/javascript" src="templates/template/jquery-1.4a2.js"></script>
+<script type="text/javascript" src="templates/template/highcharts.js"></script>
+<title>数据统计 - 音乐电台统计</title>
+</head>
+<body>
+<script type="text/javascript">
+Highcharts.visualize = function(table, options) {
+				// the categories
+				options.xAxis.categories = [];
+				$('tbody th', table).each( function(i) {
+					options.xAxis.categories.push(this.innerHTML);
+				});
+				
+				// the data series
+				options.series = [];
+				$('tr', table).each( function(i) {
+					var tr = this;
+					$('th, td', tr).each( function(j) {
+						if (j > 0) { // skip first column
+							if (i == 0) { // get the name and init the series
+								options.series[j - 1] = { 
+									name: this.innerHTML,
+									data: []
+								};
+							} else { // add values
+								options.series[j - 1].data.push(parseFloat(this.innerHTML));
+							}
+						}
+					});
+				});
+				
+				var chart = new Highcharts.Chart(options);
+			}
+$(document).ready(function() {			
+				var table = document.getElementById('datatable'),
+				options = {
+					   chart: {
+					      renderTo: 'container',
+					      defaultSeriesType: 'column'
+					   },
+					   title: {
+					      text: '音乐电台统计'
+					   },
+					   xAxis: {
+					   },
+					   yAxis: {
+					      title: {
+					         text: ''
+					      }
+					   },
+					   tooltip: {
+					      formatter: function() {
+					         return '<b>'+ this.series.name +'</b><br/><br/>'+
+					            this.y +' '+ this.x.toLowerCase();
+					      }
+					   }
+					};					
+				Highcharts.visualize(table, options);
+			});
+		</script>
+        <div class="main_right">
+  <div class="title"><img src="templates/template/images/ico_clew_yes.gif" border="0"/>&nbsp;<a>音乐电台统计</a></div>
+  <table cellspacing="0">
+    <tr>
+      <td>
+      <div id="container" style="width:100%; height: 400px; margin: 0 auto"></div></td>
+    </tr>
+  </table>
+  <table id="datatable" style="display:none">
+  <thead><tr><th></th><th>歌曲数</th><th>点击数</th></tr></thead>
+  <tbody>
+  {foreach from=$output item=o}
+  <tr>
+  <th>{$o.name}</th>
+  <td>{$o.count}</td>
+  <td>{$o.click}</td>
+	</tr>
+  {/foreach}
+			</tbody>
+		</table>
+</div>
+</body>
+</html>
+<style>
+table tr td a {
+	color:#09F;
+	text-decoration:underline;
+	line-height:20px
+}
+table tr td a:hover {
+	color:#F00;
+	font-weight:bold;
+	text-decoration:none
+}
+</style>

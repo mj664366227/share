@@ -1,12 +1,11 @@
 package com.share.core.jdbc;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -27,8 +25,8 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.google.common.base.Joiner;
 import com.share.core.annotation.processor.PojoProcessor;
-import com.share.core.exception.MysqlConnectException;
 import com.share.core.interfaces.DSuper;
+import com.share.core.util.FileSystem;
 import com.share.core.util.StringUtil;
 import com.share.core.util.SystemUtil;
 
@@ -49,6 +47,10 @@ public abstract class AbstractJDBC {
 	 */
 	@Autowired
 	private PojoProcessor pojoProcessor;
+	/**
+	 * 数据库名
+	 */
+	private String dbName;
 
 	/**
 	 * 注入数据源
@@ -60,12 +62,213 @@ public abstract class AbstractJDBC {
 	/**
 	 * 检查连接
 	 */
-	protected void check() {
+	protected final void check() {
 		byte one = queryByte("select 1");
 		if (one != 1) {
-			throw new MysqlConnectException("can not connect to mysql!");
+			logger.error("can not connect to mysql!");
+			System.exit(0);
 		}
 		update("set names utf8mb4");
+
+		// 获取数据库名(我们这个框架就一定用druid的了)
+		com.alibaba.druid.pool.DruidDataSource dataSource = (com.alibaba.druid.pool.DruidDataSource) jdbc.getDataSource();
+		String jdbcUrl = dataSource.getUrl();
+		jdbcUrl = jdbcUrl.split("\\?")[0];
+		String[] arr = jdbcUrl.split("\\/");
+		dbName = StringUtil.getString(arr[arr.length - 1]);
+
+		// 根据数据库表结构，初始化T对象
+		initT();
+	}
+
+	/**
+	 * 根据数据库表结构，初始化T对象
+	 */
+	private final void initT() {
+		if (!FileSystem.isWindows()) {
+			// 本程序只为了windows开发方便，自动生成pojo类；在linux系统不执行
+			return;
+		}
+
+		// 约定好pojo类的目录，就在dao工程内
+		// 所以如果有数据库功能，一定要有dao工程
+		// 如果没有目标文件夹，则自动创建，但不会创建dao工程
+		String modelPath = FileSystem.getSystemDir() + "../../share-dao/src/java/com/share/dao/model/";
+		FileSystem.mkdir(modelPath);
+
+		String sql = "show tables";
+		List<Map<String, Object>> tableList = queryList(sql);
+		for (Map<String, Object> table : tableList) {
+			// 生成类名
+			String tableName = StringUtil.getString(table.entrySet().iterator().next().getValue());
+			String className = tableNameToClassName(tableName);
+
+			// 删除旧的类
+			String classPath = modelPath + className + ".java";
+			FileSystem.delete(classPath);
+
+			// 根据表结构，生成pojo类
+			makePojoClass(classPath);
+		}
+
+		logger.info("make pojo object finish!");
+	}
+
+	/**
+	 * 根据表结构，生成pojo类
+	 * @param classPath pojo类要保存的目标地址
+	 */
+	private final void makePojoClass(String classPath) {
+		// 从文件名转成表名(虽然有点蛋疼，但是保证了程序的优雅，反正程序init阶段不需要考虑性能)
+		String[] arr = classPath.split("/");
+		String className = StringUtil.getString(arr[arr.length - 1].replaceAll(".java", "")).substring(1);
+		String tableName = fieldNameToColumnName(className);
+
+		// 有3个预留字段不用生成
+		Set<String> reservedColumn = new HashSet<>();
+		reservedColumn.add("id");
+		reservedColumn.add("createTime");
+		reservedColumn.add("lastModifyTime");
+
+		// 换行符
+		String newlineCharacter = "\r\n";
+
+		// 获取表注释
+		String sql = "select `TABLE_COMMENT` from `information_schema`.`TABLES` where `TABLE_SCHEMA`='" + dbName + "' and `TABLE_NAME`='" + tableName + "'";
+		String tableComment = queryString(sql);
+
+		// 拼装生成pojo类的代码
+		StringBuilder code = new StringBuilder();
+		code.append("package com.share.dao.model;");
+		code.append(newlineCharacter);
+		code.append("import com.share.core.annotation.Pojo;");
+		code.append(newlineCharacter);
+		code.append("import com.share.core.interfaces.DSuper;");
+		code.append(newlineCharacter);
+
+		// 如果有表注释，也当作是类注释
+		if (!tableComment.isEmpty()) {
+			code.append("/**");
+			code.append(newlineCharacter);
+			code.append(" * ");
+			code.append(tableComment);
+			code.append(newlineCharacter);
+			code.append(" */");
+			code.append(newlineCharacter);
+		}
+
+		code.append("@Pojo");
+		code.append(newlineCharacter);
+		code.append("public class D");
+		code.append(className);
+		code.append(" extends DSuper {");
+		code.append(newlineCharacter);
+
+		// 获取表结构
+		sql = "show full  columns from `" + tableName + "`";
+		List<Map<String, Object>> createTable = queryList(sql);
+		for (Map<String, Object> column : createTable) {
+			String field = columnNameToFieldName(StringUtil.getString(column.get("Field")));
+
+			// 预留字段不用生成
+			if (reservedColumn.contains(field)) {
+				continue;
+			}
+
+			// 如果有表注释，也当作是字段注释
+			String comment = StringUtil.getString(column.get("Comment"));
+			String type = getType(StringUtil.getString(column.get("Type")));
+			if (!comment.isEmpty()) {
+				code.append("\t/**");
+				code.append(newlineCharacter);
+				code.append("\t * ");
+				code.append(comment);
+				code.append(newlineCharacter);
+				code.append("\t */");
+				code.append(newlineCharacter);
+			}
+
+			code.append("\tprivate ");
+			code.append(type);
+			code.append(" ");
+			code.append(field);
+			code.append(";");
+			code.append(newlineCharacter);
+		}
+
+		code.append(newlineCharacter);
+
+		// 生成get set 方法
+		for (Map<String, Object> column : createTable) {
+			String field = columnNameToFieldName(StringUtil.getString(column.get("Field")));
+
+			// 预留字段不用生成
+			if (reservedColumn.contains(field)) {
+				continue;
+			}
+
+			// 如果有表注释，也当作是方法注释
+			String comment = StringUtil.getString(column.get("Comment"));
+			String type = getType(StringUtil.getString(column.get("Type")));
+			if (!comment.isEmpty()) {
+				code.append("\t/**");
+				code.append(newlineCharacter);
+				code.append("\t * 获取");
+				code.append(comment);
+				code.append(newlineCharacter);
+				code.append("\t */");
+				code.append(newlineCharacter);
+			}
+
+			code.append("\tpublic ");
+			code.append(type);
+			code.append(" ");
+			code.append(getGetter(field));
+			code.append("() {");
+			code.append(newlineCharacter);
+			code.append("\t\treturn ");
+			code.append(field);
+			code.append(";");
+			code.append(newlineCharacter);
+			code.append("\t}");
+			code.append(newlineCharacter);
+			code.append(newlineCharacter);
+
+			if (!comment.isEmpty()) {
+				code.append("\t/**");
+				code.append(newlineCharacter);
+				code.append("\t * 设置");
+				code.append(comment);
+				code.append(newlineCharacter);
+				code.append("\t */");
+				code.append(newlineCharacter);
+			}
+
+			code.append("\tpublic void ");
+			code.append(getSetter(field));
+			code.append("(");
+			code.append(type);
+			code.append(" ");
+			code.append(field);
+			code.append(") {");
+			code.append(newlineCharacter);
+			code.append("\t\tthis.");
+			code.append(field);
+			code.append(" = ");
+			code.append(field);
+			code.append(";");
+			code.append(newlineCharacter);
+			code.append("\t}");
+			code.append(newlineCharacter);
+			code.append(newlineCharacter);
+		}
+
+		// 文件尾部
+		code.append(newlineCharacter);
+		code.append("}");
+
+		// 写入文件
+		FileSystem.write(classPath, code.toString(), false);
 	}
 
 	/**
@@ -78,8 +281,7 @@ public abstract class AbstractJDBC {
 		List<T> list = new ArrayList<T>();
 		Map<String, Method> methodMap = pojoProcessor.getSetMethodMapByClass(clazz);
 		if (methodMap == null) {
-			logger.error("class {} methodMap is null", clazz.getName());
-			return list;
+			//throw new MethodMapNotFoundException("class " + clazz.getName() + " methodMap is null");
 		}
 		try {
 			SqlRowSet rs = jdbc.queryForRowSet(sql, args);
@@ -87,7 +289,42 @@ public abstract class AbstractJDBC {
 				T t = clazz.newInstance();
 				for (Entry<String, Method> e : methodMap.entrySet()) {
 					String column = fieldNameToColumnName(e.getKey());//程序字段->数据库字段(adminPhoneId->admin_phone_id)
-					e.getValue().invoke(t, rs.getObject(column));
+					Class<?> columnClazz = e.getValue().getParameterTypes()[0];
+					if (columnClazz.equals(byte.class)) {
+						e.getValue().invoke(t, StringUtil.getByte(rs.getByte(column)));
+					} else if (columnClazz.equals(Byte.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getByte(value));
+					} else if (columnClazz.equals(short.class)) {
+						e.getValue().invoke(t, StringUtil.getShort(rs.getShort(column)));
+					} else if (columnClazz.equals(Short.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getShort(value));
+					} else if (columnClazz.equals(int.class)) {
+						e.getValue().invoke(t, StringUtil.getInt(rs.getInt(column)));
+					} else if (columnClazz.equals(Integer.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getInt(value));
+					} else if (columnClazz.equals(long.class)) {
+						e.getValue().invoke(t, StringUtil.getLong(rs.getLong(column)));
+					} else if (columnClazz.equals(Long.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getLong(value));
+					} else if (columnClazz.equals(float.class)) {
+						e.getValue().invoke(t, StringUtil.getFloat(rs.getFloat(column)));
+					} else if (columnClazz.equals(Float.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getFloat(value));
+					} else if (columnClazz.equals(double.class)) {
+						e.getValue().invoke(t, StringUtil.getDouble(rs.getDouble(column)));
+					} else if (columnClazz.equals(Double.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getDouble(value));
+					} else if (columnClazz.equals(byte[].class)) {
+						e.getValue().invoke(t, (byte[]) rs.getObject(column));
+					} else {
+						e.getValue().invoke(t, StringUtil.getString(rs.getString(column)));
+					}
 				}
 				list.add(t);
 			}
@@ -109,7 +346,27 @@ public abstract class AbstractJDBC {
 		try {
 			SqlRowSet rs = jdbc.queryForRowSet(sql, args);
 			while (rs.next()) {
-				list.add(rs.getLong(1));
+				list.add(StringUtil.getLong(rs.getLong(1)));
+			}
+			return list;
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		return list;
+	}
+
+	/**
+	 * @author ruan
+	 * @param sql
+	 * @param clazz
+	 * @param args
+	 */
+	public final List<String> queryStringList(String sql, Object... args) {
+		List<String> list = new ArrayList<String>();
+		try {
+			SqlRowSet rs = jdbc.queryForRowSet(sql, args);
+			while (rs.next()) {
+				list.add(StringUtil.getString(rs.getString(1)));
 			}
 			return list;
 		} catch (Exception e) {
@@ -137,12 +394,47 @@ public abstract class AbstractJDBC {
 				T t = clazz.newInstance();
 				for (Entry<String, Method> e : methodMap.entrySet()) {
 					String column = fieldNameToColumnName(e.getKey());//程序字段->数据库字段(adminPhoneId->admin_phone_id)
-					e.getValue().invoke(t, rs.getObject(column));
+					Class<?> columnClazz = e.getValue().getParameterTypes()[0];
+					if (columnClazz.equals(byte.class)) {
+						e.getValue().invoke(t, StringUtil.getByte(rs.getByte(column)));
+					} else if (columnClazz.equals(Byte.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getByte(value));
+					} else if (columnClazz.equals(short.class)) {
+						e.getValue().invoke(t, StringUtil.getShort(rs.getShort(column)));
+					} else if (columnClazz.equals(Short.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getShort(value));
+					} else if (columnClazz.equals(int.class)) {
+						e.getValue().invoke(t, StringUtil.getInt(rs.getInt(column)));
+					} else if (columnClazz.equals(Integer.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getInt(value));
+					} else if (columnClazz.equals(long.class)) {
+						e.getValue().invoke(t, StringUtil.getLong(rs.getLong(column)));
+					} else if (columnClazz.equals(Long.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getLong(value));
+					} else if (columnClazz.equals(float.class)) {
+						e.getValue().invoke(t, StringUtil.getFloat(rs.getFloat(column)));
+					} else if (columnClazz.equals(Float.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getFloat(value));
+					} else if (columnClazz.equals(double.class)) {
+						e.getValue().invoke(t, StringUtil.getDouble(rs.getDouble(column)));
+					} else if (columnClazz.equals(Double.class)) {
+						String value = rs.getString(column);
+						e.getValue().invoke(t, value == null ? null : StringUtil.getDouble(value));
+					} else if (columnClazz.equals(byte[].class)) {
+						e.getValue().invoke(t, (byte[]) rs.getObject(column));
+					} else {
+						e.getValue().invoke(t, StringUtil.getString(rs.getString(column)));
+					}
 				}
 				return t;
 			}
 			return null;
-		} catch (DataAccessException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 		}
 		return null;
@@ -157,7 +449,7 @@ public abstract class AbstractJDBC {
 	public final List<Map<String, Object>> queryList(String sql, Object... args) {
 		try {
 			return jdbc.queryForList(sql, args);
-		} catch (EmptyResultDataAccessException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 			return null;
 		}
@@ -172,7 +464,7 @@ public abstract class AbstractJDBC {
 	public final byte queryByte(String sql, Object... args) {
 		try {
 			return StringUtil.getByte(jdbc.queryForObject(sql, args, Byte.class));
-		} catch (EmptyResultDataAccessException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 			return 0;
 		}
@@ -187,7 +479,7 @@ public abstract class AbstractJDBC {
 	public final short queryShort(String sql, Object... args) {
 		try {
 			return StringUtil.getShort(jdbc.queryForObject(sql, args, Short.class));
-		} catch (EmptyResultDataAccessException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 			return 0;
 		}
@@ -202,7 +494,7 @@ public abstract class AbstractJDBC {
 	public final int queryInt(String sql, Object... args) {
 		try {
 			return StringUtil.getInt(jdbc.queryForObject(sql, args, Integer.class));
-		} catch (EmptyResultDataAccessException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 			return 0;
 		}
@@ -217,7 +509,7 @@ public abstract class AbstractJDBC {
 	public final long queryLong(String sql, Object... args) {
 		try {
 			return StringUtil.getLong(jdbc.queryForObject(sql, args, Long.class));
-		} catch (EmptyResultDataAccessException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 			return 0L;
 		}
@@ -232,9 +524,9 @@ public abstract class AbstractJDBC {
 	public final float queryFloat(String sql, Object... args) {
 		try {
 			return StringUtil.getFloat(jdbc.queryForObject(sql, args, Float.class));
-		} catch (EmptyResultDataAccessException e) {
+		} catch (Exception e) {
 			logger.error("", e);
-			return 0L;
+			return 0;
 		}
 	}
 
@@ -247,7 +539,7 @@ public abstract class AbstractJDBC {
 	public final double queryDouble(String sql, Object... args) {
 		try {
 			return StringUtil.getDouble(jdbc.queryForObject(sql, args, Double.class));
-		} catch (EmptyResultDataAccessException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 			return 0L;
 		}
@@ -262,9 +554,9 @@ public abstract class AbstractJDBC {
 	public final String queryString(String sql, Object... args) {
 		try {
 			return StringUtil.getString(jdbc.queryForObject(sql, args, String.class));
-		} catch (EmptyResultDataAccessException e) {
+		} catch (Exception e) {
 			logger.error("", e);
-			return null;
+			return "";
 		}
 	}
 
@@ -277,7 +569,7 @@ public abstract class AbstractJDBC {
 	public final boolean update(String sql, Object... args) {
 		try {
 			return jdbc.update(sql, args) > 0;
-		} catch (DataAccessException e) {
+		} catch (Exception e) {
 			logger.error("", e);
 		}
 		return false;
@@ -296,9 +588,6 @@ public abstract class AbstractJDBC {
 		sql.append(table);
 		sql.append("` set ");
 
-		//根据表名取出update要忽略的统计字段map
-		//HashMap<String, String> columnMap = CountKey.getColumnMap(table);
-
 		try {
 			// 统计有多少个字段
 			int count = 1;
@@ -310,10 +599,6 @@ public abstract class AbstractJDBC {
 				if ("id".equals(column)) {
 					continue;
 				}
-				//忽略的字段
-//				if (columnMap != null && !StringUtil.getString(columnMap.get(column)).isEmpty()) {
-//					continue;
-//				}
 
 				sql.append("`");
 				sql.append(column);
@@ -324,7 +609,7 @@ public abstract class AbstractJDBC {
 
 			int len = sql.length();
 			sql.delete(len - 1, len);
-			sql.append(" where id=?");
+			sql.append(" where `id`=?");
 
 			// 传入参数
 			Object[] args = new Object[count];
@@ -333,10 +618,6 @@ public abstract class AbstractJDBC {
 				if ("id".equals(e.getKey())) {
 					continue;
 				}
-				//忽略的字段
-//				if (columnMap != null && !StringUtil.getString(columnMap.get(fieldNameToColumnName(e.getKey()))).isEmpty()) {
-//					continue;
-//				}
 				args[count] = e.getValue().invoke(t);
 
 				count += 1;
@@ -357,32 +638,33 @@ public abstract class AbstractJDBC {
 	 * @param idSet id集合
 	 * @param clazz 实体类
 	 */
-	public <T, F> List<T> multiGetT(Set<F> idSet, Class<T> clazz) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("select * from `");
-		sql.append(classNameToTableName(clazz));
-		sql.append("` where `id` in (");
-		sql.append(Joiner.on(",").join(idSet));
-		sql.append(") order by `id` desc");
-		return queryList(sql.toString(), clazz);
+	public final <T, F> List<T> multiGetT(Set<F> idSet, Class<T> clazz) {
+		return multiGetT(idSet, clazz, "id");
 	}
 
 	/**
-	 * 批量获取统计字段
+	 * 批量获取T(兼容"id"不是主键)
 	 * @param idSet id集合
-	 * @param countKey 统计字段key枚举
+	 * @param clazz 实体类
+	 * @param sqlKey 数据库主键(程序字段格式)
 	 */
-//	public List<Map<String, Object>> multiGetCountColumn(Set<Long> idSet, CountKey countKey) {
-//		StringBuilder sql = new StringBuilder();
-//		sql.append("select `id`,`");
-//		sql.append(countKey.getColumn());
-//		sql.append("` from `");
-//		sql.append(countKey.getTable());
-//		sql.append("` where `id` in (");
-//		sql.append(Joiner.on(",").join(idSet));
-//		sql.append(") order by `id` desc");
-//		return queryList(sql.toString());
-//	}
+	public final <T, F> List<T> multiGetT(Set<F> idSet, Class<T> clazz, String sqlKey) {
+		String column = sqlKey;
+		if (!sqlKey.equals("id")) {
+			column = fieldNameToColumnName(sqlKey);
+		}
+		StringBuilder sql = new StringBuilder();
+		sql.append("select * from `");
+		sql.append(classNameToTableName(clazz));
+		sql.append("` where `");
+		sql.append(column);
+		sql.append("` in (");
+		sql.append(Joiner.on(",").join(idSet));
+		sql.append(") order by `");
+		sql.append(column);
+		sql.append("` desc");
+		return queryList(sql.toString(), clazz);
+	}
 
 	/**
 	 * 插入数据,返回自增id
@@ -406,7 +688,7 @@ public abstract class AbstractJDBC {
 			}
 		};
 		result = jdbc.update(psc, keyHolder);
-		return result > 0 ? keyHolder.getKey().intValue() : -1;
+		return result > 0 ? keyHolder.getKey().longValue() : -1;
 	}
 
 	/**
@@ -432,6 +714,80 @@ public abstract class AbstractJDBC {
 	}
 
 	/**
+	 * 批量保存pojo对象
+	 * @param tArray pojo对象
+	 */
+	@SuppressWarnings("unchecked")
+	public final <T> void batchSave(T... tArray) {
+		int count = 0;
+		List<Object[]> batchArgs = new ArrayList<Object[]>(Math.max(tArray.length, 100));
+		Map<String, Method> methodMap = null;
+		StringBuilder sql = null;
+
+		// 主键是否是id
+		try {
+			for (int j = 0; j < tArray.length; j++) {
+				T t = tArray[j];
+				Class<?> clazz = t.getClass();
+				if (j == 0) {
+					// 生成sql insert头
+					sql = new StringBuilder();
+					sql.append("insert into `");
+					sql.append(classNameToTableName(clazz));
+					sql.append("` (");
+					methodMap = pojoProcessor.getGetMethodMapByClass(clazz);
+
+					// 列出字段
+					for (Entry<String, Method> e : methodMap.entrySet()) {
+						String column = fieldNameToColumnName(e.getKey());//程序字段->数据库字段(adminPhoneId->admin_phone_id)
+						if ("id".equals(column)) {
+							continue;
+						}
+						sql.append("`");
+						sql.append(column);
+						sql.append("`,");
+
+						count += 1;
+					}
+					int len = sql.length();
+					sql.delete(len - 1, len);
+					sql.append(") values (");
+
+					// 统计出来的字段数是为了生成n个?，这样可以使用preperstament的防注入
+					for (int i = 0; i < count; i++) {
+						sql.append("?,");
+					}
+					len = sql.length();
+					sql.delete(len - 1, len);
+					sql.append(")");
+				}
+
+				// 传入参数
+				Object[] args = new Object[count];
+				int tmpCount = 0;
+				for (Entry<String, Method> e : methodMap.entrySet()) {
+					if ("id".equals(e.getKey())) {
+						continue;
+					}
+					args[tmpCount] = e.getValue().invoke(t);
+					tmpCount += 1;
+				}
+
+				batchArgs.add(args);
+				if ((j + 1) % 100 == 0 && !batchArgs.isEmpty()) {
+					batchUpdate(sql.toString(), batchArgs);
+					batchArgs.clear();
+				}
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+		}
+		if (!batchArgs.isEmpty()) {
+			batchUpdate(sql.toString(), batchArgs);
+		}
+	}
+
+	/**
 	 * 保存整个pojo对象
 	 * @param t pojo对象
 	 * @return -1 异常 
@@ -450,18 +806,24 @@ public abstract class AbstractJDBC {
 			// 统计有多少个字段
 			int count = 0;
 
-			// 列出字段
+			// 如果id有值，组sql的时候也要有id字段
 			Map<String, Method> methodMap = pojoProcessor.getGetMethodMapByClass(clazz);
+			long id = 0;
+			Method method = methodMap.get("id");
+			if (method != null) {
+				id = StringUtil.getLong(method.invoke(t));
+			}
+
+			// 列出字段
 			for (Entry<String, Method> e : methodMap.entrySet()) {
 				String column = fieldNameToColumnName(e.getKey());//程序字段->数据库字段(adminPhoneId->admin_phone_id)
-				if ("id".equals(column)) {
+				if ("id".equals(column) && id <= 0) {
 					idIsPrimary = true;
 					continue;
 				}
 				sql.append("`");
 				sql.append(column);
 				sql.append("`,");
-
 				count += 1;
 			}
 			int len = sql.length();
@@ -480,15 +842,15 @@ public abstract class AbstractJDBC {
 			Object[] args = new Object[count];
 			count = 0;
 			for (Entry<String, Method> e : methodMap.entrySet()) {
-				if ("id".equals(e.getKey())) {
+				if ("id".equals(e.getKey()) && id <= 0) {
 					continue;
 				}
 				args[count] = e.getValue().invoke(t);
-
 				count += 1;
 			}
-			// 主键不是是id,是user_id,case_id等
-			if (!idIsPrimary) {
+
+			// 如果id有值或者主键不是id，调用update
+			if (!idIsPrimary || id > 0) {
 				boolean success = update(sql.toString(), args);
 				if (!success) {
 					return null;
@@ -496,7 +858,7 @@ public abstract class AbstractJDBC {
 				return t;
 			}
 			// 主键是id
-			long id = insert(sql.toString(), "id", args);
+			id = insert(sql.toString(), "id", args);
 			if (id <= 0) {
 				// 如果返回的id是非正数，证明插入错误，返回null对象
 				return null;
@@ -541,9 +903,8 @@ public abstract class AbstractJDBC {
 	/**
 	 * 程序字段->数据库字段(adminPhoneId->admin_phone_id)
 	 * @param fieldName 程序字段 
-	 * @return columnName 数据库字段
 	 */
-	private String fieldNameToColumnName(String fieldName) {
+	private final String fieldNameToColumnName(String fieldName) {
 		StringBuilder columnName = new StringBuilder();
 		int l = fieldName.length();
 		for (int i = 0; i < l; i++) {
@@ -559,10 +920,25 @@ public abstract class AbstractJDBC {
 	}
 
 	/**
+	 * 数据库字段->程序字段(admin_phone_id->adminPhoneId)
+	 * @param columnName 程序字段 
+	 */
+	private final String columnNameToFieldName(String columnName) {
+		StringBuilder fieldName = new StringBuilder();
+		String[] arr = columnName.split("_");
+		for (int i = 0; i < arr.length; i++) {
+			fieldName.append(StringUtil.firstUpperCase(arr[i]));
+		}
+		String field = fieldName.toString();
+		field = field.substring(0, 1).toLowerCase() + field.substring(1);
+		return field;
+	}
+
+	/**
 	 * pojo类型转化成表名
 	 * @param clazz
 	 */
-	private <T> String classNameToTableName(Class<T> clazz) {
+	private final <T> String classNameToTableName(Class<T> clazz) {
 		//类名转化成数据表名
 		String className = clazz.getSimpleName().substring(1);
 		StringBuilder tableName = new StringBuilder();
@@ -577,5 +953,64 @@ public abstract class AbstractJDBC {
 			}
 		}
 		return tableName.toString().toLowerCase();
+	}
+
+	/**
+	 * 表名转成类名(user_detail => DUserDetail)
+	 * @param tableName 表名
+	 */
+	private final String tableNameToClassName(String tableName) {
+		StringBuilder className = new StringBuilder("D");
+		String[] arr = tableName.split("_");
+		for (int i = 0; i < arr.length; i++) {
+			className.append(StringUtil.firstUpperCase(arr[i]));
+		}
+		return className.toString();
+	}
+
+	/**
+	 * 根据属性名，获取Getter方法名
+	 * @param field
+	 */
+	private final String getGetter(String field) {
+		return "get" + field.substring(0, 1).toUpperCase() + field.substring(1);
+	}
+
+	/**
+	 * 根据属性名，获取setter方法名
+	 * @param field
+	 */
+	private final String getSetter(String field) {
+		return "set" + field.substring(0, 1).toUpperCase() + field.substring(1);
+	}
+
+	/**
+	 * 把数据库的类型，转成java的类型
+	 * @param type 数据类型
+	 */
+	private final String getType(String type) {
+		int index = type.indexOf("(");
+		if (index > -1) {
+			type = type.substring(0, type.indexOf("("));
+		}
+		switch (type) {
+		case "tinyint":
+			return "byte";
+		case "int":
+			return "int";
+		case "bigint":
+			return "long";
+		case "decimal":
+			return "double";
+		case "varchar":
+			return "String";
+		case "char":
+			return "String";
+		case "mediumtext":
+			return "String";
+		case "text":
+			return "String";
+		}
+		return "String";
 	}
 }

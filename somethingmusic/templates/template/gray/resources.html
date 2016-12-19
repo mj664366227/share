@@ -1,0 +1,140 @@
+<!--分类查询-->
+<div class="sort">
+<ul>
+<li><div class="title"><img src="{$base_url}templates/template/gray/images/area.png" width="30" height="15"/></div>
+<div class="type">
+      <ul>
+        {foreach from=$area item=s}
+        {if $action==$s.id}
+        <li><a href="{$base_url}resources.php?skin=gray&action={$s.id}" title="{$s.bigcategory}"><font color="#e7999a">{$s.bigcategory}</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action={$s.id}" title="{$s.bigcategory}">{$s.bigcategory}</a></li>
+        {/if}
+        {/foreach}
+      </ul>
+</li>
+<li><div class="title"><img src="{$base_url}templates/template/gray/images/language.png" width="30" height="15"/></div>
+<div class="type">
+      <ul>
+        {if $action=='a'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=a" title="粤语"><font color="#ff0066">粤语</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=a" title="粤语">粤语</a></li>
+        {/if}
+        {if $action=='b'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=b" title="国语"><font color="#ff0066">国语</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=b" title="国语">国语</a></li>
+        {/if}
+        {if $action=='c'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=c" title="英语"><font color="#ff0066">英语</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=c" title="英语">英语</a></li>
+        {/if}
+        {if $action=='d'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=d" title="日语"><font color="#ff0066">日语</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=d" title="日语">日语</a></li>
+        {/if}
+        {if $action=='e'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=e" title="韩语"><font color="#ff0066">韩语</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=e" title="韩语">韩语</a></li>
+        {/if}
+        {if $action=='f'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=f" title="其他"><font color="#ff0066">其他</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=f" title="其他">其他</a></li>
+        {/if}
+      </ul>
+    </div>
+</li>
+<li><div class="title"><img src="{$base_url}templates/template/gray/images/category.png" width="30" height="15"/></div>
+<div class="type">
+      <ul>
+        {foreach from=$category item=s}
+        {if $s.smallcategory==$action}
+        <li><a href="{$base_url}resources.php?skin=gray&action={$s.smallcategory}" title="{$s.smallcategory}"><font color="#e7999a">{$s.smallcategory}</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action={$s.smallcategory}" title="{$s.smallcategory}">{$s.smallcategory}</a></li>
+        {/if}
+        {/foreach}
+      </ul>
+    </div>
+</li>
+<li><div class="title"><img src="{$base_url}templates/template/gray/images/year.png" width="30" height="15"/></div>
+<div class="type">
+      <ul>
+        {foreach from=$time item=t}
+        {if $t=='00-05'}
+        {if $action=='2005'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year=2005" title="{$t}年"><font color="#e7999a">{$t}</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year=2005" title="{$t}年">{$t}</a></li>
+        {/if}
+        {else}
+        {if $action==$t}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year={$t}" title="{$t}年"><font color="#e7999a">{$t}</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year={$t}" title="{$t}年">{$t}</a></li>
+        {/if}
+        {/if}
+        {/foreach}
+        {if $action=='90'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year=90" title="90年代"><font color="#e7999a">90年代</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year=90" title="90年代">90年代</a></li>
+        {/if}
+        {if $action=='80'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year=80" title="80年代"><font color="#e7999a">80年代</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year=80" title="80年代">80年代</a></li>
+        {/if}
+        {if $action=='70'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year=70" title="70年代"><font color="#e7999a">70年代</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year=70" title="70年代">70年代</a></li>
+        {/if}
+        {if $action=='60'}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year=60" title="60年代"><font color="#e7999a">60年代</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=year&year=60" title="60年代">60年代</a></li>
+        {/if}
+      </ul>
+    </div>
+</li>
+<li><div class="title"><img src="{$base_url}templates/template/gray/images/letter.png" width="30" height="15"/></div>
+<div class="type">
+      <ul>
+        {foreach from=$a_z item=a}
+        {if $action==$a}
+        <li><a href="{$base_url}resources.php?skin=gray&action=all&letter={$a}" title="{$a}"><font color="#e7999a">{$a}</font></a></li>
+        {else}
+        <li><a href="{$base_url}resources.php?skin=gray&action=all&letter={$a}" title="{$a}">{$a}</a></li>
+        {/if}
+        {/foreach}
+      </ul>
+    </div></li>
+</ul>
+</div>
+<!--专辑列表-->
+<div class="new">
+ <div class="special">
+<a href="{$base_url}resources.php?skin=gray&action=all" title="查看全部专辑">{if $action=='all'}<font color="#e7999a">全部</font>{else}全部{/if}</a> <span>|</span> 
+<a href="{$base_url}resources.php?skin=gray&action=time" title="按发行时间排序">{if $action=='time'}<font color="#e7999a">发行时间</font>{else}发行时间{/if}</a> <span>|</span> 
+<a href="{$base_url}resources.php?skin=gray&action=hot" title="按专辑热度排序">{if $action=='hot'}<font color="#e7999a">专辑热度</font>{else}专辑热度{/if}</a></div>
+<ul>
+      {if $album!='0'}{if $no_album=='0' && $type=='search'}
+      <li>查无结果...</li>
+      {/if}
+      {foreach from=$album item=s}<li><a href="{$base_url}album.php?skin=gray&id={$s.id}" title="{$s.artist|trim}-{$s.title|trim}"><img src="{$base_url}thumbs/thumbs/cache/w190h190/admin/{$s.picture}" border="0" width="190" height="190" alt="{$s.artist|trim}-{$s.title|trim}"/></a><br/><a href="{$base_url}album.php?skin=gray&id={$s.id}" title="{$s.artist}-{$s.title|stripslashes}" id="artist">{$s.artist|truncate:16|trim}</a><br/><a href="{$base_url}album.php?skin=gray&id={$s.id}" title="{$s.artist}-{$s.title|stripslashes}" id="title">{$s.title|truncate:16|trim|stripslashes}</a></li>{/foreach}
+      {else}
+      <li>暂无记录...</li>
+      {/if}
+    </ul>
+    {if $page!=''} 
+    <!--分页--> 
+    <div class="page">{$page}</div>
+    {/if}
+</div>
+{include file="foot.html"}

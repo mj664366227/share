@@ -1,0 +1,16 @@
+.header ul,.nav .search{margin-right:12px}
+.nav ul{ margin-left:-30px}
+.slide,.music_introduction,.resources,.page,.album,.musician,.singer,.zhuanji{margin-left:10px;}
+.music_introduction{width:576px;}
+.music_introduction_list span{top:129px;}
+.music_introduction_list li{margin-top:1px}
+.ad{ margin-left:-20px}
+.sort{ margin-left:0px}
+.right{ margin-left:20px}
+.album .song{ margin-top:-20px; margin-top:5px}
+.other,.other_artist{ margin-left:0px}
+.other_artist ul li{ margin-left:2px; margin-right:2px;}
+.result{right:45px;}
+.hot ul li .info{ margin-left:5px}
+.slide .slide_content_list dd a{ margin-left:-41px;}
+.album .album_sth{ width:345px;float:left}

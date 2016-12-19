@@ -19,8 +19,8 @@ install_path='/install'
 rm -rf $install_path
 mkdir -p $install_path
 
-#下载
-jdk='jdk-8u101-linux-x64'
+#下载java
+jdk='jdk-8u111-linux-x64'
 echo 'installing '$jdk' ...'
 if [ ! -f $base_path/$jdk.tar.gz ]; then
 	echo $jdk'.tar.gz is not exists, system will going to download it...'
@@ -31,7 +31,7 @@ tar zxvf $jdk.tar.gz -C $java_install_path
 
 echo "" >> /etc/profile
 echo "# set Java environment" >> /etc/profile
-echo "JAVA_HOME="$java_install_path"/jdk1.8.0_101" >> /etc/profile
+echo "JAVA_HOME="$java_install_path"/jdk1.8.0_111" >> /etc/profile
 echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile
 echo "CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile
 echo "export JAVA_HOME" >> /etc/profile

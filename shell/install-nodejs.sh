@@ -1,6 +1,6 @@
 #linux nodejs自动安装程序 
 #http://www.cnblogs.com/zzbo/p/4963137.html
-#运行例子：sh install-nodejs.sh 6.1.0 /usr/local
+#运行例子：sh install-nodejs.sh 7.2.1 /usr/local
 ntpdate ntp.api.bz
  
 #定义本程序的当前目录
@@ -11,7 +11,7 @@ nodejs_version=$1
 nodejs_install_path=$2
 if [ ! $nodejs_version ] || [ ! $nodejs_install_path ]; then
 	echo 'error command!!! you must input nodejs version and install path...'
-	echo 'for example: sh install-nodejs.sh 6.3.1 /usr/local'
+	echo 'for example: sh install-nodejs.sh 7.2.1 /usr/local'
 	exit
 fi
 
@@ -40,7 +40,7 @@ ln -s $nodejs_install_path/nodejs/lib/node_modules/npm/bin/npm-cli.js /usr/bin/n
 
 #更新npm版本
 npm config set registry https://registry.npm.taobao.org/
-npm install npm pm2 -g
+npm install npm pm2 yarn -g
 echo 'node version: '$(node -v)
 echo 'npm version: '$(npm -v)
 

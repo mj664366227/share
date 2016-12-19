@@ -1,7 +1,9 @@
 package com.share.core.redis;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,10 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.share.core.exception.RedisCommandNotSupportException;
+import com.share.core.util.FileSystem;
 import com.share.core.util.StringUtil;
 
 import redis.clients.jedis.BinaryClient.LIST_POSITION;
+import redis.clients.jedis.GeoCoordinate;
+import redis.clients.jedis.GeoRadiusResponse;
+import redis.clients.jedis.GeoUnit;
+import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.Pipeline;
@@ -26,6 +35,7 @@ import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.SortingParams;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.ZParams;
+import redis.clients.jedis.params.geo.GeoRadiusParam;
 import redis.clients.util.SafeEncoder;
 
 /**
@@ -44,6 +54,10 @@ public class Redis {
 	 * jedisPool
 	 */
 	private JedisPool jedisPool = null;
+	/**
+	 * jedisCluster
+	 */
+	private JedisCluster jedisCluster = null;
 	/** 
 	 * 操作Key的方法 
 	 */
@@ -88,6 +102,18 @@ public class Redis {
 	 * 服务 
 	 */
 	public Server SERVER = new Server();
+	/**
+	 * 集群
+	 */
+	public Cluster CLUSTER = new Cluster();
+	/**
+	 * 地理位置
+	 */
+	public Geo GEO = new Geo();
+	/**
+	 * 基数统计
+	 */
+	public HyperLogLog HYPERLOGLOG = new HyperLogLog();
 	/**
 	 * 最小空闲连接数
 	 */
@@ -136,9 +162,9 @@ public class Redis {
 	}
 
 	/**
-	 * 初始化
+	 * 初始化jedis连接池
 	 */
-	public void init() {
+	private GenericObjectPoolConfig initPoolConfig() {
 		GenericObjectPoolConfig jedisPoolConfig = new GenericObjectPoolConfig();
 		jedisPoolConfig.setMinIdle(minIdle);
 		jedisPoolConfig.setMaxIdle(maxIdle);
@@ -148,13 +174,55 @@ public class Redis {
 		jedisPoolConfig.setTestOnReturn(true);
 		jedisPoolConfig.setMaxWaitMillis(maxWait);
 		jedisPoolConfig.setMaxTotal(maxTotal);
+		return jedisPoolConfig;
+	}
 
+	/**
+	 * 抛出redis命令不支持的异常
+	 */
+	private void throwRedisCommandNotSupportException() {
+		String command = Thread.currentThread().getStackTrace()[3].getMethodName();
+		throw new RedisCommandNotSupportException(String.format("it does't support '%s' command in cluster mode...", command));
+	}
+
+	/**
+	 * 初始化(single)
+	 */
+	public void single() {
+		GenericObjectPoolConfig jedisPoolConfig = initPoolConfig();
 		if (password.isEmpty()) {
 			jedisPool = new JedisPool(jedisPoolConfig, host, port);
 		} else {
 			jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
 		}
-		logger.warn("redis init " + host + ":" + port);
+		logger.warn("redis single init {}:{}", host, port);
+
+		// 检查连接
+		try {
+			KEYS.del("test");
+		} catch (Exception e) {
+			logger.error("", e);
+			System.exit(0);
+		}
+	}
+
+	/**
+	 * 初始化(cluster)
+	 */
+	public void cluster() {
+		Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
+		for (int i = 1; i < 1000; i++) {
+			String hostAndPort = FileSystem.getPropertyString("redis.node" + i);
+			if (hostAndPort.isEmpty()) {
+				break;
+			}
+			jedisClusterNodes.add(HostAndPort.parseString(hostAndPort));
+			logger.warn("redis cluster connect to {}", hostAndPort);
+		}
+
+		GenericObjectPoolConfig jedisPoolConfig = initPoolConfig();
+		jedisCluster = new JedisCluster(jedisClusterNodes, timeout, jedisPoolConfig);
+		logger.warn("redis cluster init success!");
 
 		// 检查连接
 		try {
@@ -169,7 +237,16 @@ public class Redis {
 	 * 关闭方法
 	 */
 	public void close() {
-		jedisPool.close();
+		try {
+			if (jedisPool != null) {
+				jedisPool.close();
+			}
+			if (jedisCluster != null) {
+				jedisCluster.close();
+			}
+		} catch (Exception e) {
+			logger.error("", e);
+		}
 		logger.warn("redis closed");
 	}
 
@@ -186,16 +263,20 @@ public class Redis {
 			if (seconds <= 0) {
 				return 0;
 			}
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.expire(key, seconds);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.expire(key, seconds);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.expire(key, seconds);
 			}
-			return 0;
 		}
 
 		/**
@@ -213,16 +294,20 @@ public class Redis {
 		 * @param newkey 新key
 		 * */
 		public long renamenx(String oldkey, String newkey) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.renamenx(oldkey, newkey);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.renamenx(oldkey, newkey);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.renamenx(oldkey, newkey);
 			}
-			return 0;
 		}
 
 		/**
@@ -231,16 +316,20 @@ public class Redis {
 		 * @param newkey 新key
 		 */
 		public String rename(byte[] oldkey, byte[] newkey) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.rename(oldkey, newkey);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.rename(oldkey, newkey);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.rename(oldkey, newkey);
 			}
-			return null;
 		}
 
 		/**
@@ -250,16 +339,20 @@ public class Redis {
 		 * @return 影响的记录数
 		 */
 		public long expireAt(String key, long timestamp) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.expireAt(key, timestamp);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.expireAt(key, timestamp);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.expireAt(key, timestamp);
 			}
-			return 0;
 		}
 
 		/**
@@ -268,16 +361,20 @@ public class Redis {
 		 * @return 以秒为单位的时间表示
 		 */
 		public long ttl(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.ttl(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.ttl(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.ttl(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -286,16 +383,20 @@ public class Redis {
 		 * @return 以毫秒为单位的时间表示
 		 */
 		public long pttl(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.pttl(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pttl(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.pttl(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -305,16 +406,21 @@ public class Redis {
 		 * @return
 		 */
 		public long move(String key, int dbIndex) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.move(key, dbIndex);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.move(key, dbIndex);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				throwRedisCommandNotSupportException();
+				return 0;
 			}
-			return 0;
 		}
 
 		/**
@@ -322,16 +428,21 @@ public class Redis {
 		 * @param key 键
 		 */
 		public String objectEncoding(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.objectEncoding(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.objectEncoding(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -339,16 +450,21 @@ public class Redis {
 		 * @param key 键
 		 */
 		public long objectRefcount(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.objectRefcount(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.objectRefcount(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				throwRedisCommandNotSupportException();
+				return 0;
 			}
-			return 0;
 		}
 
 		/**
@@ -357,16 +473,21 @@ public class Redis {
 		 * @return 以10秒为单位的秒级别时间
 		 */
 		public long objectIdletime(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.objectIdletime(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.objectIdletime(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				throwRedisCommandNotSupportException();
+				return 0;
 			}
-			return 0;
 		}
 
 		/**
@@ -377,16 +498,21 @@ public class Redis {
 		 * @return
 		 */
 		public String restore(String key, int ttl, byte[] serializedValue) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.restore(key, ttl, serializedValue);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.restore(key, ttl, serializedValue);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -397,16 +523,21 @@ public class Redis {
 		 * @return
 		 */
 		public String restore(byte[] key, int ttl, byte[] serializedValue) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.restore(key, ttl, serializedValue);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.restore(key, ttl, serializedValue);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -419,32 +550,42 @@ public class Redis {
 		 * @return
 		 */
 		public String migrate(String host, int port, String key, int destinationDb, int timeout) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.migrate(host, port, key, destinationDb, timeout);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.migrate(host, port, key, destinationDb, timeout);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
 		 * 随机返回一个key
 		 */
 		public String randomkey() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.randomKey();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.randomKey();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -453,16 +594,20 @@ public class Redis {
 		 * @return 影响的记录数
 		 * */
 		public long persist(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.persist(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.persist(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.persist(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -471,16 +616,20 @@ public class Redis {
 		 * @return 删除的记录数
 		 * */
 		public long del(String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.del(keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.del(keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.del(keys);
 			}
-			return 0;
 		}
 
 		/**
@@ -489,16 +638,20 @@ public class Redis {
 		 * @return 删除的记录数
 		 * */
 		public long del(byte[]... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.del(keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.del(keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.del(keys);
 			}
-			return 0;
 		}
 
 		/**
@@ -507,16 +660,20 @@ public class Redis {
 		 * @return boolean
 		 * */
 		public boolean exists(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.exists(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.exists(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return false;
+			} else {
+				return jedisCluster.exists(key);
 			}
-			return false;
 		}
 
 		/**
@@ -525,16 +682,20 @@ public class Redis {
 		 * @return List<String> 集合的全部记录
 		 */
 		public List<String> sort(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sort(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sort(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.sort(key);
 			}
-			return null;
 		}
 
 		/**
@@ -544,16 +705,20 @@ public class Redis {
 		 * @return List<String> 集合的全部记录
 		 */
 		public List<String> sort(String key, SortingParams param) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sort(key, param);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sort(key, param);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.sort(key, param);
 			}
-			return null;
 		}
 
 		/**
@@ -561,16 +726,20 @@ public class Redis {
 		 * @param key 键
 		 */
 		public String type(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.type(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.type(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.type(key);
 			}
-			return null;
 		}
 
 		/**
@@ -578,16 +747,21 @@ public class Redis {
 		 * @param pattern
 		 */
 		public Set<String> keys(String pattern) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.keys(pattern);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.keys(pattern);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -595,16 +769,21 @@ public class Redis {
 		 * @param key 键
 		 */
 		public byte[] dump(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.dump(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.dump(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -612,16 +791,21 @@ public class Redis {
 		 * @param cursor 游标
 		 */
 		public ScanResult<String> scan(String cursor) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.scan(cursor);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.scan(cursor);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -630,16 +814,20 @@ public class Redis {
 		 * @param params 迭代参数
 		 */
 		public ScanResult<String> scan(String cursor, ScanParams params) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.scan(cursor, params);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.scan(cursor, params);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.scan(cursor, params);
 			}
-			return null;
 		}
 	}
 
@@ -653,16 +841,20 @@ public class Redis {
 		 * @param member
 		 */
 		public long sadd(String key, String... member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sadd(key, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sadd(key, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.sadd(key, member);
 			}
-			return 0;
 		}
 
 		/**
@@ -671,16 +863,20 @@ public class Redis {
 		 * @param member
 		 */
 		public long sadd(byte[] key, byte[]... member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sadd(key, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sadd(key, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.sadd(key, member);
 			}
-			return 0;
 		}
 
 		/**
@@ -688,16 +884,20 @@ public class Redis {
 		 * @param key 键
 		 */
 		public long scard(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.scard(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.scard(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.scard(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -707,16 +907,20 @@ public class Redis {
 		 * @return 差异的成员集合
 		 * */
 		public Set<String> sdiff(String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sdiff(keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sdiff(keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.sdiff(keys);
 			}
-			return null;
 		}
 
 		/**
@@ -726,16 +930,20 @@ public class Redis {
 		 * @return 新集合中的记录数
 		 */
 		public long sdiffstore(String newkey, String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sdiffstore(newkey, keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sdiffstore(newkey, keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.sdiffstore(newkey, keys);
 			}
-			return 0;
 		}
 
 		/**
@@ -745,16 +953,20 @@ public class Redis {
 		 * @return 交集成员的集合
 		 * **/
 		public Set<String> sinter(String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sinter(keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sinter(keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.sinter(keys);
 			}
-			return null;
 		}
 
 		/**
@@ -764,16 +976,20 @@ public class Redis {
 		 * @return 新集合中的记录数
 		 * **/
 		public long sinterstore(String newkey, String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sinterstore(newkey, keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sinterstore(newkey, keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.sinterstore(newkey, keys);
 			}
-			return 0;
 		}
 
 		/**
@@ -783,16 +999,20 @@ public class Redis {
 		 * @param member 要判断的值
 		 */
 		public boolean sismember(String key, String member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sismember(key, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sismember(key, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return false;
+			} else {
+				return jedisCluster.sismember(key, member);
 			}
-			return false;
 		}
 
 		/**
@@ -801,16 +1021,20 @@ public class Redis {
 		 * @return 成员集合
 		 */
 		public Set<String> smembers(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.smembers(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.smembers(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.smembers(key);
 			}
-			return null;
 		}
 
 		/**
@@ -819,16 +1043,20 @@ public class Redis {
 		 * @return 成员集合
 		 */
 		public Set<byte[]> smembers(byte[] key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.smembers(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.smembers(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.smembers(key);
 			}
-			return null;
 		}
 
 		/**
@@ -839,16 +1067,20 @@ public class Redis {
 		 * @return 状态码，1成功，0失败
 		 * */
 		public long smove(String srckey, String dstkey, String member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.smove(srckey, dstkey, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.smove(srckey, dstkey, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.smove(srckey, dstkey, member);
 			}
-			return 0;
 		}
 
 		/**
@@ -856,16 +1088,20 @@ public class Redis {
 		 * @param key
 		 * */
 		public String spop(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.spop(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.spop(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.spop(key);
 			}
-			return null;
 		}
 
 		/**
@@ -875,16 +1111,20 @@ public class Redis {
 		 * @return 状态码，成功返回1，成员不存在返回0
 		 * */
 		public long srem(String key, String member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.srem(key, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.srem(key, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.srem(key, member);
 			}
-			return 0;
 		}
 
 		/**
@@ -894,16 +1134,20 @@ public class Redis {
 		 * @return 状态码，成功返回1，成员不存在返回0
 		 * */
 		public long srem(byte[] key, byte[] member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.srem(key, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.srem(key, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.srem(key, member);
 			}
-			return 0;
 		}
 
 		/**
@@ -912,16 +1156,20 @@ public class Redis {
 		 * @return 合并后的结果集合
 		 */
 		public Set<String> sunion(String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sunion(keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sunion(keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.sunion(keys);
 			}
-			return null;
 		}
 
 		/**
@@ -930,16 +1178,20 @@ public class Redis {
 		 * @return 合并后的结果集合
 		 */
 		public Set<byte[]> sunion(byte[]... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sunion(keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sunion(keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.sunion(keys);
 			}
-			return null;
 		}
 
 		/**
@@ -948,16 +1200,20 @@ public class Redis {
 		 * @param keys 要合并的集合
 		 */
 		public long sunionstore(String newkey, String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.sunionstore(newkey, keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.sunionstore(newkey, keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.sunionstore(newkey, keys);
 			}
-			return 0;
 		}
 	}
 
@@ -973,16 +1229,20 @@ public class Redis {
 		 * @return 状态码 1成功，0已存在member的值
 		 * */
 		public long zadd(String key, double score, String member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zadd(key, score, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zadd(key, score, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zadd(key, score, member);
 			}
-			return 0;
 		}
 
 		/**
@@ -992,46 +1252,51 @@ public class Redis {
 		 * @return 状态码 1成功，0已存在member的值，-1为出现异常
 		 * */
 		public long zadd(String key, Map<String, Double> scoreMembers) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
 
-				// 如果传进来的map大小大于100，拆成每批100来保存
-				int size = scoreMembers.size();
-				if (size > maxPipelineLen) {
-					int i = 1;
-					Map<String, Double> tmpMap = new HashMap<String, Double>(maxPipelineLen);
-					Iterator<Entry<String, Double>> it = scoreMembers.entrySet().iterator();
-					while (it.hasNext()) {
-						Entry<String, Double> e = it.next();
-						tmpMap.put(e.getKey(), e.getValue());
-						if (++i % maxPipelineLen == 0) {
-							// 添加途中可能出错，但忽略
-							// 一般来说，出错的情况是redis无法访问，这个几率很低
-							// member重复的情况会经常出现，不过只是更新score值而已，不会造成重大影响
-							jedis.zadd(key, tmpMap);
-							tmpMap.clear();
+					// 如果传进来的map大小大于100，拆成每批100来保存
+					int size = scoreMembers.size();
+					if (size > maxPipelineLen) {
+						int i = 1;
+						Map<String, Double> tmpMap = new HashMap<String, Double>(maxPipelineLen);
+						Iterator<Entry<String, Double>> it = scoreMembers.entrySet().iterator();
+						while (it.hasNext()) {
+							Entry<String, Double> e = it.next();
+							tmpMap.put(e.getKey(), e.getValue());
+							if (++i % maxPipelineLen == 0) {
+								// 添加途中可能出错，但忽略
+								// 一般来说，出错的情况是redis无法访问，这个几率很低
+								// member重复的情况会经常出现，不过只是更新score值而已，不会造成重大影响
+								jedis.zadd(key, tmpMap);
+								tmpMap.clear();
+							}
+
+							// 用迭代器来做，这样每处理一个就移除一个
+							it.remove();
 						}
 
-						// 用迭代器来做，这样每处理一个就移除一个
-						it.remove();
+						// 可能还会有多余的，要判断一次
+						if (!tmpMap.isEmpty()) {
+							jedis.zadd(key, tmpMap);
+						}
+						return 1;
+					} else {
+						// 如果不超100就不拆
+						return jedis.zadd(key, scoreMembers);
 					}
-
-					// 可能还会有多余的，要判断一次
-					if (!tmpMap.isEmpty()) {
-						jedis.zadd(key, tmpMap);
-					}
-					return 1;
-				} else {
-					// 如果不超100就不拆
-					return jedis.zadd(key, scoreMembers);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
 				}
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+				return -1;
+			} else {
+				throwRedisCommandNotSupportException();
+				return -1;
 			}
-			return -1;
 		}
 
 		/**
@@ -1060,35 +1325,39 @@ public class Redis {
 				logger.warn("keyScoreMembers is empty");
 				return;
 			}
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				Pipeline pipeline = jedis.pipelined();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					Pipeline pipeline = jedis.pipelined();
 
-				// 如果传进来的map大小大于100，拆成每批100来保存
-				int size = keyScoreMembers.size();
-				if (size > maxPipelineLen) {
-					int i = 1;
-					for (Entry<String, Map<String, Double>> e : keyScoreMembers.entrySet()) {
-						pipeline.zadd(e.getKey(), e.getValue());
-						if (++i % maxPipelineLen == 0) {
-							pipeline.sync();
+					// 如果传进来的map大小大于100，拆成每批100来保存
+					int size = keyScoreMembers.size();
+					if (size > maxPipelineLen) {
+						int i = 1;
+						for (Entry<String, Map<String, Double>> e : keyScoreMembers.entrySet()) {
+							pipeline.zadd(e.getKey(), e.getValue());
+							if (++i % maxPipelineLen == 0) {
+								pipeline.sync();
+							}
 						}
-					}
 
-					// 可能还会有多余的，要多请求一次
-					pipeline.sync();
-				} else {
-					// 如果不超100就一次过搞掂
-					for (Entry<String, Map<String, Double>> e : keyScoreMembers.entrySet()) {
-						pipeline.zadd(e.getKey(), e.getValue());
+						// 可能还会有多余的，要多请求一次
+						pipeline.sync();
+					} else {
+						// 如果不超100就一次过搞掂
+						for (Entry<String, Map<String, Double>> e : keyScoreMembers.entrySet()) {
+							pipeline.zadd(e.getKey(), e.getValue());
+						}
+						pipeline.sync();
 					}
-					pipeline.sync();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
 				}
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			} else {
+				throwRedisCommandNotSupportException();
 			}
 		}
 
@@ -1098,16 +1367,20 @@ public class Redis {
 		 * @return 如果返回0则集合不存在
 		 * */
 		public long zcard(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return StringUtil.getLong(jedis.zcard(key));
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return StringUtil.getLong(jedis.zcard(key));
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return StringUtil.getLong(jedisCluster.zcard(key));
 			}
-			return 0;
 		}
 
 		/**
@@ -1117,16 +1390,20 @@ public class Redis {
 		 * @param max 最大排序位置
 		 * */
 		public long zcount(String key, double min, double max) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zcount(key, min, max);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zcount(key, min, max);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zcount(key, min, max);
 			}
-			return 0;
 		}
 
 		/**
@@ -1138,16 +1415,20 @@ public class Redis {
 		 * @return 增后的权重
 		 * */
 		public double zincrby(String key, double score, String member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zincrby(key, score, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zincrby(key, score, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zincrby(key, score, member);
 			}
-			return 0;
 		}
 
 		/**
@@ -1158,16 +1439,20 @@ public class Redis {
 		 * @return Set<String>
 		 * */
 		public Set<String> zrange(String key, int start, int end) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrange(key, start, end);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrange(key, start, end);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.zrange(key, start, end);
 			}
-			return null;
 		}
 
 		/**
@@ -1178,16 +1463,20 @@ public class Redis {
 		 * @return Set<String>
 		 * */
 		public Set<String> zrangeByScore(String key, double min, double max) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrangeByScore(key, min, max);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrangeByScore(key, min, max);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.zrangeByScore(key, min, max);
 			}
-			return null;
 		}
 
 		/**
@@ -1198,16 +1487,20 @@ public class Redis {
 		 * @param limit 返回条数限制
 		 */
 		public Set<String> zrevrangeByScore(String key, double max, double min, int limit) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrevrangeByScore(key, max, min, 0, limit);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrevrangeByScore(key, max, min, 0, limit);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.zrevrangeByScore(key, max, min, 0, limit);
 			}
-			return null;
 
 		}
 
@@ -1218,16 +1511,20 @@ public class Redis {
 		 * @return long 位置
 		 * */
 		public long zrank(String key, String member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrank(key, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrank(key, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zrank(key, member);
 			}
-			return 0;
 		}
 
 		/**
@@ -1237,16 +1534,20 @@ public class Redis {
 		 * @return long 位置
 		 * */
 		public long zrevrank(String key, String member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrevrank(key, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrevrank(key, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zrevrank(key, member);
 			}
-			return 0;
 		}
 
 		/**
@@ -1256,16 +1557,20 @@ public class Redis {
 		 * @return 返回1成功
 		 * */
 		public long zrem(String key, String... member) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrem(key, member);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrem(key, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zrem(key, member);
 			}
-			return 0;
 		}
 
 		/**
@@ -1276,16 +1581,20 @@ public class Redis {
 		 * @return 删除的数量
 		 * */
 		public long zremrangeByRank(String key, int start, int end) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zremrangeByRank(key, start, end);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zremrangeByRank(key, start, end);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zremrangeByRank(key, start, end);
 			}
-			return 0;
 		}
 
 		/**
@@ -1296,16 +1605,20 @@ public class Redis {
 		 * @return 删除的数量
 		 * */
 		public long zremrangeByScore(String key, double min, double max) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zremrangeByScore(key, min, max);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zremrangeByScore(key, min, max);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zremrangeByScore(key, min, max);
 			}
-			return 0;
 		}
 
 		/**
@@ -1316,16 +1629,20 @@ public class Redis {
 		 * @return Set<String>
 		 * */
 		public Set<String> zrevrange(String key, int start, int end) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrevrange(key, start, end);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrevrange(key, start, end);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.zrevrange(key, start, end);
 			}
-			return null;
 		}
 
 		/**
@@ -1334,17 +1651,21 @@ public class Redis {
 		 * @param memeber
 		 * @return double 权重
 		 * */
-		public double zscore(String key, String memebr) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return StringUtil.getDouble(jedis.zscore(key, memebr));
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+		public Double zscore(String key, String memebr) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zscore(key, memebr);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0D;
+			} else {
+				return jedisCluster.zscore(key, memebr);
 			}
-			return 0;
 		}
 
 		/**
@@ -1359,47 +1680,52 @@ public class Redis {
 			int size = keyMemebrMap.size();
 			Map<String, Double> map = new LinkedHashMap<>(size);
 
-			int i = 0;
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				Pipeline pipeline = jedis.pipelined();
-				List<String> keyList = new ArrayList<>(maxPipelineLen);
+			if (jedisCluster == null) {
+				int i = 0;
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					Pipeline pipeline = jedis.pipelined();
+					List<String> keyList = new ArrayList<>(maxPipelineLen);
 
-				for (Entry<String, String> e : keyMemebrMap.entrySet()) {
-					pipeline.zscore(e.getKey(), e.getValue());
-					keyList.add(e.getKey());
+					for (Entry<String, String> e : keyMemebrMap.entrySet()) {
+						pipeline.zscore(e.getKey(), e.getValue());
+						keyList.add(e.getKey());
 
-					// 由于管道一次性不能传输太多，所以要分开来
-					if (++i % maxPipelineLen == 0) {
-						List<Object> list = pipeline.syncAndReturnAll();
-						if (list != null && !list.isEmpty()) {
-							for (int j = 0; j < maxPipelineLen; j++) {
-								Object obj = list.get(j);
-								if (obj != null) {
-									map.put(StringUtil.getString(keyList.get(j)), StringUtil.getDouble(obj));
+						// 由于管道一次性不能传输太多，所以要分开来
+						if (++i % maxPipelineLen == 0) {
+							List<Object> list = pipeline.syncAndReturnAll();
+							if (list != null && !list.isEmpty()) {
+								for (int j = 0; j < maxPipelineLen; j++) {
+									Object obj = list.get(j);
+									if (obj != null) {
+										map.put(StringUtil.getString(keyList.get(j)), StringUtil.getDouble(obj));
+									}
 								}
 							}
-						}
-						keyList.clear();
-					}
-				}
-				List<Object> list = pipeline.syncAndReturnAll();
-				if (list != null && !list.isEmpty()) {
-					size = keyList.size();
-					for (int j = 0; j < size; j++) {
-						Object obj = list.get(j);
-						if (obj != null) {
-							map.put(StringUtil.getString(keyList.get(j)), StringUtil.getDouble(obj));
+							keyList.clear();
 						}
 					}
+					List<Object> list = pipeline.syncAndReturnAll();
+					if (list != null && !list.isEmpty()) {
+						size = keyList.size();
+						for (int j = 0; j < size; j++) {
+							Object obj = list.get(j);
+							if (obj != null) {
+								map.put(StringUtil.getString(keyList.get(j)), StringUtil.getDouble(obj));
+							}
+						}
+					}
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
 				}
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+				return map;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return map;
 		}
 
 		/**
@@ -1409,16 +1735,20 @@ public class Redis {
 		 * @return 结果有序集合destination中元素个数
 		 */
 		public long zinterstore(String dstkey, String... sets) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zinterstore(dstkey, sets);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zinterstore(dstkey, sets);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zinterstore(dstkey, sets);
 			}
-			return 0;
 		}
 
 		/**
@@ -1429,16 +1759,20 @@ public class Redis {
 		 * @return 结果有序集合destination中元素个数
 		 */
 		public long zinterstore(String dstkey, ZParams params, String... sets) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zinterstore(dstkey, params, sets);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zinterstore(dstkey, params, sets);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zinterstore(dstkey, params, sets);
 			}
-			return 0;
 		}
 
 		/**
@@ -1448,16 +1782,20 @@ public class Redis {
 		 * @return 结果有序集合destination中元素个数
 		 */
 		public long zinterstore(byte[] dstkey, byte[]... sets) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zinterstore(dstkey, sets);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zinterstore(dstkey, sets);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zinterstore(dstkey, sets);
 			}
-			return 0;
 		}
 
 		/**
@@ -1468,16 +1806,20 @@ public class Redis {
 		 * @return 结果有序集合destination中元素个数
 		 */
 		public long zinterstore(byte[] dstkey, ZParams params, byte[]... sets) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zinterstore(dstkey, params, sets);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zinterstore(dstkey, params, sets);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zinterstore(dstkey, params, sets);
 			}
-			return 0;
 		}
 
 		/**
@@ -1488,16 +1830,20 @@ public class Redis {
 		 * @return
 		 */
 		public long zlexcount(String key, String min, String max) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zlexcount(key, min, max);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zlexcount(key, min, max);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zlexcount(key, min, max);
 			}
-			return 0;
 		}
 
 		/**
@@ -1508,16 +1854,20 @@ public class Redis {
 		 * @return
 		 */
 		public long zlexcount(byte[] key, byte[] min, byte[] max) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zlexcount(key, min, max);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zlexcount(key, min, max);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zlexcount(key, min, max);
 			}
-			return 0;
 		}
 
 		/**
@@ -1527,16 +1877,20 @@ public class Redis {
 		 * @return 结果有序集合destination中元素个数
 		 */
 		public long zunionstore(String dstkey, String... sets) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zunionstore(dstkey, sets);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zunionstore(dstkey, sets);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zunionstore(dstkey, sets);
 			}
-			return 0;
 		}
 
 		/**
@@ -1546,16 +1900,20 @@ public class Redis {
 		 * @return 结果有序集合destination中元素个数
 		 */
 		public long zunionstore(byte[] dstkey, byte[]... sets) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zunionstore(dstkey, sets);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zunionstore(dstkey, sets);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zunionstore(dstkey, sets);
 			}
-			return 0;
 		}
 
 		/**
@@ -1566,16 +1924,20 @@ public class Redis {
 		 * @return 结果有序集合destination中元素个数
 		 */
 		public long zunionstore(byte[] dstkey, ZParams params, byte[]... sets) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zunionstore(dstkey, params, sets);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zunionstore(dstkey, params, sets);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zunionstore(dstkey, params, sets);
 			}
-			return 0;
 		}
 
 		/**
@@ -1586,16 +1948,20 @@ public class Redis {
 		 * @return 结果有序集合destination中元素个数
 		 */
 		public long zunionstore(String dstkey, ZParams params, String... sets) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zunionstore(dstkey, params, sets);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zunionstore(dstkey, params, sets);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.zunionstore(dstkey, params, sets);
 			}
-			return 0;
 		}
 
 		/**
@@ -1606,16 +1972,20 @@ public class Redis {
 		 * @return 指定范围内的成员
 		 */
 		public Set<String> zrangeByLex(String key, String min, String max) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrangeByLex(key, min, max);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrangeByLex(key, min, max);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.zrangeByLex(key, min, max);
 			}
-			return null;
 		}
 
 		/**
@@ -1626,16 +1996,20 @@ public class Redis {
 		 * @return 指定范围内的成员
 		 */
 		public Set<byte[]> zrangeByLex(byte[] key, byte[] min, byte[] max) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrangeByLex(key, min, max);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrangeByLex(key, min, max);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.zrangeByLex(key, min, max);
 			}
-			return null;
 		}
 
 		/**
@@ -1648,16 +2022,20 @@ public class Redis {
 		 * @return 指定范围内的成员
 		 */
 		public Set<String> zrangeByLex(String key, String min, String max, int offset, int count) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrangeByLex(key, min, max, offset, count);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrangeByLex(key, min, max, offset, count);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.zrangeByLex(key, min, max, offset, count);
 			}
-			return null;
 		}
 
 		/**
@@ -1670,16 +2048,20 @@ public class Redis {
 		 * @return 指定范围内的成员
 		 */
 		public Set<byte[]> zrangeByLex(byte[] key, byte[] min, byte[] max, int offset, int count) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.zrangeByLex(key, min, max, offset, count);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.zrangeByLex(key, min, max, offset, count);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.zrangeByLex(key, min, max, offset, count);
 			}
-			return null;
 		}
 	}
 
@@ -1694,16 +2076,20 @@ public class Redis {
 		 * @return 状态码，1成功，0失败
 		 * */
 		public long hdel(String key, String field) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hdel(key, field);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hdel(key, field);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hdel(key, field);
 			}
-			return 0;
 		}
 
 		/**
@@ -1712,16 +2098,20 @@ public class Redis {
 		 * @param field 存储的名字
 		 * */
 		public boolean hexists(String key, String field) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hexists(key, field);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hexists(key, field);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return false;
+			} else {
+				return jedisCluster.hexists(key, field);
 			}
-			return false;
 		}
 
 		/**
@@ -1731,16 +2121,20 @@ public class Redis {
 		 * @return 存储对应的值
 		 * */
 		public String hget(String key, String field) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hget(key, field);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hget(key, field);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hget(key, field);
 			}
-			return null;
 		}
 
 		/**
@@ -1750,16 +2144,20 @@ public class Redis {
 		 * @return 存储对应的值
 		 * */
 		public byte[] hget(byte[] key, byte[] field) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hget(key, field);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hget(key, field);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hget(key, field);
 			}
-			return null;
 		}
 
 		/**
@@ -1768,16 +2166,20 @@ public class Redis {
 		 * @return Map<Strinig,String>
 		 * */
 		public Map<String, String> hgetAll(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hgetAll(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hgetAll(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hgetAll(key);
 			}
-			return null;
 		}
 
 		/**
@@ -1786,16 +2188,20 @@ public class Redis {
 		 * @return Map<Strinig,String>
 		 * */
 		public Map<byte[], byte[]> hgetAll(byte[] key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hgetAll(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hgetAll(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hgetAll(key);
 			}
-			return null;
 		}
 
 		/**
@@ -1806,16 +2212,20 @@ public class Redis {
 		 * @return 状态码 1成功，0失败，fieid已存在将更新，也返回0
 		 * **/
 		public long hset(String key, String field, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hset(key, field, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hset(key, field, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hset(key, field, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -1826,16 +2236,20 @@ public class Redis {
 		 * @return 状态码 1成功，0失败，fieid已存在将更新，也返回0
 		 * **/
 		public long hset(byte[] key, byte[] field, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hset(key, field, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hset(key, field, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hset(key, field, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -1846,16 +2260,20 @@ public class Redis {
 		 * @return 状态码 1成功，0失败fieid已存
 		 * **/
 		public long hsetnx(String key, String field, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hsetnx(key, field, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hsetnx(key, field, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hsetnx(key, field, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -1866,16 +2284,20 @@ public class Redis {
 		 * @return 状态码 1成功，0失败fieid已存
 		 * **/
 		public long hsetnx(byte[] key, byte[] field, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hsetnx(key, field, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hsetnx(key, field, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hsetnx(key, field, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -1884,16 +2306,20 @@ public class Redis {
 		 * @return List<String>
 		 * */
 		public List<String> hvals(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hvals(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hvals(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hvals(key);
 			}
-			return null;
 		}
 
 		/**
@@ -1901,17 +2327,21 @@ public class Redis {
 		 * @param key
 		 * @return List<byte[]>
 		 * */
-		public List<byte[]> hvals(byte[] key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hvals(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+		public Collection<byte[]> hvals(byte[] key) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hvals(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hvals(key);
 			}
-			return null;
 		}
 
 		/**
@@ -1922,16 +2352,20 @@ public class Redis {
 		 * @return 增加指定数字后，存储位置的值
 		 * */
 		public long hincrby(String key, String field, long value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hincrBy(key, field, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hincrBy(key, field, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hincrBy(key, field, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -1942,16 +2376,20 @@ public class Redis {
 		 * @return 增加指定数字后，存储位置的值
 		 * */
 		public long hincrby(byte[] key, byte[] field, long value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hincrBy(key, field, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hincrBy(key, field, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hincrBy(key, field, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -1962,16 +2400,20 @@ public class Redis {
 		 * @return 增加指定数字后，存储位置的值
 		 * */
 		public double hincrByFloat(String key, String field, double value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hincrByFloat(key, field, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hincrByFloat(key, field, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hincrByFloat(key, field, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -1982,16 +2424,20 @@ public class Redis {
 		 * @return 增加指定数字后，存储位置的值
 		 * */
 		public double hincrByFloat(byte[] key, byte[] field, double value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hincrByFloat(key, field, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hincrByFloat(key, field, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hincrByFloat(key, field, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -2000,16 +2446,20 @@ public class Redis {
 		 * @return Set<String> 存储名称的集合
 		 * */
 		public Set<String> hkeys(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hkeys(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hkeys(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hkeys(key);
 			}
-			return null;
 		}
 
 		/**
@@ -2018,16 +2468,20 @@ public class Redis {
 		 * @return Set<String> 存储名称的集合
 		 * */
 		public Set<byte[]> hkeys(byte[] key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hkeys(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hkeys(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hkeys(key);
 			}
-			return null;
 		}
 
 		/**
@@ -2036,16 +2490,20 @@ public class Redis {
 		 * @return long 存储的个数
 		 * */
 		public long hlen(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hlen(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hlen(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hlen(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -2054,16 +2512,20 @@ public class Redis {
 		 * @return long 存储的个数
 		 * */
 		public long hlen(byte[] key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hlen(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hlen(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.hlen(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -2073,16 +2535,20 @@ public class Redis {
 		 * @return List<String>
 		 * */
 		public List<String> hmget(String key, String... fields) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hmget(key, fields);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hmget(key, fields);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hmget(key, fields);
 			}
-			return null;
 		}
 
 		/**
@@ -2092,16 +2558,20 @@ public class Redis {
 		 * @return List<String>
 		 * */
 		public List<byte[]> hmget(byte[] key, byte[]... fieids) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hmget(key, fieids);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hmget(key, fieids);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hmget(key, fieids);
 			}
-			return null;
 		}
 
 		/**
@@ -2111,16 +2581,20 @@ public class Redis {
 		 * @return 状态，成功返回OK
 		 * */
 		public String hmset(String key, Map<String, String> map) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hmset(key, map);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hmset(key, map);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hmset(key, map);
 			}
-			return null;
 		}
 
 		/**
@@ -2130,16 +2604,20 @@ public class Redis {
 		 * @return 状态，成功返回OK
 		 * */
 		public String hmset(byte[] key, Map<byte[], byte[]> map) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.hmset(key, map);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.hmset(key, map);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.hmset(key, map);
 			}
-			return null;
 		}
 
 	}
@@ -2153,16 +2631,20 @@ public class Redis {
 		 * @param key
 		 * */
 		public String get(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.get(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.get(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return "";
+			} else {
+				return jedisCluster.get(key);
 			}
-			return "";
 		}
 
 		/**
@@ -2171,16 +2653,20 @@ public class Redis {
 		 * @return 值
 		 * */
 		public byte[] get(byte[] key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.get(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.get(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.get(key);
 			}
-			return null;
 		}
 
 		/**
@@ -2190,16 +2676,20 @@ public class Redis {
 		 * @param value
 		 * */
 		public String setex(String key, int seconds, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.setex(key, seconds, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.setex(key, seconds, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.setex(key, seconds, value);
 			}
-			return null;
 		}
 
 		/**
@@ -2209,16 +2699,20 @@ public class Redis {
 		 * @param value
 		 * */
 		public String setex(byte[] key, int seconds, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.setex(key, seconds, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.setex(key, seconds, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.setex(key, seconds, value);
 			}
-			return null;
 		}
 
 		/**
@@ -2228,16 +2722,20 @@ public class Redis {
 		 * @return long 状态码，1插入成功且key不存在，0未插入，key存在
 		 * */
 		public long setnx(String key, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.setnx(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.setnx(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.setnx(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -2267,16 +2765,20 @@ public class Redis {
 		 * @return 状态码
 		 * */
 		public String set(byte[] key, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.set(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.set(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.set(key, value);
 			}
-			return null;
 		}
 
 		/**
@@ -2287,16 +2789,20 @@ public class Redis {
 		 * @return long value的长度
 		 * */
 		public long setrange(String key, long offset, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.setrange(key, offset, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.setrange(key, offset, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.setrange(key, offset, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -2307,16 +2813,20 @@ public class Redis {
 		 * @return long value的长度
 		 * */
 		public long setrange(byte[] key, long offset, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.setrange(key, offset, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.setrange(key, offset, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.setrange(key, offset, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -2326,16 +2836,20 @@ public class Redis {
 		 * @return long 追加后value的长度
 		 * **/
 		public long append(String key, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.append(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.append(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.append(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -2345,16 +2859,20 @@ public class Redis {
 		 * @return long 追加后value的长度
 		 * **/
 		public long append(byte[] key, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.append(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.append(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.append(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -2364,16 +2882,20 @@ public class Redis {
 		 * @return long 减去指定值后的值
 		 * */
 		public long decrBy(String key, long number) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.decrBy(key, number);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.decrBy(key, number);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.decrBy(key, number);
 			}
-			return 0;
 		}
 
 		/**
@@ -2383,16 +2905,20 @@ public class Redis {
 		 * @return long 相加定值后的值
 		 * */
 		public long incrBy(String key, long number) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.incrBy(key, number);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.incrBy(key, number);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.incrBy(key, number);
 			}
-			return 0;
 		}
 
 		/**
@@ -2402,16 +2928,20 @@ public class Redis {
 		 * @return long 相加后的值
 		 * */
 		public double incrByFloat(String key, double number) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.incrByFloat(key, number);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.incrByFloat(key, number);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.incrByFloat(key, number);
 			}
-			return 0;
 		}
 
 		/**
@@ -2422,16 +2952,20 @@ public class Redis {
 		 * @return String 截取的值
 		 * */
 		public String getrange(String key, long startOffset, long endOffset) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.getrange(key, startOffset, endOffset);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.getrange(key, startOffset, endOffset);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.getrange(key, startOffset, endOffset);
 			}
-			return null;
 		}
 
 		/**
@@ -2441,16 +2975,20 @@ public class Redis {
 		 * @return 原来的value
 		 * */
 		public String getset(String key, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.getSet(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.getSet(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.getSet(key, value);
 			}
-			return null;
 		}
 
 		/**
@@ -2459,16 +2997,20 @@ public class Redis {
 		 * @return List<String> 值得集合
 		 * */
 		public List<String> mget(String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.mget(keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.mget(keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.mget(keys);
 			}
-			return null;
 		}
 
 		/**
@@ -2477,16 +3019,20 @@ public class Redis {
 		 * @return List<byte[]> 值得集合
 		 * */
 		public List<byte[]> mget(byte[]... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.mget(keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.mget(keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.mget(keys);
 			}
-			return null;
 		}
 
 		/**
@@ -2527,16 +3073,20 @@ public class Redis {
 		 * @return String 状态码
 		 * */
 		public String mset(String... keysvalues) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.mset(keysvalues);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.mset(keysvalues);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.mset(keysvalues);
 			}
-			return null;
 		}
 
 		/**
@@ -2570,24 +3120,27 @@ public class Redis {
 				logger.warn("keysvalues is empty");
 				return;
 			}
-
-			int i = 0;
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				Pipeline pipeline = jedis.pipelined();
-				for (Entry<byte[], byte[]> e : keysvalues.entrySet()) {
-					pipeline.setex(e.getKey(), seconds, e.getValue());
-					// 由于管道一次性不能传输太多，所以要分开来
-					if (++i % maxPipelineLen == 0) {
-						pipeline.sync();
+			if (jedisCluster == null) {
+				int i = 0;
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					Pipeline pipeline = jedis.pipelined();
+					for (Entry<byte[], byte[]> e : keysvalues.entrySet()) {
+						pipeline.setex(e.getKey(), seconds, e.getValue());
+						// 由于管道一次性不能传输太多，所以要分开来
+						if (++i % maxPipelineLen == 0) {
+							pipeline.sync();
+						}
 					}
+					pipeline.sync();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
 				}
-				pipeline.sync();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			} else {
+				throwRedisCommandNotSupportException();
 			}
 		}
 
@@ -2601,23 +3154,27 @@ public class Redis {
 				return;
 			}
 
-			int i = 0;
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				Pipeline pipeline = jedis.pipelined();
-				for (Entry<byte[], byte[]> e : keysvalues.entrySet()) {
-					pipeline.set(e.getKey(), e.getValue());
-					// 由于管道一次性不能传输太多，所以要分开来
-					if (++i % maxPipelineLen == 0) {
-						pipeline.sync();
+			if (jedisCluster == null) {
+				int i = 0;
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					Pipeline pipeline = jedis.pipelined();
+					for (Entry<byte[], byte[]> e : keysvalues.entrySet()) {
+						pipeline.set(e.getKey(), e.getValue());
+						// 由于管道一次性不能传输太多，所以要分开来
+						if (++i % maxPipelineLen == 0) {
+							pipeline.sync();
+						}
 					}
+					pipeline.sync();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
 				}
-				pipeline.sync();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			} else {
+				throwRedisCommandNotSupportException();
 			}
 		}
 
@@ -2627,16 +3184,20 @@ public class Redis {
 		 * @return value值得长度
 		 * */
 		public long strlen(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.strlen(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.strlen(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.strlen(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -2644,16 +3205,20 @@ public class Redis {
 		 * @param keysvalues
 		 */
 		public long msetnx(String... keysvalues) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.msetnx(keysvalues);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.msetnx(keysvalues);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.msetnx(keysvalues);
 			}
-			return 0;
 		}
 
 		/**
@@ -2683,16 +3248,20 @@ public class Redis {
 		 * @return
 		 */
 		public String psetex(String key, long milliseconds, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.psetex(key, milliseconds, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.psetex(key, milliseconds, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.psetex(key, milliseconds, value);
 			}
-			return null;
 		}
 
 		/**
@@ -2703,16 +3272,20 @@ public class Redis {
 		 * @return
 		 */
 		public String psetex(byte[] key, long milliseconds, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.psetex(key, milliseconds, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.psetex(key, milliseconds, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.psetex(new String(key), milliseconds, new String(value));
 			}
-			return null;
 		}
 	}
 
@@ -2726,16 +3299,20 @@ public class Redis {
 		 * @return 长度
 		 * */
 		public long llen(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.llen(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.llen(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.llen(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -2744,16 +3321,20 @@ public class Redis {
 		 * @return 长度
 		 * */
 		public long llen(byte[] key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.llen(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.llen(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.llen(key);
 			}
-			return 0;
 		}
 
 		/**
@@ -2764,16 +3345,20 @@ public class Redis {
 		 * @return 状态码
 		 * */
 		public String lset(byte[] key, int index, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lset(key, index, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lset(key, index, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.lset(key, index, value);
 			}
-			return null;
 		}
 
 		/**
@@ -2784,16 +3369,20 @@ public class Redis {
 		 * @return 状态码
 		 * */
 		public String lset(String key, int index, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lset(key, index, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lset(key, index, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.lset(key, index, value);
 			}
-			return null;
 		}
 
 		/**
@@ -2805,16 +3394,20 @@ public class Redis {
 		 * @return 记录总数
 		 * */
 		public long linsert(String key, LIST_POSITION where, String pivot, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.linsert(key, where, pivot, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.linsert(key, where, pivot, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.linsert(key, where, pivot, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -2826,16 +3419,20 @@ public class Redis {
 		 * @return 记录总数
 		 * */
 		public long linsert(byte[] key, LIST_POSITION where, byte[] pivot, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.linsert(key, where, pivot, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.linsert(key, where, pivot, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.linsert(key, where, pivot, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -2845,16 +3442,20 @@ public class Redis {
 		 * @return 值
 		 * **/
 		public String lindex(String key, int index) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lindex(key, index);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lindex(key, index);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.lindex(key, index);
 			}
-			return null;
 		}
 
 		/**
@@ -2864,16 +3465,20 @@ public class Redis {
 		 * @return 值
 		 * **/
 		public byte[] lindex(byte[] key, int index) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lindex(key, index);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lindex(key, index);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.lindex(key, index);
 			}
-			return null;
 		}
 
 		/**
@@ -2882,16 +3487,20 @@ public class Redis {
 		 * @return 移出的记录
 		 * */
 		public String lpop(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lpop(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lpop(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.lpop(key);
 			}
-			return null;
 		}
 
 		/**
@@ -2900,16 +3509,20 @@ public class Redis {
 		 * @return 移出的记录
 		 * */
 		public byte[] lpop(byte[] key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lpop(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lpop(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.lpop(key);
 			}
-			return null;
 		}
 
 		/**
@@ -2918,16 +3531,20 @@ public class Redis {
 		 * @return 移出的记录
 		 * */
 		public String rpop(String key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.rpop(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.rpop(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.rpop(key);
 			}
-			return null;
 		}
 
 		/**
@@ -2936,16 +3553,20 @@ public class Redis {
 		 * @return 移出的记录
 		 * */
 		public byte[] rpop(byte[] key) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.rpop(key);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.rpop(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.rpop(key);
 			}
-			return null;
 		}
 
 		/**
@@ -2955,16 +3576,20 @@ public class Redis {
 		 * @return 记录总数
 		 * */
 		public long lpush(String key, String... value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lpush(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lpush(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.lpush(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -2974,16 +3599,20 @@ public class Redis {
 		 * @return 记录总数
 		 * */
 		public long lpush(byte[] key, byte[]... value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lpush(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lpush(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.lpush(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -2993,16 +3622,20 @@ public class Redis {
 		 * @return 记录总数
 		 * */
 		public long lpushx(String key, String... value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lpushx(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lpushx(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.lpushx(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -3012,16 +3645,20 @@ public class Redis {
 		 * @return 记录总数
 		 * */
 		public long lpushx(byte[] key, byte[]... value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lpushx(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lpushx(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.lpushx(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -3031,16 +3668,20 @@ public class Redis {
 		 * @return 记录总数
 		 * */
 		public long rpush(String key, String... value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.rpush(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.rpush(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.rpush(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -3050,16 +3691,20 @@ public class Redis {
 		 * @return 记录总数
 		 * */
 		public long rpush(byte[] key, byte[]... value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.rpush(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.rpush(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.rpush(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -3069,16 +3714,20 @@ public class Redis {
 		 * @return 记录总数
 		 * */
 		public long rpushx(String key, String... value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.rpushx(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.rpushx(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.rpushx(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -3088,16 +3737,20 @@ public class Redis {
 		 * @return 记录总数
 		 * */
 		public long rpushx(byte[] key, byte[]... value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.rpushx(key, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.rpushx(key, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.rpushx(key, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -3108,16 +3761,20 @@ public class Redis {
 		 * @return List
 		 * */
 		public List<String> lrange(String key, long start, long end) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lrange(key, start, end);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lrange(key, start, end);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.lrange(key, start, end);
 			}
-			return null;
 		}
 
 		/**
@@ -3128,16 +3785,20 @@ public class Redis {
 		 * @return List
 		 * */
 		public List<byte[]> lrange(byte[] key, int start, int end) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lrange(key, start, end);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lrange(key, start, end);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.lrange(key, start, end);
 			}
-			return null;
 		}
 
 		/**
@@ -3148,16 +3809,20 @@ public class Redis {
 		 * @return 删除后的List中的记录数
 		 * */
 		public long lrem(byte[] key, long count, byte[] value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lrem(key, count, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lrem(key, count, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.lrem(key, count, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -3168,16 +3833,20 @@ public class Redis {
 		 * @return 删除后的List中的记录数
 		 * */
 		public long lrem(String key, int count, String value) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.lrem(key, count, value);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.lrem(key, count, value);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.lrem(key, count, value);
 			}
-			return 0;
 		}
 
 		/**
@@ -3188,16 +3857,20 @@ public class Redis {
 		 * @return 执行状态码
 		 * */
 		public String ltrim(byte[] key, int start, int end) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.ltrim(key, start, end);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.ltrim(key, start, end);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.ltrim(key, start, end);
 			}
-			return null;
 		}
 
 		/**
@@ -3208,16 +3881,20 @@ public class Redis {
 		 * @return 执行状态码
 		 * */
 		public String ltrim(String key, int start, int end) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.ltrim(key, start, end);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.ltrim(key, start, end);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.ltrim(key, start, end);
 			}
-			return null;
 		}
 
 		/**
@@ -3228,16 +3905,20 @@ public class Redis {
 		 * @return
 		 */
 		public List<String> blpop(int timeout, String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.blpop(timeout, keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.blpop(timeout, keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.blpop(timeout, keys);
 			}
-			return null;
 		}
 
 		/**
@@ -3248,16 +3929,20 @@ public class Redis {
 		 * @return
 		 */
 		public List<byte[]> blpop(int timeout, byte[]... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.blpop(timeout, keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.blpop(timeout, keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.blpop(timeout, keys);
 			}
-			return null;
 		}
 
 		/**
@@ -3268,16 +3953,20 @@ public class Redis {
 		 * @return
 		 */
 		public List<String> brpop(int timeout, String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.brpop(timeout, keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.brpop(timeout, keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.brpop(timeout, keys);
 			}
-			return null;
 		}
 
 		/**
@@ -3288,16 +3977,20 @@ public class Redis {
 		 * @return
 		 */
 		public List<byte[]> brpop(int timeout, byte[]... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.brpop(timeout, keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.brpop(timeout, keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.brpop(timeout, keys);
 			}
-			return null;
 		}
 
 		/**
@@ -3308,16 +4001,20 @@ public class Redis {
 		 * @return
 		 */
 		public String rpoplpush(String srckey, String dstkey) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.rpoplpush(srckey, dstkey);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.rpoplpush(srckey, dstkey);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.rpoplpush(srckey, dstkey);
 			}
-			return null;
 		}
 
 		/**
@@ -3328,16 +4025,20 @@ public class Redis {
 		 * @return
 		 */
 		public byte[] rpoplpush(byte[] srckey, byte[] dstkey) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.rpoplpush(srckey, dstkey);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.rpoplpush(srckey, dstkey);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.rpoplpush(srckey, dstkey);
 			}
-			return null;
 		}
 
 		/**
@@ -3349,16 +4050,20 @@ public class Redis {
 		 * @return
 		 */
 		public String brpoplpush(String source, String destination, int timeout) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.brpoplpush(source, destination, timeout);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.brpoplpush(source, destination, timeout);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.brpoplpush(source, destination, timeout);
 			}
-			return null;
 		}
 
 		/**
@@ -3370,16 +4075,20 @@ public class Redis {
 		 * @return
 		 */
 		public byte[] brpoplpush(byte[] source, byte[] destination, int timeout) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.brpoplpush(source, destination, timeout);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.brpoplpush(source, destination, timeout);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.brpoplpush(source, destination, timeout);
 			}
-			return null;
 		}
 	}
 
@@ -3393,7 +4102,11 @@ public class Redis {
 		 * @param patterns 模式
 		 */
 		public void psubscribe(JedisPubSub jedisPubSub, String... patterns) {
-			jedisPool.getResource().psubscribe(jedisPubSub, patterns);
+			if (jedisCluster == null) {
+				jedisPool.getResource().psubscribe(jedisPubSub, patterns);
+			} else {
+				jedisCluster.psubscribe(jedisPubSub, patterns);
+			}
 		}
 
 		/**
@@ -3402,7 +4115,11 @@ public class Redis {
 		 * @param channels 频道名
 		 */
 		public void subscribe(JedisPubSub jedisPubSub, String... channels) {
-			jedisPool.getResource().subscribe(jedisPubSub, channels);
+			if (jedisCluster == null) {
+				jedisPool.getResource().subscribe(jedisPubSub, channels);
+			} else {
+				jedisCluster.psubscribe(jedisPubSub, channels);
+			}
 		}
 
 		/**
@@ -3412,50 +4129,63 @@ public class Redis {
 		 * @return 收到消息的客户端数量
 		 */
 		public long publish(String channel, String message) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.publish(channel, message);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.publish(channel, message);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0L;
+			} else {
+				return jedisCluster.publish(channel, message);
 			}
-			return 0L;
 		}
 
 		/**
 		 * 列出指定模式的活跃频道
 		 * @param pattern 模式
-		 * @return
 		 */
 		public List<String> pubsubChannels(String pattern) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.pubsubChannels(pattern);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pubsubChannels(pattern);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
 		 * 列出所有活跃频道
 		 */
 		public List<String> pubsubChannels() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.pubsubChannels("");
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pubsubChannels("");
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -3464,32 +4194,42 @@ public class Redis {
 		 * @return
 		 */
 		public Map<String, String> pubsubNumSub(String... channels) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.pubsubNumSub(channels);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pubsubNumSub(channels);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
 		 * 返回客户端订阅的所有模式的数量总和
 		 */
 		public long pubsubNumPat() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.pubsubNumPat();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pubsubNumPat();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				throwRedisCommandNotSupportException();
+				return 0;
 			}
-			return 0;
 		}
 	}
 
@@ -3503,32 +4243,42 @@ public class Redis {
 		 * @return
 		 */
 		public String watch(String... keys) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.watch(keys);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.watch(keys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
 		 * 取消对所有 key 的监视
 		 */
 		public String unwatch() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.unwatch();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.unwatch();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -3536,16 +4286,21 @@ public class Redis {
 		 * 事务块内的多条命令会按照先后顺序被放进一个队列当中，最后由 EXEC 命令原子性(atomic)地执行
 		 */
 		public Transaction multi() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.multi();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.multi();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 	}
 
@@ -3559,16 +4314,21 @@ public class Redis {
 		 * @return
 		 */
 		public String load(String script) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.scriptLoad(script);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.scriptLoad(script);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -3577,16 +4337,20 @@ public class Redis {
 		 * @return
 		 */
 		public boolean exists(String sha1) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.scriptExists(sha1);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.scriptExists(sha1);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return false;
+			} else {
+				return jedisCluster.scriptExists("", sha1);
 			}
-			return false;
 		}
 
 		/**
@@ -3595,48 +4359,60 @@ public class Redis {
 		 * @return
 		 */
 		public List<Boolean> exists(String... sha1) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.scriptExists(sha1);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.scriptExists(sha1);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.scriptExists("", sha1);
 			}
-			return null;
 		}
 
 		/**
 		 * 清除所有 Lua 脚本缓存
 		 */
 		public String flush() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.scriptFlush();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.scriptFlush();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.scriptFlush(new byte[] {});
 			}
-			return null;
 		}
 
 		/**
 		 * 杀死当前正在运行的 Lua 脚本，当且仅当这个脚本没有执行过任何写操作时，这个命令才生效
 		 */
 		public String kill() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.scriptKill();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.scriptKill();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.scriptKill(new byte[] {});
 			}
-			return null;
 		}
 
 		/**
@@ -3645,16 +4421,20 @@ public class Redis {
 		 * @return
 		 */
 		public Object evalsha(String sha1) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.evalsha(sha1);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.evalsha(sha1);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.evalsha(sha1, "");
 			}
-			return null;
 		}
 
 		/**
@@ -3665,16 +4445,20 @@ public class Redis {
 		 * @return
 		 */
 		public Object evalsha(String sha1, List<String> keys, List<String> args) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.evalsha(sha1, keys, args);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.evalsha(sha1, keys, args);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.evalsha(sha1, keys, args);
 			}
-			return null;
 		}
 
 		/**
@@ -3685,16 +4469,20 @@ public class Redis {
 		 * @return
 		 */
 		public Object evalsha(String sha1, int keyCount, String... params) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.evalsha(sha1, keyCount, params);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.evalsha(sha1, keyCount, params);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.evalsha(sha1, keyCount, params);
 			}
-			return null;
 		}
 
 		/**
@@ -3703,16 +4491,20 @@ public class Redis {
 		 * @return
 		 */
 		public Object eval(String script) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.eval(script);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.eval(script);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.eval(script, "");
 			}
-			return null;
 		}
 
 		/**
@@ -3723,16 +4515,20 @@ public class Redis {
 		 * @return
 		 */
 		public Object eval(String sha1, int keyCount, String... params) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.eval(sha1, keyCount, params);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.eval(sha1, keyCount, params);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.eval(sha1, keyCount, params);
 			}
-			return null;
 		}
 
 		/**
@@ -3743,16 +4539,20 @@ public class Redis {
 		 * @return
 		 */
 		public Object eval(String script, List<String> keys, List<String> args) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.eval(script, keys, args);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.eval(script, keys, args);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.eval(script, keys, args);
 			}
-			return null;
 		}
 	}
 
@@ -3767,16 +4567,21 @@ public class Redis {
 		 * @return
 		 */
 		public String auth(String password) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.auth(password);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.auth(password);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -3785,16 +4590,21 @@ public class Redis {
 		 * @return
 		 */
 		public String ping() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.ping();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.ping();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -3804,16 +4614,20 @@ public class Redis {
 		 * @return
 		 */
 		public String echo(String string) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.echo(string);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.echo(string);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.echo(string);
 			}
-			return null;
 		}
 
 		/**
@@ -3823,16 +4637,21 @@ public class Redis {
 		 * @return
 		 */
 		public String select(int index) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.select(index);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.select(index);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -3841,16 +4660,21 @@ public class Redis {
 		 * @return
 		 */
 		public String quit() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.quit();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.quit();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 	}
 
@@ -3862,73 +4686,93 @@ public class Redis {
 		 * 删除所有数据库的所有 key
 		 */
 		public String flushAll() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.flushAll();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.flushAll();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
 		 * 清空当前数据库中的所有 key
 		 */
 		public String flushDB() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.flushDB();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.flushDB();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
 		 * 返回当前数据库的 key 的数量
 		 */
 		public long dbSize() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.dbSize();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.dbSize();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0L;
+			} else {
+				throwRedisCommandNotSupportException();
+				return 0L;
 			}
-			return 0L;
 		}
 
 		/**
 		 * 返回服务器信息
 		 */
 		public Map<String, String> info() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				String[] infoArray = jedis.info().trim().split("\\r\\n");
-				Map<String, String> infoMap = new HashMap<String, String>();
-				for (String info : infoArray) {
-					String[] arr = info.split(":");
-					if (arr.length != 2) {
-						continue;
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					String[] infoArray = jedis.info().trim().split("\\r\\n");
+					Map<String, String> infoMap = new HashMap<String, String>();
+					for (String info : infoArray) {
+						String[] arr = info.split(":");
+						if (arr.length != 2) {
+							continue;
+						}
+						infoMap.put(arr[0].trim(), arr[1].trim());
 					}
-					infoMap.put(arr[0].trim(), arr[1].trim());
+					return infoMap;
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
 				}
-				return infoMap;
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -3940,16 +4784,21 @@ public class Redis {
 		 * <li>微秒</li>
 		 */
 		public List<String> time() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.time();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.time();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -3959,16 +4808,21 @@ public class Redis {
 		 * @return
 		 */
 		public String clientKill(String client) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.clientKill(client);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.clientKill(client);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -3977,16 +4831,21 @@ public class Redis {
 		 * @return
 		 */
 		public String clientList() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.clientList();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.clientList();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -3995,16 +4854,21 @@ public class Redis {
 		 * @return
 		 */
 		public String clientGetname() {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.clientGetname();
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.clientGetname();
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -4014,16 +4878,21 @@ public class Redis {
 		 * @return
 		 */
 		public String clientSetname(String name) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.clientSetname(name);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.clientSetname(name);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
 		}
 
 		/**
@@ -4033,16 +4902,702 @@ public class Redis {
 		 * @return
 		 */
 		public List<String> configGet(String pattern) {
-			Jedis jedis = null;
-			try {
-				jedis = jedisPool.getResource();
-				return jedis.configGet(pattern);
-			} catch (Exception e) {
-				logger.error("", e);
-			} finally {
-				jedis.close();
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.configGet(pattern);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				throwRedisCommandNotSupportException();
+				return null;
 			}
-			return null;
+		}
+	}
+
+	/**
+	 * 集群
+	 */
+	public class Cluster {
+		private Cluster() {
+		}
+
+		/**
+		 * 返回redis集群的所有节点
+		 */
+		public Map<String, JedisPool> clusterNodes() {
+			return jedisCluster.getClusterNodes();
+		}
+	}
+
+	/**
+	 * 地理位置
+	 */
+	public class Geo {
+		private Geo() {
+		}
+
+		/**
+		 * 将指定的地理空间位置添加到指定的key中
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param member 位置名称
+		 */
+		public Long geoadd(String key, double longitude, double latitude, String member) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geoadd(key, longitude, latitude, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geoadd(key, longitude, latitude, member);
+			}
+		}
+
+		/**
+		 * 将指定的地理空间位置添加到指定的key中
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param member 位置名称
+		 */
+		public Long geoadd(byte[] key, double longitude, double latitude, byte[] member) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geoadd(key, longitude, latitude, member);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geoadd(key, longitude, latitude, member);
+			}
+		}
+
+		/**
+		 * 将指定的地理空间位置添加到指定的key中
+		 * @param key 键
+		 * @param memberCoordinateMap 经纬度集合
+		 */
+		public Long geoadd(String key, Map<String, GeoCoordinate> memberCoordinateMap) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geoadd(key, memberCoordinateMap);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geoadd(key, memberCoordinateMap);
+			}
+		}
+
+		/**
+		 * 将指定的地理空间位置添加到指定的key中
+		 * @param key 键
+		 * @param memberCoordinateMap 经纬度集合
+		 */
+		public Long geoadd(byte[] key, Map<byte[], GeoCoordinate> memberCoordinateMap) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geoadd(key, memberCoordinateMap);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geoadd(key, memberCoordinateMap);
+			}
+		}
+
+		/**
+		 * 返回两个给定位置之间的距离(使用米作为单位)
+		 * @param key 键
+		 * @param member1 位置名称1
+		 * @param member2 位置名称2
+		 */
+		public Double geodist(String key, String member1, String member2) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geodist(key, member1, member2);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geodist(key, member1, member2);
+			}
+		}
+
+		/**
+		 * 返回两个给定位置之间的距离(使用米作为单位)
+		 * @param key 键
+		 * @param member1 位置名称1
+		 * @param member2 位置名称2
+		 */
+		public Double geodist(byte[] key, byte[] member1, byte[] member2) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geodist(key, member1, member2);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geodist(key, member1, member2);
+			}
+		}
+
+		/**
+		 * 返回两个给定位置之间的距离
+		 * @param key 键
+		 * @param member1 位置名称1
+		 * @param member2 位置名称2
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
+		public Double geodist(String key, String member1, String member2, GeoUnit unit) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geodist(key, member1, member2, unit);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geodist(key, member1, member2, unit);
+			}
+		}
+
+		/**
+		 * 返回两个给定位置之间的距离
+		 * @param key 键
+		 * @param member1 位置名称1
+		 * @param member2 位置名称2
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
+		public Double geodist(byte[] key, byte[] member1, byte[] member2, GeoUnit unit) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geodist(key, member1, member2, unit);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geodist(key, member1, member2, unit);
+			}
+		}
+
+		/**
+		 * 返回一个或多个标准的地理空间的Geohash字符串
+		 * @param key 键
+		 * @param members 位置名称
+		 */
+		public List<String> geohash(String key, String... members) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geohash(key, members);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geohash(key, members);
+			}
+		}
+
+		/**
+		 * 返回一个或多个标准的地理空间的Geohash字符串
+		 * @param key 键
+		 * @param members 位置名称
+		 */
+		public List<byte[]> geohash(byte[] key, byte[]... members) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geohash(key, members);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geohash(key, members);
+			}
+		}
+
+		/**
+		 * 返回地理空间的经纬度
+		 * @param key 键
+		 * @param members 位置名称
+		 */
+		public List<GeoCoordinate> geopos(String key, String... members) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geopos(key, members);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geopos(key, members);
+			}
+		}
+
+		/**
+		 * 返回地理空间的经纬度
+		 * @param key 键
+		 * @param members 位置名称
+		 */
+		public List<GeoCoordinate> geopos(byte[] key, byte[]... members) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.geopos(key, members);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.geopos(key, members);
+			}
+		}
+
+		/**
+		 * 查询指定半径内所有的地理空间元素的集合
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
+		public List<GeoRadiusResponse> georadius(String key, double longitude, double latitude, double radius, GeoUnit unit) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.georadius(key, longitude, latitude, radius, unit);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.georadius(key, longitude, latitude, radius, unit);
+			}
+		}
+
+		/**
+		 * 查询指定半径内所有的地理空间元素的集合
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
+		public List<GeoRadiusResponse> georadius(byte[] key, double longitude, double latitude, double radius, GeoUnit unit) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.georadius(key, longitude, latitude, radius, unit);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.georadius(key, longitude, latitude, radius, unit);
+			}
+		}
+
+		/**
+		 * 查询指定半径内所有的地理空间元素的集合
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 * @param param 额外参数
+		 */
+		public List<GeoRadiusResponse> georadius(String key, double longitude, double latitude, double radius, GeoUnit unit, GeoRadiusParam param) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.georadius(key, longitude, latitude, radius, unit, param);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.georadius(key, longitude, latitude, radius, unit, param);
+			}
+		}
+
+		/**
+		 * 查询指定半径内所有的地理空间元素的集合
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 * @param param 额外参数
+		 */
+		public List<GeoRadiusResponse> georadius(byte[] key, double longitude, double latitude, double radius, GeoUnit unit, GeoRadiusParam param) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.georadius(key, longitude, latitude, radius, unit, param);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.georadius(key, longitude, latitude, radius, unit, param);
+			}
+		}
+
+		/**
+		 * 查询指定半径内匹配到的最大距离的一个地理空间元素
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
+		public List<GeoRadiusResponse> georadiusByMember(String key, String member, double radius, GeoUnit unit) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.georadiusByMember(key, member, radius, unit);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.georadiusByMember(key, member, radius, unit);
+			}
+		}
+
+		/**
+		 * 查询指定半径内匹配到的最大距离的一个地理空间元素
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 */
+		public List<GeoRadiusResponse> georadiusByMember(byte[] key, byte[] member, double radius, GeoUnit unit) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.georadiusByMember(key, member, radius, unit);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.georadiusByMember(key, member, radius, unit);
+			}
+		}
+
+		/**
+		 * 查询指定半径内匹配到的最大距离的一个地理空间元素
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 * @param param 额外参数
+		 */
+		public List<GeoRadiusResponse> georadiusByMember(String key, String member, double radius, GeoUnit unit, GeoRadiusParam param) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.georadiusByMember(key, member, radius, unit, param);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.georadiusByMember(key, member, radius, unit, param);
+			}
+		}
+
+		/**
+		 * 查询指定半径内匹配到的最大距离的一个地理空间元素
+		 * @param key 键
+		 * @param longitude 经度
+		 * @param latitude 纬度
+		 * @param radius 半径
+		 * @param unit 返回单位(可选：米【M】、千米【KM】、英里【MI】、英尺【FT】)
+		 * @param param 额外参数
+		 */
+		public List<GeoRadiusResponse> georadiusByMember(byte[] key, byte[] member, double radius, GeoUnit unit, GeoRadiusParam param) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.georadiusByMember(key, member, radius, unit, param);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.georadiusByMember(key, member, radius, unit, param);
+			}
+		}
+	}
+
+	/**
+	 * 基数统计
+	 */
+	public class HyperLogLog {
+		private HyperLogLog() {
+		}
+
+		/**
+		 * 将指定元素添加到HyperLogLog
+		 * @param key 键
+		 * @param elements 要统计的元素
+		 */
+		public Long pfadd(String key, String... elements) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pfadd(key, elements);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.pfadd(key, elements);
+			}
+		}
+
+		/**
+		 * 将指定元素添加到HyperLogLog
+		 * @param key 键
+		 * @param elements 要统计的元素
+		 */
+		public Long pfadd(final byte[] key, final byte[]... elements) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pfadd(key, elements);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.pfadd(key, elements);
+			}
+		}
+
+		/**
+		 * 返回存储在HyperLogLog结构体的该变量的近似基数
+		 * @param key 键
+		 */
+		public long pfcount(String key) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pfcount(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.pfcount(key);
+			}
+		}
+
+		/**
+		 * 返回存储在HyperLogLog结构体的该变量的近似基数
+		 * @param key 键的集合
+		 */
+		public long pfcount(String... key) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pfcount(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.pfcount(key);
+			}
+		}
+
+		/**
+		* 返回存储在HyperLogLog结构体的该变量的近似基数
+		* @param key 键
+		*/
+		public long pfcount(byte[] key) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pfcount(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.pfcount(key);
+			}
+		}
+
+		/**
+		* 返回存储在HyperLogLog结构体的该变量的近似基数
+		* @param key 键的集合
+		*/
+		public long pfcount(byte[]... key) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pfcount(key);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return 0;
+			} else {
+				return jedisCluster.pfcount(key);
+			}
+		}
+
+		/**
+		 * 将多个 HyperLogLog 合并为一个 HyperLogLog 
+		 * @param destkey 目标结合
+		 * @param sourcekeys 源集合
+		 */
+		public String pfmerge(String destkey, String... sourcekeys) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pfmerge(destkey, sourcekeys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.pfmerge(destkey, sourcekeys);
+			}
+		}
+
+		/**
+		 * 将多个 HyperLogLog 合并为一个 HyperLogLog 
+		 * @param destkey 目标结合
+		 * @param sourcekeys 源集合
+		 */
+		public String pfmerge(final byte[] destkey, final byte[]... sourcekeys) {
+			if (jedisCluster == null) {
+				Jedis jedis = null;
+				try {
+					jedis = jedisPool.getResource();
+					return jedis.pfmerge(destkey, sourcekeys);
+				} catch (Exception e) {
+					logger.error("", e);
+				} finally {
+					jedis.close();
+				}
+				return null;
+			} else {
+				return jedisCluster.pfmerge(destkey, sourcekeys);
+			}
 		}
 	}
 }

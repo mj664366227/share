@@ -1,0 +1,40 @@
+<?php
+session_start();
+include "config.php";//载入系统配置文件
+$login=$_SESSION['login'];
+if($login=="")
+{
+	header("location:index.php");
+}
+else
+{
+	$pwd1=clean($_POST['userpassword1']);
+	$pwd2=clean($_POST['userpassword2']);
+	$user=clean($_POST['username']);
+	$pwd=secret(md5($pwd1));
+	$result=$conn->Execute("select * from `somethingmusic_admin` where `name`='$user'")or die("select database error!");
+	if($result->recordcount()>=1)
+	{
+		tips('此用户已存在！');
+	}
+	else
+	{
+		if($pwd1!=$pwd2)
+		{
+			tips('两次密码输入不一致！');
+		}
+		else
+		{
+			if($user==''||$pwd=='d41d8cd98f00b204e9800998ecf8427e')
+			{
+				tips('用户名或者密码空！');
+			}
+			else
+			{
+				$conn->Execute("insert into `somethingmusic_admin`(`name`,`pwd`) values ('$user','$pwd')")or die("insert database error!");
+				tips('新用户添加成功！');
+			}
+		}
+	}
+}
+?>
