@@ -61,7 +61,7 @@ if [ ! -d $nginx_install_path/libiconv ]; then
 fi
 
 # 安装python 
-python='Python-3.5.2'
+python='Python-3.6.0'
 if [ ! -d $nginx_install_path/python ]; then
 	echo 'installing '$python' ...'
 	if [ ! -f $base_path/$python.tgz ]; then
