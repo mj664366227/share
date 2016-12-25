@@ -34,11 +34,11 @@ public class CaptchaService {
 	/**
 	 * 随机字符串数组
 	 */
-	private final static String[] randomStringArr = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+	private final static String[] randomStringArr = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 	/**
 	 * 验证码暂存
 	 */
-	private LoadingCache<String, String> cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build(new CacheLoader<String, String>() {
+	private LoadingCache<String, String> cache = CacheBuilder.newBuilder().expireAfterWrite(120, TimeUnit.MINUTES).build(new CacheLoader<String, String>() {
 		public String load(String key) throws Exception {
 			return null;
 		}
@@ -96,12 +96,12 @@ public class CaptchaService {
 		int length = numberStr.length();
 		for (int i = 0; i < length; i++) {
 			String Str = numberStr.substring(i, i + 1);
-			g.setFont(new Font("Atlantic Inline", Font.BOLD, RandomUtil.rand(35, 35)));
+			g.setFont(new Font("Atlantic Inline", Font.BOLD, RandomUtil.rand(40, 45)));
 			g.setColor(new Color(RandomUtil.rand(1, 255), RandomUtil.rand(1, 255), RandomUtil.rand(1, 255)));
 			if (i == 0) {
-				g.drawString(Str, RandomUtil.rand(8, 10), RandomUtil.rand(30, 35));
+				g.drawString(Str, 3, RandomUtil.rand(35, 40));
 			} else {
-				g.drawString(Str, i * 23, RandomUtil.rand(35, 35));
+				g.drawString(Str, i * 25, RandomUtil.rand(35, 40));
 			}
 		}
 

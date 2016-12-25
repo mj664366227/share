@@ -64,6 +64,7 @@ subprojects {
 project(':share-core') {
 	dependencies{
 	    compile fileTree( dir: "lib", include: '*.jar' )
+		compile 'com.notnoop.apns:apns:1.0.0.Beta6'
 		compile 'com.hankcs:hanlp:portable-1.3.1'
 		compile 'org.jsoup:jsoup:1.10.1'
 		compile 'com.itextpdf.tool:xmlworker:5.5.9'
