@@ -11,7 +11,10 @@
   "dependencies": {
     "thinkjs": "2.2.x",
     "babel-runtime": "6.x.x",
-    "source-map-support": "0.4.0"
+    "source-map-support": "0.4.7",
+    "request": "^2.79.0",
+    "jsonwebtoken": "^7.1.9",
+    "ioredis": "^2.4.0"
   },
   "devDependencies": {
     "babel-cli": "^6.7.7",
