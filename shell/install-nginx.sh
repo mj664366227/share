@@ -3,7 +3,7 @@
 ntpdate ntp.api.bz
  
 #定义本程序的当前目录
-base_path=$(pwd)
+base_path=$(pwd)  
 
 #处理外部参数
 nginx_version=$1
