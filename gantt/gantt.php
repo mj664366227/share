@@ -1,5 +1,4 @@
 <?php
-//require('mysql.php');
 require('../share-php/class/shareMysql.php');
 
 // 定义配置
