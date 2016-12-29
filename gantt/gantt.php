@@ -2,7 +2,7 @@
 require('../share-php/class/shareMysql.php');
 
 // 定义配置
-define('GANTT_USER', $_SERVER["HTTP_USER_AGENT"].'@'.$_SERVER["REMOTE_ADDR"]);
+define('GANTT_USER', 'ruanzhijun');
 define('DB_HOST','127.0.0.1');
 define('DB_USER','root');
 define('DB_PASS','root');
