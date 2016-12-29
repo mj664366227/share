@@ -1,5 +1,6 @@
 <?php
-require('mysql.php');
+//require('mysql.php');
+require('../share-php/class/shareMysql.php');
 
 // 定义配置
 define('GANTT_USER', $_SERVER["HTTP_USER_AGENT"].'@'.$_SERVER["REMOTE_ADDR"]);
@@ -10,7 +11,7 @@ define('DB_PORT','3306');
 define('DB_NAME','gantt');
 
 // 连接数据库
-$mysql = new mysql(DB_HOST, DB_USER, DB_PASS, '', 'mysql', DB_PORT);
+$mysql = new shareMysql(DB_HOST, DB_USER, DB_PASS, '', 'mysql', DB_PORT);
 
 // 如果没有库和表，自动创建
 $hasGanttDb = false;

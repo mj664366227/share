@@ -46,6 +46,15 @@ class shareMysql {
 			$this->mysqli->close();
 		}
 	}
+	
+	/**
+	 * 切换数据库
+	 * @param $db 数据库
+	 */
+	public function select_db($db) {
+		$this->db_name = $db;
+		$this->mysqli->select_db($db);
+	}
 
 	/**
 	 * 是否可用
