@@ -38,7 +38,7 @@ public class CaptchaService {
 	/**
 	 * 验证码暂存
 	 */
-	private LoadingCache<String, String> cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build(new CacheLoader<String, String>() {
+	private LoadingCache<String, String> cache = CacheBuilder.newBuilder().expireAfterWrite(120, TimeUnit.MINUTES).build(new CacheLoader<String, String>() {
 		public String load(String key) throws Exception {
 			return null;
 		}
@@ -96,12 +96,12 @@ public class CaptchaService {
 		int length = numberStr.length();
 		for (int i = 0; i < length; i++) {
 			String Str = numberStr.substring(i, i + 1);
-			g.setFont(new Font("Atlantic Inline", Font.BOLD, RandomUtil.rand(35, 35)));
+			g.setFont(new Font("Atlantic Inline", Font.BOLD, RandomUtil.rand(40, 45)));
 			g.setColor(new Color(RandomUtil.rand(1, 255), RandomUtil.rand(1, 255), RandomUtil.rand(1, 255)));
 			if (i == 0) {
-				g.drawString(Str, RandomUtil.rand(8, 10), RandomUtil.rand(30, 35));
+				g.drawString(Str, 3, RandomUtil.rand(35, 40));
 			} else {
-				g.drawString(Str, i * 23, RandomUtil.rand(35, 35));
+				g.drawString(Str, i * 25, RandomUtil.rand(35, 40));
 			}
 		}
 
