@@ -1,5 +1,5 @@
 #linux nginx自动安装程序 
-#运行例子：sh install-nginx.sh 1.11.7 /usr/local
+#运行例子：sh install-nginx.sh 1.10.2 /usr/local
 ntpdate ntp.api.bz
  
 #定义本程序的当前目录
@@ -10,7 +10,7 @@ nginx_version=$1
 nginx_install_path=$2
 if [ ! $nginx_version ] || [ ! $nginx_install_path ]; then
 	echo 'error command!!! you must input nginx version and install path...'
-	echo 'for example: sh install-nginx.sh 1.11.7 /usr/local'
+	echo 'for example: sh install-nginx.sh 1.10.2 /usr/local'
 	exit
 fi
 
@@ -58,38 +58,6 @@ if [ ! -d $nginx_install_path/libiconv ]; then
 	cd $install_path/$libiconv
 	./configure --prefix=$nginx_install_path/libiconv -enable-shared --host=arm-linux && make && make install || exit
 	yes|cp $nginx_install_path/libiconv/bin/* /usr/bin/
-fi
-
-# 安装python 
-python='Python-3.6.0'
-if [ ! -d $nginx_install_path/python ]; then
-	echo 'installing '$python' ...'
-	if [ ! -f $base_path/$python.tgz ]; then
-		echo $python'.tgz is not exists, system will going to download it...'
-		wget -O $base_path/$python.tgz --no-check-certificate http://install.ruanzhijun.cn/$python.tgz || exit
-		echo 'download '$python' finished...'
-	fi
-	tar xvf $base_path/$python.tgz -C $install_path || exit
-	cd $install_path/$python
-	./configure --prefix=$nginx_install_path/python --enable-shared && make && make install || exit
-	yes|cp $nginx_install_path/python/bin/* /usr/bin/
-	echo $python' install finished...'
-fi
-
-# 安装libxml2
-libxml='libxml2-2.9.4'
-if [ ! -d $nginx_install_path/libxml2 ]; then
-	echo 'installing '$libxml' ...'
-	if [ ! -f $base_path/$libxml.tar.gz ]; then
-		echo $libxml'.tar.gz is not exists, system will going to download it...'
-		wget -O $base_path/$libxml.tar.gz http://install.ruanzhijun.cn/$libxml.tar.gz || exit
-		echo 'download '$libxml' finished...'
-	fi
-	tar zxvf $base_path/$libxml.tar.gz -C $install_path || exit
-	cd $install_path/$libxml
-	./configure --prefix=$nginx_install_path/libxml2 --disable-static --with-iconv=$nginx_install_path/libiconv --with-zlib=$nginx_install_path/zlib/ && make && make install || exit
-	yes|cp $nginx_install_path/libxml2/bin/* /usr/bin/
-	echo $libxml' install finished...'
 fi
 
 #安装OpenSSL
