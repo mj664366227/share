@@ -33,15 +33,15 @@ perl Makefile.PL
 make
 make install
 
-if [ ! -d $php_install_path/m4 ]; then
+if [ ! -d $install_path/m4 ]; then
 	m4='m4-1.4.17'
 	if [ ! -f $base_path/$m4.tar.gz ]; then
 		wget -O $base_path/$m4.tar.gz http://install.ruanzhijun.cn/$m4.tar.gz || exit
 	fi
 	tar zxvf $base_path/$m4.tar.gz -C $install_path || exit
 	cd $install_path/$m4
-	./configure --prefix=$php_install_path/m4 && make && make install || exit
-	yes|cp $php_install_path/m4/bin/* /usr/bin/
+	./configure --prefix=$install_path/m4 && make && make install || exit
+	yes|cp $install_path/m4/bin/* /usr/bin/
 fi
 
 if [ ! -d $git_install_path/autoconf ]; then
