@@ -1,8 +1,5 @@
 package com.share.test.http.server;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-
 import java.io.IOException;
 
 import javax.servlet.ServletInputStream;
@@ -17,6 +14,9 @@ import com.share.core.interfaces.AbstractConverter;
 import com.share.core.protocol.protocol.ProtocolBase;
 import com.share.core.util.StringUtil;
 import com.share.test.protocol.ReqDemo;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 /**
  * protocol参数转换器
@@ -35,7 +35,7 @@ public class ProtocolConverter extends AbstractConverter {
 				inputStream.read(bytes, 0, size);
 				ByteBuf buffer = Unpooled.buffer(bytes.length);
 				buffer.readBytes(bytes);
-				x =  new ReqDemo();
+				x = new ReqDemo();
 				x.loadFromBuffer(buffer);
 
 			}

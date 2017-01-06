@@ -29,5 +29,5 @@
 	<bean class="com.share.core.redis.Redis" init-method="single" destroy-method="close" />
 
 	<!-- 启动Mongodb -->
-	<!--<bean class="com.share.core.mongo.Mongodb" init-method="init" destroy-method="close" /> -->
+	<bean class="com.share.core.mongo.Mongodb" init-method="init" destroy-method="close" />
 </beans>
