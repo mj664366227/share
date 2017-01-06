@@ -17,5 +17,3 @@
 
 ######[共做室](https://gatherup.cc)
 其中官网、app接口是基于share-java框架实现；创意人是基于share-node实现。
-
-![image](https://www.trustdream.com/pic/Avatar128x128.png)
