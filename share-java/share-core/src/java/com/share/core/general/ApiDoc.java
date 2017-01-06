@@ -60,11 +60,11 @@ public class ApiDoc {
 		}
 
 		// 生成首页
-		//index(classSet);
+		index(classSet);
 
 		// 生成各个文档
 		for (Class<?> controller : classSet) {
-			//doc(classSet, controller);
+			doc(classSet, controller);
 		}
 	}
 

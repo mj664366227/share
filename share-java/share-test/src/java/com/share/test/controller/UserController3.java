@@ -77,22 +77,4 @@ public class UserController3 {
 		resUserReg.setUserId(12);
 		return resUserReg;
 	}
-
-	@GetMapping("/java")
-	public void java(HttpServletResponse response) {
-		logger.info("1");
-		ServletOutputStream outputStream = null;
-		try {
-			response.setContentType("application/json;charset=" + SystemUtil.getSystemCharsetString());
-			outputStream = response.getOutputStream();
-			outputStream.write("1".getBytes());
-			outputStream.flush();
-		} catch (IOException e) {
-		} finally {
-			try {
-				outputStream.close();
-			} catch (IOException e) {
-			}
-		}
-	}
 }
