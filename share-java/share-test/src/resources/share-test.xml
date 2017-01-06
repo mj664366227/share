@@ -8,8 +8,8 @@
 
 
 	<import resource="classpath:share-core.xml" />
-	<import resource="classpath:share-soa.xml" />
-	<import resource="classpath:share-dao.xml" />
+	<!--<import resource="classpath:share-soa.xml" />-->
+	<!--<import resource="classpath:share-dao.xml" />-->
 
 
 

@@ -1,14 +1,23 @@
 package com.share.test.controller;
 
+import java.io.IOException;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.share.core.util.SystemUtil;
 import com.share.protocol.ReqUserReg;
 import com.share.protocol.ResUserReg;
 
 @Controller("反对地方模块")
 public class UserController3 {
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	/**
 	 * 用户注册
 	 */
@@ -38,7 +47,7 @@ public class UserController3 {
 		resUserReg.setUserId(12);
 		return resUserReg;
 	}
-	
+
 	/**
 	 * 用户注册2
 	 */
@@ -67,5 +76,23 @@ public class UserController3 {
 		ResUserReg resUserReg = new ResUserReg();
 		resUserReg.setUserId(12);
 		return resUserReg;
+	}
+
+	@GetMapping("/java")
+	public void java(HttpServletResponse response) {
+		logger.info("1");
+		ServletOutputStream outputStream = null;
+		try {
+			response.setContentType("application/json;charset=" + SystemUtil.getSystemCharsetString());
+			outputStream = response.getOutputStream();
+			outputStream.write("1".getBytes());
+			outputStream.flush();
+		} catch (IOException e) {
+		} finally {
+			try {
+				outputStream.close();
+			} catch (IOException e) {
+			}
+		}
 	}
 }

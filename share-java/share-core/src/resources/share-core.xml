@@ -28,45 +28,6 @@
 	<!-- 启动redis -->
 	<bean class="com.share.core.redis.Redis" init-method="single" destroy-method="close" />
 
-	<!-- 启动ssdb -->
-	<bean class="com.share.core.ssdb.SSDB" init-method="init" destroy-method="close" />
-
 	<!-- 启动Mongodb -->
-	<bean class="com.share.core.mongo.Mongodb" init-method="init" destroy-method="close" />
-
-	<bean id="rsaService1024" class="com.share.core.general.RSAService" init-method="init">
-		<!-- 加密器的名字 -->
-		<property name="name" value="com.share.core.RSAService1024" />
-		<!-- RSA公钥pem文件地址 -->
-		<property name="publicKey" value="cert/1024/rsa_public_key.pem" />
-		<!-- RSA私钥pem文件地址 -->
-		<property name="privateKey" value="cert/1024/rsa_pkcs8_private_key.pem" />
-	</bean>
-
-	<bean id="rsaService2048" class="com.share.core.general.RSAService" init-method="init">
-		<!-- 加密器的名字 -->
-		<property name="name" value="com.share.core.RSAService2048" />
-		<!-- RSA公钥pem文件地址 -->
-		<property name="publicKey" value="cert/2048/rsa_public_key.pem" />
-		<!-- RSA私钥pem文件地址 -->
-		<property name="privateKey" value="cert/2048/rsa_pkcs8_private_key.pem" />
-	</bean>
-
-	<bean id="rsaService4096" class="com.share.core.general.RSAService" init-method="init">
-		<!-- 加密器的名字 -->
-		<property name="name" value="com.share.core.RSAService4096" />
-		<!-- RSA公钥pem文件地址 -->
-		<property name="publicKey" value="cert/4096/rsa_public_key.pem" />
-		<!-- RSA私钥pem文件地址 -->
-		<property name="privateKey" value="cert/4096/rsa_pkcs8_private_key.pem" />
-	</bean>
-
-	<bean id="rsaService8192" class="com.share.core.general.RSAService" init-method="init">
-		<!-- 加密器的名字 -->
-		<property name="name" value="com.share.core.RSAService8192" />
-		<!-- RSA公钥pem文件地址 -->
-		<property name="publicKey" value="cert/8192/rsa_public_key.pem" />
-		<!-- RSA私钥pem文件地址 -->
-		<property name="privateKey" value="cert/8192/rsa_pkcs8_private_key.pem" />
-	</bean>
+	<!--<bean class="com.share.core.mongo.Mongodb" init-method="init" destroy-method="close" /> -->
 </beans>

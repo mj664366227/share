@@ -97,7 +97,6 @@ project(':share-core') {
 		compile 'com.google.guava:guava:20.0'
 		compile 'com.auth0:java-jwt:3.0.2'
 		compile 'junit:junit:4.12'
-		compile 'org.nutz:ssdb4j:9.4'
 		compile 'org.javassist:javassist:3.21.0-GA'
 		compile 'org.apache.httpcomponents:httpclient:4.5.2'
 		compile 'org.apache.httpcomponents:httpmime:4.5.2'
