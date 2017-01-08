@@ -106,6 +106,7 @@ project(':share-core') {
 		compile 'org.apache.logging.log4j:log4j-jcl:2.7'
 		compile 'org.apache.logging.log4j:log4j-web:2.7'
 		compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.7'
+		compile 'org.slf4j:slf4j-api:1.7.22'
 		compile 'org.eclipse.jetty:jetty-alpn-client:9.4.0.v20161208'
 		compile 'org.eclipse.jetty:jetty-alpn-server:9.4.0.v20161208'
 		compile 'org.eclipse.jetty:jetty-annotations:9.4.0.v20161208'
