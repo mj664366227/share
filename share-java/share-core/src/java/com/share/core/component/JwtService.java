@@ -26,12 +26,15 @@ public class JwtService {
 	 * 加密密匙
 	 */
 	private final static String secret = FileSystem.getPropertyString("system.key");
+	/**
+	 * 加密算法
+	 */
+	private String algorithm;
 
 	/**
 	 * 私有化构造函数，只有spring才可以实例化
 	 */
 	private JwtService() {
-
 	}
 
 	/**
@@ -39,7 +42,15 @@ public class JwtService {
 	 */
 	@PostConstruct
 	public void init() {
+		System.err.println(algorithm);
+	}
 
+	/**
+	 * 设置加密算法
+	 * @param algorithm 加密算法名称
+	 */
+	public void setAlgorithm(String algorithm) {
+		this.algorithm = algorithm;
 	}
 
 	/**

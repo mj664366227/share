@@ -68,8 +68,8 @@
 	
 	<!-- jwt -->
 	<bean class="com.share.core.component.JwtService" init-method="init">
-		<!-- 线程池大小 -->
-		<property name="poolSize" value="10" />
+		<!-- 加密算法，参考：https://github.com/auth0/java-jwt#available-algorithms -->
+		<property name="algorithm" value="HS256" />
 	</bean>
 
 	<!-- http客户端 -->
