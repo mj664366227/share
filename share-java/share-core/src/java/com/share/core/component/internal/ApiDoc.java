@@ -1,4 +1,4 @@
-package com.share.core.general;
+package com.share.core.component.internal;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

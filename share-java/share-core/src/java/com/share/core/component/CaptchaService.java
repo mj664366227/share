@@ -1,4 +1,4 @@
-package com.share.core.general;
+package com.share.core.component;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -25,7 +24,6 @@ import com.share.core.util.StringUtil;
  * 验证码服务
  * @author ruan
  */
-@Component
 public class CaptchaService {
 	/**
 	 * logger

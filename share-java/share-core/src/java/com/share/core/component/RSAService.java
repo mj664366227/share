@@ -1,4 +1,4 @@
-package com.share.core.general;
+package com.share.core.component;
 
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPrivateKey;

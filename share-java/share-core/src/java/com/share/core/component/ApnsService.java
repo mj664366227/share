@@ -1,8 +1,7 @@
-package com.share.core.general;
+package com.share.core.component;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.notnoop.apns.APNS;
 import com.share.core.util.FileSystem;
@@ -11,7 +10,6 @@ import com.share.core.util.FileSystem;
  * 苹果官方推送<br>
  * https://github.com/notnoop/java-apns
  */
-@Component
 public class ApnsService {
 	private final static Logger logger = LoggerFactory.getLogger(ApnsService.class);
 
