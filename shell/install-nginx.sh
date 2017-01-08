@@ -199,6 +199,12 @@ server {
 	#location ~ .*\.(txt|ico)$ {
 	#	break;
 	#}
+	
+	#需要用户名密码访问
+	#location / {
+	#		auth_basic "Authorized users only";
+	#		auth_basic_user_file /usr/local/tengine/conf/web/htpasswd;  #密码文件格式：gatherup.cc:/XJt5jAl/dKTI
+	#}
 		
 	#nginx 伪静态写法(一定要写在最后)
 	#location ~ .*$ { 
