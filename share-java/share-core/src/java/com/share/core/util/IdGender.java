@@ -1,4 +1,4 @@
-package com.share.core.util;
+package com.gu.core.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,7 +17,7 @@ public class IdGender {
 	 */
 	public final static long genUniqueId() {
 		int x = atomicInteger.getAndIncrement();
-		if (x >= 99) {
+		if (x > 99) {
 			atomicInteger.set(1);
 		}
 		// 这样做可以保证按照时间顺序
