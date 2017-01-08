@@ -4,7 +4,6 @@ buildscript {
 		// http://mvnrepository.com  
         repositories {
 			maven { url "http://127.0.0.1:8081/repository/maven-central/" }
-			maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
 			maven { url "http://repository.exoplatform.org/content/groups/public/" }
         }
         dependencies {
@@ -39,7 +38,6 @@ subprojects {
 	
 	repositories {
 		maven { url "http://127.0.0.1:8081/repository/maven-central/" }
-		maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
 		maven { url "http://repository.exoplatform.org/content/groups/public/" }
 	}
 	
@@ -89,8 +87,8 @@ project(':share-core') {
 		compile 'org.apache.poi:poi:3.15'
 		compile 'org.apache.poi:poi-scratchpad:3.15'
 		compile 'org.apache.poi:poi-ooxml:3.15'
-		compile 'com.dyuproject.protostuff:protostuff-core:1.0.10'
-		compile 'com.dyuproject.protostuff:protostuff-runtime:1.0.10'
+		compile 'com.dyuproject.protostuff:protostuff-core:1.0.12'
+		compile 'com.dyuproject.protostuff:protostuff-runtime:1.0.12'
 		compile 'org.apache.commons:commons-lang3:3.4'
 		compile 'commons-logging:commons-logging:1.2'
 		compile 'org.apache.commons:commons-pool2:2.4.2'
