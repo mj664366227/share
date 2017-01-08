@@ -65,11 +65,15 @@
 		<!-- 线程池大小 -->
 		<property name="poolSize" value="10" />
 	</bean>
-	
+
 	<!-- jwt -->
 	<bean class="com.share.core.component.JwtService" init-method="init">
-		<!-- 加密算法，参考：https://github.com/auth0/java-jwt#available-algorithms -->
-		<property name="algorithm" value="HS256" />
+		<!-- 实例的名字(选配项，多实例的时候适用) -->
+		<!-- <property name="name" value="xxxx" /> -->
+		<!-- RSA公钥pem文件地址 -->
+		<property name="publicKey" value="cert/1024/rsa_public_key.pem" />
+		<!-- RSA私钥pem文件地址 -->
+		<property name="privateKey" value="cert/1024/rsa_pkcs8_private_key.pem" />
 	</bean>
 
 	<!-- http客户端 -->
@@ -85,15 +89,6 @@
 		<!-- SSL加密算法(","分割) -->
 		<!-- <property name="sslProtocols" value="TLSv1" /> -->
 	</bean>
-
-
-	<!-- 视图配置 -->
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/default/" /><!-- 这里定义皮肤的名字 -->
-		<property name="suffix" value=".jsp" />
-	</bean>
-
 
 	<!-- 定时器配置 -->
 	<task:annotation-driven executor="shareExecutor" scheduler="shareScheduler" />

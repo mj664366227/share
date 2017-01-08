@@ -18,7 +18,7 @@ subprojects {
     apply plugin: 'cobertura'
 	
 	// 过滤不打包的文件(只会过滤资源文件)
-	jar.exclude 'log4j.properties'
+	jar.exclude 'log4j2.xml'
 	jar.exclude 'config.properties'
 	jar.exclude 'nginx'
 	jar.exclude 'config'
