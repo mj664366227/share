@@ -61,7 +61,7 @@ if [ ! -d $php_install_path/libiconv ]; then
 fi
  
 # 下载zlib
-zlib='zlib-1.2.8'
+zlib='zlib-1.2.10'
 if [ ! -d $php_install_path/zlib ]; then
 	echo 'installing '$zlib' ...'
 	if [ ! -f $base_path/$zlib.tar.gz ]; then
@@ -146,7 +146,7 @@ if [ ! -d $php_install_path/pcre ]; then
 fi
 
 # 安装curl
-curl='curl-7.51.0'
+curl='curl-7.52.1'
 if [ ! -d $php_install_path/curl ]; then
 	echo 'installing '$curl' ...'
 	if [ ! -f $base_path/$curl.tar.gz ]; then
@@ -226,7 +226,7 @@ fi
 # 安装GD库
 # # libpng
 if [ ! -d $php_install_path/libpng ]; then
-	libpng='1.6.25'
+	libpng='1.6.28'
 	if [ ! -f $base_path/libpng-$libpng.tar.gz ]; then
 		wget -O $base_path/libpng-$libpng.tar.gz http://install.ruanzhijun.cn/libpng-$libpng.tar.gz || exit
 	fi
@@ -247,7 +247,7 @@ if [ ! -d $php_install_path/jpeg ]; then
 fi
 # freetype
 if [ ! -d $php_install_path/freetype ]; then
-	freetype='freetype-2.7'
+	freetype='freetype-2.7.1'
 	if [ ! -f $base_path/$freetype.tar.gz ]; then
 		wget -O $base_path/$freetype.tar.gz http://install.ruanzhijun.cn/$freetype.tar.gz || exit
 	fi
@@ -272,7 +272,6 @@ cd $install_path/php-$php_version
 if [ -d $php_install_path/mysql ]; then
 	mysql_install='--with-pdo-mysql='$php_install_path'/mysql -with-mysqli='$php_install_path'/mysql/bin/mysql_config'
 fi
-
 
 ./configure --prefix=$php_install_path/php --with-config-file-path=$php_install_path/php/etc --with-pcre-dir=$php_install_path/pcre --with-libxml-dir=$php_install_path/libxml2 --with-openssl-dir=$php_install_path/openssl --with-zlib-dir=$php_install_path/zlib $php_mysql_install_str --with-curl=$php_install_path/curl --enable-libgcc --with-curlwrappers --with-iconv-dir=$php_install_path/libiconv --with-mcrypt=$php_install_path/libmcrypt --with-jpeg-dir=$php_install_path/jpeg --with-png-dir=$php_install_path/libpng --with-freetype-dir=$php_install_path/freetype $mysql_install --with-icu-dir=$php_install_path/icu --enable-mysqlnd --with-mhash --with-snmp --with-xmlrpc --with-bz2 --with-openssl --enable-mbstring --enable-fpm --enable-zip --enable-sockets --enable-soap --enable-xml --enable-zend-signals --enable-wddx --enable-gd-jis-conv --enable-intl --enable-calendar --enable-mbstring --enable-bcmath --enable-ftp --enable-shmop --enable-gd-native-ttf --enable-exif --enable-dba --with-mm=$php_install_path/mm --enable-sysvmsg --with-pic --enable-sysvsem --enable-sysvshm && make && make install || exit
 echo 'php-'$php_version' install finshed...'
